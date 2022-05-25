@@ -3,7 +3,7 @@
 using namespace std;
 
 int main() {
-    freopen("input.txt", "r", stdin);
+//    freopen("input.txt", "r", stdin);
 
     int n;
     cin >> n;
@@ -43,12 +43,10 @@ int main() {
         } else if(menuInput == "E") {
             symbolTable->exitScope();
 
-        } else {
+        } else if(menuInput == "exit") {
             break;
-
         }
     }
 
-
-    return 0;
+    delete symbolTable;
 }

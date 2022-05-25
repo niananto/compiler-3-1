@@ -28,29 +28,38 @@ public:
     ScopeTable(unsigned long totalBuckets, ScopeTable* parentScope, unsigned scopeCount) {
         this->totalBuckets = totalBuckets;
         buckets = new SymbolInfo*[totalBuckets];
+        for(unsigned long i=0; i<totalBuckets; i++) {
+            buckets[i] = nullptr;
+        }
         this->parentScope = parentScope;
         this->scopeCount = scopeCount;
 
-        id = parentScope->id + to_string(scopeCount);
+        if(parentScope == nullptr) {
+            id = to_string(scopeCount);
+        } else {
+            id = parentScope->id + "." + to_string(scopeCount);
+        }
 
         cout << "New ScopeTable with id " << id << " created" << endl;
     }
 
 
-    virtual ~ScopeTable() {
-        cout << "ScopeTable with id " << id << " removed" << endl;
-
-        SymbolInfo *itr, *nxt;
+    ~ScopeTable() {
+        cout << "Destroying the ScopeTable" << endl;
+        SymbolInfo *itr, *prev;
         for (unsigned long i=0; i<totalBuckets; i++) {
-            itr = buckets[i];
-            while(itr->getNext() != nullptr) {
-                nxt = itr->getNext();
-                delete itr;
-                itr = nxt;
+            if(buckets[i] == nullptr) continue;
+
+            prev = buckets[i];
+            itr = prev->getNext();
+            while(itr != nullptr) {
+                delete prev;
+                prev = itr;
+                itr = prev->getNext();
             }
+            delete prev;
         }
         delete [] buckets;
-        delete parentScope;
     }
 
 
@@ -63,9 +72,22 @@ public:
         SymbolInfo* symbol = new SymbolInfo(name, type);
 
         unsigned long index = hashFunction(&name[0]);
-        SymbolInfo* itr = buckets[index];
-        SymbolInfo* prev = itr;
-        unsigned secondaryIndex = 0;
+
+        if(buckets[index] == nullptr) {
+            buckets[index] = symbol;
+            cout << "Inserted in ScopeTable# " << id << " at position " << index << ", 0" << endl;
+            return true;
+        }
+
+        if(buckets[index]->getName() == name) {
+            cout << "This word already exists" << endl;
+            cout << "<" << name << ", " << type << "> already exists in current ScopeTable" << endl;
+            return false;
+        }
+
+        SymbolInfo* prev = buckets[index];
+        SymbolInfo* itr = prev->getNext();
+        unsigned secondaryIndex = 1;
         while(itr != nullptr) {
             if(itr->getName() == name) {
                 cout << "<" << name << "," << type << "> already exists in current ScopeTable" << endl;
@@ -86,46 +108,81 @@ public:
         unsigned secondaryIndex = 0;
         while(itr != nullptr) {
             if(itr->getName() == name) {
-                cout << "Not found" << endl;
-                return nullptr;
+                cout << "Found in ScopeTable# " << id << " at position " << index << ", " << secondaryIndex << endl;
+                return itr;
             }
             itr = itr->getNext();
             secondaryIndex++;
         }
-        cout << "Found in ScopeTable# " << id << " at position " << index << ", " << secondaryIndex << endl;
-        return itr;
+        return nullptr;
     }
 
     bool remove(string name) {
         unsigned long index = hashFunction(&name[0]);
-        SymbolInfo* itr = buckets[index];
-        unsigned secondaryIndex = 0;
 
-        if(itr->getName() == name) {
+        if(buckets[index] == nullptr) {
+            cout << "Not found" << endl;
+            cout << name << " is not found" << endl;
+            return false;
+        }
+
+        if(buckets[index]->getName() == name) {
+            delete buckets[index];
             buckets[index] = nullptr;
-            cout << "Found in ScopeTable# " << id << " at position " << index << ", " << secondaryIndex << endl;
+            cout << "Found in ScopeTable# " << id << " at position " << index << ", 0" << endl;
             cout << "Found it" << endl;
-            cout << "Deleted entry at " << index << "," << " in the current ScopeTable" << endl;
-            delete itr;
+            cout << "Deleted entry at " << index << ", 0 in the current ScopeTable" << endl;
             return true;
         }
 
-        secondaryIndex++;
-        while(itr->getNext() != nullptr) {
-            if(itr->getNext()->getName() == name) {
-                cout << "Found in ScopeTable# " << id << " at position " << index << ", " << secondaryIndex << endl;
+        SymbolInfo* prev = buckets[index];
+        SymbolInfo* itr = prev->getNext();
+        unsigned secondaryIndex = 1;
+        while(itr != nullptr) {
+            if(itr->getName() == name) {
+                delete itr;
+                prev->setNext(nullptr);
+                cout << "Found in ScopeTable# " << id << " at position " << index << ", 0" << endl;
                 cout << "Found it" << endl;
-                cout << "Deleted entry at " << index << "," << " in the current ScopeTable" << endl;
-                delete itr->getNext();
-                itr->setNext(nullptr);
+                cout << "Deleted entry at " << index << ", " << secondaryIndex << " in the current ScopeTable" << endl;
                 return true;
             }
+            prev = itr;
             itr = itr->getNext();
             secondaryIndex++;
         }
         cout << "Not found" << endl;
         cout << name << " is not found" << endl;
-        return false;
+        return true;
+
+
+
+
+//        if(itr->getName() == name) {
+//            buckets[index] = nullptr;
+//            cout << "Found in ScopeTable# " << id << " at position " << index << ", " << secondaryIndex << endl;
+//            cout << "Found it" << endl;
+//            cout << "Deleted entry at " << index << "," << " in the current ScopeTable" << endl;
+//            delete itr;
+//            return true;
+//        }
+//
+//        secondaryIndex++;
+//        while(itr->getNext() != nullptr) {
+//            if(itr->getNext()->getName() == name) {
+//                cout << "Found in ScopeTable# " << id << " at position " << index << ", " << secondaryIndex << endl;
+//                cout << "Found it" << endl;
+//                cout << "Deleted entry at " << index << "," << " in the current ScopeTable" << endl;
+//                delete itr->getNext();
+//                itr->setNext(nullptr);
+//                return true;
+//            }
+//            itr = itr->getNext();
+//            secondaryIndex++;
+//        }
+//        cout << "Not found" << endl;
+//        cout << name << " is not found" << endl;
+//        return false;
     }
 
     void print() {
@@ -136,6 +193,7 @@ public:
             itr = buckets[i];
             while(itr != nullptr) {
                 cout << "< " << itr->getName() << " : " << itr->getType() << ">  ";
+                itr = itr->getNext();
             }
             cout << endl;
         }
@@ -143,6 +201,10 @@ public:
 
     ScopeTable *getParentScope() const {
         return parentScope;
+    }
+
+    const string &getId() const {
+        return id;
     }
 };
 

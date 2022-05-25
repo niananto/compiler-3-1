@@ -18,11 +18,13 @@ public:
     SymbolTable(unsigned long totalBuckets) {
         this->totalBuckets = totalBuckets;
         scopeCount = 1;
-        currentScope = new ScopeTable(totalBuckets, nullptr, scopeCount++);
+//        currentScope = new ScopeTable(totalBuckets, nullptr, scopeCount++);
+        currentScope = nullptr;
+        enterScope();
     }
 
     ~SymbolTable() {
-        delete currentScope;
+        delete [] currentScope;
     }
 
     void enterScope() {
@@ -31,12 +33,22 @@ public:
     }
 
     void exitScope() {
+        if(currentScope == nullptr) {
+            cout << "NO CURRENT SCOPE" << endl;
+            return;
+        }
         ScopeTable* temp = currentScope->getParentScope();
+        cout << "ScopeTable with id " << currentScope->getId() << " removed" << endl;
+        if(currentScope->getParentScope() == nullptr) {
+            cout << "Destroying the First Scope" << endl;
+            scopeCount = 1;
+        }
         delete currentScope;
         currentScope = temp;
     }
 
     bool insert(string name, string type) {
+        if(currentScope == nullptr) enterScope();
         return currentScope->insert(name, type, scopeCount);
     }
 
@@ -54,6 +66,7 @@ public:
             }
             itr = itr->getParentScope();
         }
+        cout << "Not found" << endl;
         return nullptr;
     }
 
@@ -65,7 +78,7 @@ public:
         ScopeTable* itr = currentScope;
         while(itr != nullptr) {
             itr->print();
-            itr->getParentScope();
+            itr = itr->getParentScope();
         }
     }
 };

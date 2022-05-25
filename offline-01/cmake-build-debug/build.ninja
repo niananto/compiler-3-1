@@ -51,13 +51,7 @@ build cmake_object_order_depends_target_offline_01: phony || CMakeFiles/offline_
 
 build CMakeFiles/offline_01.dir/main.cpp.obj: CXX_COMPILER__offline_01_Debug D$:/3-1/CSE$ 310/compiler-3-1/offline-01/main.cpp || cmake_object_order_depends_target_offline_01
   DEP_FILE = CMakeFiles\offline_01.dir\main.cpp.obj.d
-  FLAGS = -g -std=gnu++17
-  OBJECT_DIR = CMakeFiles\offline_01.dir
-  OBJECT_FILE_DIR = CMakeFiles\offline_01.dir
-
-build CMakeFiles/offline_01.dir/SymbolTable.cpp.obj: CXX_COMPILER__offline_01_Debug D$:/3-1/CSE$ 310/compiler-3-1/offline-01/SymbolTable.cpp || cmake_object_order_depends_target_offline_01
-  DEP_FILE = CMakeFiles\offline_01.dir\SymbolTable.cpp.obj.d
-  FLAGS = -g -std=gnu++17
+  FLAGS = -g -std=gnu++14
   OBJECT_DIR = CMakeFiles\offline_01.dir
   OBJECT_FILE_DIR = CMakeFiles\offline_01.dir
 
@@ -69,7 +63,7 @@ build CMakeFiles/offline_01.dir/SymbolTable.cpp.obj: CXX_COMPILER__offline_01_De
 #############################################
 # Link the executable offline_01.exe
 
-build offline_01.exe: CXX_EXECUTABLE_LINKER__offline_01_Debug CMakeFiles/offline_01.dir/main.cpp.obj CMakeFiles/offline_01.dir/SymbolTable.cpp.obj
+build offline_01.exe: CXX_EXECUTABLE_LINKER__offline_01_Debug CMakeFiles/offline_01.dir/main.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\offline_01.dir

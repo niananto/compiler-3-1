@@ -27,7 +27,7 @@ public:
     }
 
     ~SymbolInfo() {
-        delete next;
+//        if(next != nullptr) delete next;
     }
 
     string getName() const {
