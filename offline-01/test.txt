@@ -1,37 +1,10 @@
 New ScopeTable with id 1 created
 
-Inserted in ScopeTable# 1 at position 6, 0
+Inserted in ScopeTable# 1 at position 5, 0
 
 
-New ScopeTable with id 1.1 created
+Inserted in ScopeTable# 1 at position 5, 1
 
-
-Inserted in ScopeTable# 1.1 at position 6, 0
-
-
-New ScopeTable with id 1.1.1 created
-
-
-Inserted in ScopeTable# 1.1.1 at position 6, 0
-
-
-ScopeTable #1.1.1
-0 --> 
-1 --> 
-2 --> 
-3 --> 
-4 --> 
-5 --> 
-6 --> < o : o>  
-
-ScopeTable #1.1
-0 --> 
-1 --> 
-2 --> 
-3 --> 
-4 --> 
-5 --> 
-6 --> < h : h>  
 
 ScopeTable #1
 0 --> 
@@ -39,54 +12,15 @@ ScopeTable #1
 2 --> 
 3 --> 
 4 --> 
-5 --> 
-6 --> < a : a>  
-
-
-
-Found in ScopeTable# 1.1.1 at position 6, 0
-
-
-Found in ScopeTable# 1 at position 6, 0
-
-
-ScopeTable with id 1.1.1 removed
-Destroying the ScopeTable
-
-
-New ScopeTable with id 1.1.2 created
-
-
-Inserted in ScopeTable# 1.1.2 at position 4, 0
-
-
-ScopeTable with id 1.1.2 removed
-Destroying the ScopeTable
-
-
-New ScopeTable with id 1.1.3 created
-
-
-Inserted in ScopeTable# 1.1.3 at position 0, 0
-
-
-ScopeTable #1.1.3
-0 --> < i : VAR>  
-1 --> 
-2 --> 
-3 --> 
-4 --> 
-5 --> 
+5 --> < ab : ab>  < g : g>  
 6 --> 
 
-ScopeTable #1.1
-0 --> 
-1 --> 
-2 --> 
-3 --> 
-4 --> 
-5 --> 
-6 --> < h : h>  
+
+
+Found in ScopeTable# 1 at position 5, 0
+Found it
+Deleted entry at 5, 0 in the current ScopeTable
+
 
 ScopeTable #1
 0 --> 
@@ -94,85 +28,7 @@ ScopeTable #1
 2 --> 
 3 --> 
 4 --> 
-5 --> 
-6 --> < a : a>  
-
-
-
-Not found
-
-
-Not found
-
-
-ScopeTable with id 1.1.3 removed
-Destroying the ScopeTable
-
-
-ScopeTable with id 1.1 removed
-Destroying the ScopeTable
-
-
-New ScopeTable with id 1.2 created
-
-
-Inserted in ScopeTable# 1.2 at position 4, 0
-
-
-ScopeTable #1.2
-0 --> 
-1 --> 
-2 --> 
-3 --> 
-4 --> < 5 : NUMBER>  
-5 --> 
+5 --> < g : g>  
 6 --> 
 
-ScopeTable #1
-0 --> 
-1 --> 
-2 --> 
-3 --> 
-4 --> 
-5 --> 
-6 --> < a : a>  
-
-
-
-Not found
-j is not found
-
-
-Not found
-i is not found
-
-
-ScopeTable #1.2
-0 --> 
-1 --> 
-2 --> 
-3 --> 
-4 --> < 5 : NUMBER>  
-5 --> 
-6 --> 
-
-ScopeTable #1
-0 --> 
-1 --> 
-2 --> 
-3 --> 
-4 --> 
-5 --> 
-6 --> < a : a>  
-
-
-
-New ScopeTable with id 1.2.1 created
-
-
-ScopeTable with id 1.2.1 removed
-Destroying the ScopeTable
-
-
-New ScopeTable with id 1.2.2 created
 

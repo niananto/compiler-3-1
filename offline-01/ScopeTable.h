@@ -131,8 +131,9 @@ public:
         }
 
         if(buckets[index]->getName() == name) {
-            delete buckets[index];
-            buckets[index] = nullptr;
+            SymbolInfo* temp = buckets[index];
+            buckets[index] = buckets[index]->getNext();
+            delete temp;
             printOutput("Found in ScopeTable# " + id + " at position " + to_string(index) + ", 0\n");
             printOutput("Found it\n");
             printOutput("Deleted entry at " + to_string(index) + ", 0 in the current ScopeTable\n");
@@ -144,8 +145,8 @@ public:
         unsigned secondaryIndex = 1;
         while(itr != nullptr) {
             if(itr->getName() == name) {
+                prev->setNext(itr->getNext());
                 delete itr;
-                prev->setNext(nullptr);
                 printOutput("Found in ScopeTable# " + id + " at position " + to_string(index) + ", " + to_string(secondaryIndex) + "\n");
                 printOutput("Found it\n");
                 printOutput("Deleted entry at " + to_string(index) + ", " + to_string(secondaryIndex) + " in the current ScopeTable\n");
