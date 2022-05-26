@@ -1,17 +1,20 @@
 #include <bits/stdc++.h>
 #include "SymbolTable.h"
+#include "outputToFilleAndConsole.h"
 using namespace std;
 
 int main() {
-//    freopen("input.txt", "r", stdin);
+//    freopen("input2.txt", "r", stdin);
+    freopen("/home/ni/3-1/compiler-3-1/offline-01/input2.txt", "r", stdin);
 
     int n;
     cin >> n;
     SymbolTable* symbolTable = new SymbolTable(n);
 
     string menuInput;
-    while(true) {
+    while(!feof(stdin)) {
         cin >> menuInput;
+        printOutput("\n");
         if(menuInput == "I") {
             string name, type;
             cin >> name >> type;
@@ -46,6 +49,7 @@ int main() {
         } else if(menuInput == "exit") {
             break;
         }
+        printOutput("\n");
     }
 
     delete symbolTable;

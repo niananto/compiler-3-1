@@ -2,10 +2,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "offline_01.exe"
-		},
-		{
-			"path" : "offline_01.pdb"
+			"path" : "offline_01"
 		}
 	],
 	"backtrace" : 1,
@@ -71,16 +68,12 @@
 			{
 				"fragment" : "",
 				"role" : "flags"
-			},
-			{
-				"fragment" : "-lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32",
-				"role" : "libraries"
 			}
 		],
 		"language" : "CXX"
 	},
 	"name" : "offline_01",
-	"nameOnDisk" : "offline_01.exe",
+	"nameOnDisk" : "offline_01",
 	"paths" : 
 	{
 		"build" : ".",
@@ -101,7 +94,8 @@
 			[
 				1,
 				2,
-				3
+				3,
+				4
 			]
 		}
 	],
@@ -126,6 +120,11 @@
 		{
 			"backtrace" : 1,
 			"path" : "SymbolTable.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "outputToFilleAndConsole.h",
 			"sourceGroupIndex" : 1
 		}
 	],

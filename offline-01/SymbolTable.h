@@ -7,41 +7,38 @@
 
 #include<bits/stdc++.h>
 #include "ScopeTable.h"
+#include "outputToFilleAndConsole.h"
 using namespace std;
 
 class SymbolTable {
     ScopeTable* currentScope;
-    unsigned scopeCount;
     unsigned long totalBuckets;
 
 public:
     SymbolTable(unsigned long totalBuckets) {
         this->totalBuckets = totalBuckets;
-        scopeCount = 1;
-//        currentScope = new ScopeTable(totalBuckets, nullptr, scopeCount++);
         currentScope = nullptr;
         enterScope();
     }
 
     ~SymbolTable() {
-        delete [] currentScope;
+        delete currentScope;
     }
 
     void enterScope() {
-        ScopeTable* newScope = new ScopeTable(totalBuckets, currentScope, scopeCount++);
+        ScopeTable* newScope = new ScopeTable(totalBuckets, currentScope);
         currentScope = newScope;
     }
 
     void exitScope() {
         if(currentScope == nullptr) {
-            cout << "NO CURRENT SCOPE" << endl;
+            printOutput("NO CURRENT SCOPE\n");
             return;
         }
         ScopeTable* temp = currentScope->getParentScope();
-        cout << "ScopeTable with id " << currentScope->getId() << " removed" << endl;
+        printOutput("ScopeTable with id " + currentScope->getId() + " removed\n");
         if(currentScope->getParentScope() == nullptr) {
-            cout << "Destroying the First Scope" << endl;
-            scopeCount = 1;
+            printOutput("Destroying the First Scope\n");
         }
         delete currentScope;
         currentScope = temp;
@@ -49,7 +46,7 @@ public:
 
     bool insert(string name, string type) {
         if(currentScope == nullptr) enterScope();
-        return currentScope->insert(name, type, scopeCount);
+        return currentScope->insert(name, type);
     }
 
     bool remove(string name) {
@@ -60,13 +57,13 @@ public:
         ScopeTable* itr = currentScope;
         SymbolInfo* result = nullptr;
         while(itr != nullptr) {
-            result = itr->lookup(name, scopeCount);
+            result = itr->lookup(name);
             if(result != nullptr) {
                 return result;
             }
             itr = itr->getParentScope();
         }
-        cout << "Not found" << endl;
+        printOutput("Not found\n");
         return nullptr;
     }
 
@@ -79,6 +76,7 @@ public:
         while(itr != nullptr) {
             itr->print();
             itr = itr->getParentScope();
+            printOutput("\n");
         }
     }
 };
