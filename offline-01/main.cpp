@@ -5,7 +5,7 @@ using namespace std;
 
 int main() {
 //    freopen("input2.txt", "r", stdin);
-    freopen("/home/ni/3-1/compiler-3-1/offline-01/input2.txt", "r", stdin);
+//    freopen("/home/ni/3-1/compiler-3-1/offline-01/input2.txt", "r", stdin);
 
     int n;
     cin >> n;

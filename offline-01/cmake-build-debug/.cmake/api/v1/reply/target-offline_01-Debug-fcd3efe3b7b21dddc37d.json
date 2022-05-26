@@ -2,7 +2,10 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "offline_01"
+			"path" : "offline_01.exe"
+		},
+		{
+			"path" : "offline_01.pdb"
 		}
 	],
 	"backtrace" : 1,
@@ -68,12 +71,16 @@
 			{
 				"fragment" : "",
 				"role" : "flags"
+			},
+			{
+				"fragment" : "-lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32",
+				"role" : "libraries"
 			}
 		],
 		"language" : "CXX"
 	},
 	"name" : "offline_01",
-	"nameOnDisk" : "offline_01",
+	"nameOnDisk" : "offline_01.exe",
 	"paths" : 
 	{
 		"build" : ".",
