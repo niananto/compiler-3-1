@@ -84,7 +84,7 @@ public:
 
         if(buckets[index]->getName() == name) {
             printOutput("This word already exists\n");
-            printOutput("<" + name + ", " + type + "> already exists in current ScopeTable\n");
+            printOutput("<" + name + ", " + buckets[index]->getType() + "> already exists in current ScopeTable\n");
             delete symbol;
             return false;
         }
@@ -94,7 +94,7 @@ public:
         unsigned secondaryIndex = 1;
         while(itr != nullptr) {
             if(itr->getName() == name) {
-                printOutput("<" + name + "," + type + "> already exists in current ScopeTable\n");
+                printOutput("<" + name + "," + buckets[index]->getType() + "> already exists in current ScopeTable\n");
                 return false;
             }
             prev = itr;
