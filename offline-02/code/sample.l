@@ -1,13 +1,20 @@
 %option noyywrap yylineno
 
 %x CHAR
-%x CHAR_TAKEN
+%x STR
+%x S_CMNT
+%x B_CMNT
 
 %{
 #include <iostream>
 using namespace std;
 
 string currentChar;
+string currentExactChar;
+string currentStr;
+string currentExactStr;
+string curr;
+string currExact;
 
 string toUpper(string s) {
     for (int i = 0; i < s.length(); i++) {
@@ -23,8 +30,6 @@ newline [\r]?\n
 letter [a-zA-Z]
 letter_ [_a-zA-Z]
 digit [0-9]
-
-
 
 %%
 {whitespace} {
@@ -42,58 +47,74 @@ if|else|for|while|do|break|int|char|float|double|void|return|switch|case|default
 }
 \' {
     currentChar = "";
+    currentExactChar = "";
     BEGIN CHAR;
 }
 <CHAR>\\n {
     currentChar += '\n';
+    currentExactChar += "\\n";
 }
 <CHAR>\\t {
     currentChar += '\t';
+    currentExactChar += "\\t";
 }
 <CHAR>\\\\ {
     currentChar += '\\';
+    currentExactChar += "\\\\";
+}
+<CHAR>\\\" {
+    currentChar += '\"';
+    currentExactChar += "\\"";
 }
 <CHAR>\\\' {
     currentChar += '\'';
+    currentExactChar += "\\\'";    
 }
 <CHAR>\\a {
     currentChar += '\a';
+    currentExactChar += "\\a";
 }
 <CHAR>\\f {
     currentChar += '\f';
+    currentExactChar += "\\f";
 }
 <CHAR>\\r {
     currentChar += '\r';
+    currentExactChar += "\\r";
 }
 <CHAR>\\b {
     currentChar += '\b';
+    currentExactChar += "\\b";
 }
 <CHAR>\\v {
     currentChar += '\v';
+    currentExactChar += "\\v";
 }
 <CHAR>\\0 {
     currentChar += '\0';
+    currentExactChar += "\\0";
 }
 <CHAR><<EOF>> {
-    
+    cout << "Error at line no " << yylineno << ": Unterminated character '" << currentExactChar << endl;
+    BEGIN INITIAL;
+}
+<CHAR>{newline} {
+    cout << "Error at line no " << yylineno << ": Unterminated character '" << currentExactChar << endl;
+    BEGIN INITIAL;
 }
 <CHAR>\' {
-    cout << "<CONST_CHAR," << currentChar << ">" << endl;
+    if (currentChar.length() == 1) {
+        cout << "<CHAR," << currentChar << ">" << endl;
+    } else {
+        cout << "Error at line no " << yylineno << ": Multi character constant error '" << currentExactChar << "'" << endl;
+    }
+
     BEGIN INITIAL;
 }
 <CHAR>. {
     currentChar += yytext;
-    BEGIN CHAR_TAKEN;
+    currentExactChar += yytext;
 }
-<CHAR_TAKEN>\' {
-    cout << "<CONST_CHAR," << currentChar << ">" << endl;
-    BEGIN INITIAL;
-}
-<CHAR_TAKEN>. {
-    cout << "Error at line no " << yylineno << ": Multi character constant error" << endl;
-    BEGIN INITIAL;
-}
-
 "+"|"-" {
     cout << "<ADDOP," << yytext << ">" << endl;
 }
@@ -142,7 +163,97 @@ if|else|for|while|do|break|int|char|float|double|void|return|switch|case|default
 {letter_}({letter_}|{digit})* {
     cout << "<ID," << yytext << ">" << endl;
 }
-.* {
+\" {
+    currentStr = "";
+    currentExactStr = "";
+    BEGIN STR;
+}
+<STR>\\n {
+    currentStr += '\n';
+    currentExactStr += "\\n";
+}
+<STR>\\t {
+    currentStr += '\t';
+    currentExactStr += "\\t";
+}
+<STR>\\\\ {
+    currentStr += '\\';
+    currentExactStr += "\\\\";
+}
+<STR>\\\" {
+    currentStr += '\"';
+    currentExactStr += "\\\"";
+}
+<STR>\\\' {
+    currentStr += '\'';
+    currentExactStr += "\\\'";
+}
+<STR>\\a {
+    currentStr += '\a';
+    currentExactStr += "\\a";
+}
+<STR>\\f {
+    currentStr += '\f';
+    currentExactStr += "\\f";
+}
+<STR>\\r {
+    currentStr += '\r';
+    currentExactStr += "\\r";
+}
+<STR>\\b {
+    currentStr += '\b';
+    currentExactStr += "\\b";
+}
+<STR>\\v {
+    currentStr += '\v';
+    currentExactStr += "\\v";
+}
+<STR>\\0 {
+    currentStr += '\0';
+    currentExactStr += "\\0";
+}
+<STR>\\\r\n {
+    currentStr += '';
+    currentExactStr += "\\\r\n";
+}
+<STR>\\\n {
+    currentStr += '';
+    currentExactStr += "\\\n";
+}
+<STR>{newline} {
+    cout << "Error at line no " << yylineno << ": Unterminated string '" << currentExactStr << endl;
+    BEGIN INITIAL;
+}
+<STR><<EOF>> {
+    cout << "Error at line no " << yylineno << ": Unterminated string '" << currentExactStr << endl;
+    BEGIN INITIAL;
+}
+<STR>\" {
+    cout << "Line no " << yylineno << ": String \"" << currentExactStr << "\"" << endl;
+    BEGIN INITIAL;
+}
+<STR>. {
+    currentStr += yytext;
+    currentExactStr += yytext;
+}
+\/\/ {
+    curr = "";
+    currExact = "";
+    BEGIN S_CMNT;
+}
+<S_CMNT>\\ {
+    curr += "\";
+    currExact += "\\";
+}
+<S_CMNT>{newline} {
+    cout << "Line no " << yylineno << ": Token <COMMENT> Lexeme " << currExact << " found" << endl;
+    BEGIN INITIAL;
+}
+<S_CMNT>.* {
+    curr += yytext;
+    currExact += yytext;
+}
+. {
     // ignore everything else
 }
 
