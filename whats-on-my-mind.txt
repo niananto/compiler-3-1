@@ -1,0 +1,11 @@
+Assignment 2 was fun
+In the submitted file there is no file for both console and file output
+I deleted that
+Now those just uses console
+
+Nonetheless, the token files are a 100% match
+Log files are matching but as the sample uses previous batch's hash func,
+not ours one, sdbm, that's why the symbol tables aren't matching
+I have tried with previous hash and then it matches.
+
+Assignment 2 done
