@@ -1,0 +1,6 @@
+buet_cse
+buetCse
+_18
+cse_
+hello_thERE
+camelCase_thensnake
