@@ -65,15 +65,15 @@ if|else|for|while|do|break|int|char|float|double|void|return|switch|case|default
     st.insert(yytext, "CONST_FLOAT", logOut);
     tokenOut << "<CONST_FLOAT, " << yytext << "> ";
 }
-({digit}*\.{digit}+\.{digit}*)+ {
+({digit}*\.{digit}+(\.{digit}*)+)+ {
     logOut << endl << "Error at line no " << lineNo << ": Too many decimal points " << yytext << endl;
     errorNo++;
 }
-{digit}*\.?{digit}*[eE]{digit}*\.{digit}* {
+{digit}*\.?{digit}*[eE][+-]?{digit}*\.{digit}* {
     logOut << endl << "Error at line no " << lineNo << ": Ill formed number " << yytext << endl;
     errorNo++;
 }
-{digit}*\.([eE]{digit}*\.?{digit}*)? {
+{digit}*\.([eE][+-]?{digit}*\.?{digit}*)? {
     logOut << endl << "Error at line no " << lineNo << ": Ill formed number " << yytext << endl;
     errorNo++;
 }
