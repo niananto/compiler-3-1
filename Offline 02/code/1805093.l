@@ -69,14 +69,11 @@ if|else|for|while|do|break|int|char|float|double|void|return|switch|case|default
     logOut << endl << "Error at line no " << lineNo << ": Too many decimal points " << yytext << endl;
     errorNo++;
 }
-{digit}*\.?{digit}*[eE][+-]?{digit}*\.{digit}* {
+({digit}*\.?{digit}*[eE][+-]?{digit}*\.{digit}*)|({digit}*\.([eE][+-]?{digit}*\.?{digit}*)?) {
     logOut << endl << "Error at line no " << lineNo << ": Ill formed number " << yytext << endl;
     errorNo++;
 }
-{digit}*\.([eE][+-]?{digit}*\.?{digit}*)? {
-    logOut << endl << "Error at line no " << lineNo << ": Ill formed number " << yytext << endl;
-    errorNo++;
-}
+
 {digit}+{letter_}+ {
     logOut << endl << "Error at line no " << lineNo << ": Invalid prefix on ID or invalid suffix on Number " << yytext << endl;
     errorNo++;

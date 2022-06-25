@@ -9,11 +9,7 @@
 #define YY_FLEX_MINOR_VERSION 5
 
 #include <stdio.h>
-<<<<<<< HEAD
-#include <errno.h>
-=======
 
->>>>>>> 1ac60d036137f0b403fd7ebbb3765c68b227ec56
 
 /* cfront 1.2 defines "c_plusplus" instead of "__cplusplus" */
 #ifdef c_plusplus
@@ -26,13 +22,7 @@
 #ifdef __cplusplus
 
 #include <stdlib.h>
-<<<<<<< HEAD
-#ifndef _WIN32
 #include <unistd.h>
-#endif
-=======
-#include <unistd.h>
->>>>>>> 1ac60d036137f0b403fd7ebbb3765c68b227ec56
 
 /* Use prototypes in function declarations. */
 #define YY_USE_PROTOS
@@ -72,10 +62,6 @@
 #define YY_PROTO(proto) ()
 #endif
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 1ac60d036137f0b403fd7ebbb3765c68b227ec56
 /* Returned upon end-of-file. */
 #define YY_NULL 0
 
@@ -299,41 +285,29 @@ static void yy_fatal_error YY_PROTO(( yyconst char msg[] ));
 	*yy_cp = '\0'; \
 	yy_c_buf_p = yy_cp;
 
-#define YY_NUM_RULES 67
-#define YY_END_OF_BUFFER 68
-<<<<<<< HEAD
+#define YY_NUM_RULES 66
+#define YY_END_OF_BUFFER 67
 static yyconst short int yy_accept[174] =
-=======
-static yyconst short int yy_accept[173] =
->>>>>>> 1ac60d036137f0b403fd7ebbb3765c68b227ec56
     {   0,
         6,    6,    0,    0,    0,    0,    0,    0,    0,    0,
-       68,   66,    1,    2,    1,   32,   41,   27,   66,   11,
-       33,   34,   26,   39,   26,    9,   27,    5,   40,   29,
-       30,   29,    4,    4,   37,   38,    4,    4,    4,    4,
-        4,    4,    4,    4,    4,    4,   35,   66,   36,   25,
-       23,   25,   24,   25,   57,   55,   57,   56,   57,   61,
-       60,   61,   61,   65,   64,   65,   65,    1,    2,   29,
-       31,   28,    6,    9,   62,   58,    9,    5,   10,   10,
+       67,   65,    1,    2,    1,   31,   40,   26,   65,   10,
+       32,   33,   25,   38,   25,    8,   26,    5,   39,   28,
+       29,   28,    4,    4,   36,   37,    4,    4,    4,    4,
+        4,    4,    4,    4,    4,    4,   34,   65,   35,   24,
+       22,   24,   23,   24,   56,   54,   56,   55,   56,   60,
+       59,   60,   60,   64,   63,   64,   64,    1,    2,   28,
+       30,   27,    6,    8,   61,   57,    8,    5,    9,    9,
         4,    0,    8,    4,    4,    4,    4,    4,    4,    3,
-        4,    4,    4,    3,    4,    4,    4,    4,    4,   23,
+        4,    4,    4,    3,    4,    4,    4,    4,    4,   22,
 
-       15,   16,   22,   14,   17,   20,   18,   12,   19,   13,
-       21,   55,   54,    0,   45,   46,   52,   44,   47,   50,
-       48,   42,   49,   43,   51,   60,   59,    0,   64,   63,
-<<<<<<< HEAD
-        7,    6,    0,    9,    8,    9,    0,    6,    8,    4,
+       14,   15,   21,   13,   16,   19,   17,   11,   18,   12,
+       20,   54,   53,    0,   44,   45,   51,   43,   46,   49,
+       47,   41,   48,   42,   50,   59,   58,    0,   63,   62,
+        7,    6,    0,    8,    8,    8,    0,    6,    8,    4,
         4,    4,    4,    4,    4,    4,    4,    4,    4,    4,
-        4,   53,    7,    7,    8,    4,    4,    4,    4,    4,
+        4,   52,    7,    7,    8,    4,    4,    4,    4,    4,
         4,    4,    4,    7,    4,    4,    4,    4,    4,    4,
         4,    4,    0
-=======
-        7,    6,    0,    8,    9,    0,    6,    8,    4,    4,
-        4,    4,    4,    4,    4,    4,    4,    4,    4,    4,
-       53,    0,    7,    8,    4,    4,    4,    4,    4,    4,
-        4,    4,    0,    4,    4,    4,    4,    4,    4,    4,
-        4,    0
->>>>>>> 1ac60d036137f0b403fd7ebbb3765c68b227ec56
     } ;
 
 static yyconst int yy_ec[256] =
@@ -377,7 +351,6 @@ static yyconst int yy_meta[50] =
         3,    3,    3,    3,    3,    3,    1,    1,    1
     } ;
 
-<<<<<<< HEAD
 static yyconst short int yy_base[180] =
     {   0,
         0,    0,   47,   49,   51,   56,   60,   62,   65,   67,
@@ -425,55 +398,6 @@ static yyconst short int yy_def[180] =
     } ;
 
 static yyconst short int yy_nxt[339] =
-=======
-static yyconst short int yy_base[179] =
-    {   0,
-        0,    0,   47,   49,   51,   56,   60,   62,   65,   67,
-      280,  281,   71,  281,   78,  257,  281,  281,  270,  281,
-      281,  281,  264,  281,  261,   66,   55,   76,  281,  253,
-      252,  251,    0,   87,  281,  281,  231,   75,   53,  233,
-       50,   73,  237,  223,  228,  232,  281,  218,  281,  281,
-      281,  262,  281,  110,  281,  281,  261,  281,  153,  281,
-      281,  260,   93,  281,  281,  259,  244,  109,  281,  281,
-      281,  281,  102,  106,  281,  281,  113,  142,  129,  150,
-        0,  111,  115,  128,  227,  217,  229,  218,  222,  211,
-      212,  213,  211,    0,  208,  207,  213,  212,  211,  281,
-
-      281,  281,  281,  281,  281,  281,  281,  281,  281,  281,
-      281,  281,  281,  243,  281,  281,  281,  281,  281,  281,
-      281,  281,  281,  281,  281,  281,  281,  242,  281,  281,
-      154,  160,  184,  170,  188,  192,  172,  194,  215,  210,
-      201,  198,  211,  193,  184,  180,  161,  158,  163,  148,
-      281,  196,  200,  202,  147,  145,  133,  136,  121,  113,
-      121,  117,  206,  103,   98,   93,   84,   82,   70,   65,
-       65,  281,  225,  228,  231,  234,  236,   58
-    } ;
-
-static yyconst short int yy_def[179] =
-    {   0,
-      172,    1,  173,  173,  174,  174,  175,  175,  176,  176,
-      172,  172,  172,  172,  172,  172,  172,  172,  172,  172,
-      172,  172,  172,  172,  172,  172,  172,  177,  172,  172,
-      172,  172,  178,  178,  172,  172,  178,  178,  178,   34,
-      178,  178,  178,  178,  178,  178,  172,  172,  172,  172,
-      172,  172,  172,  172,  172,  172,  172,  172,  172,  172,
-      172,  172,  172,  172,  172,  172,  172,  172,  172,  172,
-      172,  172,  172,  172,  172,  172,  172,  177,  177,  177,
-      178,  172,  172,   34,  178,  178,  178,  178,  178,  178,
-      178,  178,  178,  178,  178,  178,  178,  178,  178,  172,
-
-      172,  172,  172,  172,  172,  172,  172,  172,  172,  172,
-      172,  172,  172,  172,  172,  172,  172,  172,  172,  172,
-      172,  172,  172,  172,  172,  172,  172,  172,  172,  172,
-      172,  172,  172,  172,  172,  172,  172,  172,  178,  178,
-      178,  178,  178,  178,  178,  178,  178,  178,  178,  178,
-      172,  172,  172,  172,  178,  178,  178,  178,  178,  178,
-      178,  178,  172,  178,  178,  178,  178,  178,  178,  178,
-      178,    0,  172,  172,  172,  172,  172,  172
-    } ;
-
-static yyconst short int yy_nxt[331] =
->>>>>>> 1ac60d036137f0b403fd7ebbb3765c68b227ec56
     {   0,
        12,   13,   14,   15,   16,   17,   18,   19,   20,   21,
        22,   18,   23,   24,   25,   26,   27,   28,   28,   29,
@@ -487,7 +411,6 @@ static yyconst short int yy_nxt[331] =
        74,   77,   90,   78,   78,  127,  128,   94,   74,   82,
 
        80,   82,   83,   86,   84,   84,   94,   94,   80,   87,
-<<<<<<< HEAD
        68,   95,   68,  172,   88,  101,   94,  131,  102,  132,
       132,   94,   73,   73,  139,  139,  133,  103,  173,   74,
       173,  173,   94,  173,  133,  173,  104,   74,  105,  106,
@@ -516,35 +439,6 @@ static yyconst short int yy_nxt[331] =
     } ;
 
 static yyconst short int yy_chk[339] =
-=======
-       68,   95,   68,  171,   88,  101,   94,  131,  102,  132,
-      132,  134,   94,  135,  135,   94,  133,  103,  137,  137,
-       73,   73,  138,  138,  133,  170,  104,   74,  105,  106,
-      172,  169,  172,  107,  172,   74,  172,  172,  108,   94,
-      109,  168,  110,  167,  111,  113,  114,   77,  115,   78,
-       78,  116,   82,   94,   82,   83,   80,  136,  136,  152,
-      117,  153,  153,  166,   80,  131,  165,  132,  132,  118,
-      164,  119,  120,   94,  133,  162,  121,  154,  154,  137,
-      137,  122,  133,  123,   94,  124,   82,  125,   82,   83,
-
-      161,  136,  136,  134,  160,  135,  135,   83,  159,  136,
-      136,  138,  138,  163,  163,  152,   94,  153,  153,  154,
-      154,  131,  158,  163,  163,   50,   50,   50,   55,   55,
-       55,   60,   60,   60,   64,   64,   64,   79,   79,  157,
-      156,   94,   94,  155,  127,  151,  150,  149,  148,  147,
-       94,   94,  146,  145,  144,  143,  142,  141,  140,  139,
-      130,  129,  126,  112,  100,   71,   99,   98,   97,   96,
-       91,   85,   70,   70,   70,   72,   72,   71,   70,  172,
-       11,  172,  172,  172,  172,  172,  172,  172,  172,  172,
-      172,  172,  172,  172,  172,  172,  172,  172,  172,  172,
-
-      172,  172,  172,  172,  172,  172,  172,  172,  172,  172,
-      172,  172,  172,  172,  172,  172,  172,  172,  172,  172,
-      172,  172,  172,  172,  172,  172,  172,  172,  172,  172
-    } ;
-
-static yyconst short int yy_chk[331] =
->>>>>>> 1ac60d036137f0b403fd7ebbb3765c68b227ec56
     {   0,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -552,7 +446,6 @@ static yyconst short int yy_chk[331] =
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    3,
         3,    4,    4,    5,    5,    3,    5,    4,    6,    6,
-<<<<<<< HEAD
       179,    6,    7,    7,    8,    8,   27,    9,    9,   10,
        10,   27,   13,    3,   13,    4,    9,    5,   10,   15,
        15,   15,    6,   26,   26,   39,    7,   41,    8,   41,
@@ -584,38 +477,6 @@ static yyconst short int yy_chk[331] =
       173,  173,  173,  173,  173,  173,  173,  173,  173,  173,
       173,  173,  173,  173,  173,  173,  173,  173,  173,  173,
       173,  173,  173,  173,  173,  173,  173,  173
-=======
-      178,    6,    7,    7,    8,    8,   27,    9,    9,   10,
-       10,   27,   13,    3,   13,    4,    9,    5,   10,   15,
-       15,   15,    6,   26,   26,   39,    7,   41,    8,   41,
-       26,   28,   39,   28,   28,   63,   63,  171,   26,   34,
-
-       28,   34,   34,   38,   34,   34,   42,  170,   28,   38,
-       68,   42,   68,  169,   38,   54,  168,   73,   54,   73,
-       73,   74,  167,   74,   74,  166,   73,   54,   82,   82,
-       77,   77,   83,   83,   73,  165,   54,   77,   54,   54,
-       84,  164,   84,   54,   79,   77,   79,   79,   54,  162,
-       54,  161,   54,  160,   54,   59,   59,   78,   59,   78,
-       78,   59,   80,  159,   80,   80,   78,   80,   80,  131,
-       59,  131,  131,  158,   78,  132,  157,  132,  132,   59,
-      156,   59,   59,  155,  132,  150,   59,  134,  134,  137,
-      137,   59,  132,   59,  149,   59,  133,   59,  133,  133,
-
-      148,  133,  133,  135,  147,  135,  135,  136,  146,  136,
-      136,  138,  138,  152,  152,  153,  145,  153,  153,  154,
-      154,  163,  144,  163,  163,  173,  173,  173,  174,  174,
-      174,  175,  175,  175,  176,  176,  176,  177,  177,  143,
-      142,  141,  140,  139,  128,  114,   99,   98,   97,   96,
-       95,   93,   92,   91,   90,   89,   88,   87,   86,   85,
-       67,   66,   62,   57,   52,   48,   46,   45,   44,   43,
-       40,   37,   32,   31,   30,   25,   23,   19,   16,   11,
-      172,  172,  172,  172,  172,  172,  172,  172,  172,  172,
-      172,  172,  172,  172,  172,  172,  172,  172,  172,  172,
-
-      172,  172,  172,  172,  172,  172,  172,  172,  172,  172,
-      172,  172,  172,  172,  172,  172,  172,  172,  172,  172,
-      172,  172,  172,  172,  172,  172,  172,  172,  172,  172
->>>>>>> 1ac60d036137f0b403fd7ebbb3765c68b227ec56
     } ;
 
 static yy_state_type yy_last_accepting_state;
@@ -665,11 +526,7 @@ string toUpper(string s) {
     return s;
 }
 
-<<<<<<< HEAD
-#line 533 "lex.yy.c"
-=======
-#line 528 "lex.yy.c"
->>>>>>> 1ac60d036137f0b403fd7ebbb3765c68b227ec56
+#line 530 "lex.yy.c"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -769,26 +626,9 @@ YY_MALLOC_DECL
 			YY_FATAL_ERROR( "input in flex scanner failed" ); \
 		result = n; \
 		} \
-<<<<<<< HEAD
-	else \
-		{ \
-		errno=0; \
-		while ( (result = fread(buf, 1, max_size, yyin))==0 && ferror(yyin)) \
-			{ \
-			if( errno != EINTR) \
-				{ \
-				YY_FATAL_ERROR( "input in flex scanner failed" ); \
-				break; \
-				} \
-			errno=0; \
-			clearerr(yyin); \
-			} \
-		}
-=======
 	else if ( ((result = fread( buf, 1, max_size, yyin )) == 0) \
 		  && ferror( yyin ) ) \
 		YY_FATAL_ERROR( "input in flex scanner failed" );
->>>>>>> 1ac60d036137f0b403fd7ebbb3765c68b227ec56
 #endif
 
 /* No semi-colon after return; correct usage is to write "yyterminate();" -
@@ -839,11 +679,7 @@ YY_DECL
 
 #line 42 "1805093.l"
 
-<<<<<<< HEAD
-#line 697 "lex.yy.c"
-=======
-#line 681 "lex.yy.c"
->>>>>>> 1ac60d036137f0b403fd7ebbb3765c68b227ec56
+#line 683 "lex.yy.c"
 
 	if ( yy_init )
 		{
@@ -894,21 +730,13 @@ yy_match:
 			while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 				{
 				yy_current_state = (int) yy_def[yy_current_state];
-<<<<<<< HEAD
 				if ( yy_current_state >= 174 )
-=======
-				if ( yy_current_state >= 173 )
->>>>>>> 1ac60d036137f0b403fd7ebbb3765c68b227ec56
 					yy_c = yy_meta[(unsigned int) yy_c];
 				}
 			yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
 			++yy_cp;
 			}
-<<<<<<< HEAD
 		while ( yy_base[yy_current_state] != 289 );
-=======
-		while ( yy_base[yy_current_state] != 281 );
->>>>>>> 1ac60d036137f0b403fd7ebbb3765c68b227ec56
 
 yy_find_action:
 		yy_act = yy_accept[yy_current_state];
@@ -1001,128 +829,120 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 76 "1805093.l"
-{
-    logOut << endl << "Error at line no " << lineNo << ": Ill formed number " << yytext << endl;
-    errorNo++;
-}
-	YY_BREAK
-case 10:
-YY_RULE_SETUP
-#line 80 "1805093.l"
+#line 77 "1805093.l"
 {
     logOut << endl << "Error at line no " << lineNo << ": Invalid prefix on ID or invalid suffix on Number " << yytext << endl;
     errorNo++;
 }
 	YY_BREAK
-case 11:
+case 10:
 YY_RULE_SETUP
-#line 84 "1805093.l"
+#line 81 "1805093.l"
 {
     currentChar = "";
     currentExactChar = "";
     BEGIN CHAR;
 }
 	YY_BREAK
-case 12:
+case 11:
 YY_RULE_SETUP
-#line 89 "1805093.l"
+#line 86 "1805093.l"
 {
     currentChar += '\n';
     currentExactChar += "\\n";
 }
 	YY_BREAK
-case 13:
+case 12:
 YY_RULE_SETUP
-#line 93 "1805093.l"
+#line 90 "1805093.l"
 {
     currentChar += '\t';
     currentExactChar += "\\t";
 }
 	YY_BREAK
-case 14:
+case 13:
 YY_RULE_SETUP
-#line 97 "1805093.l"
+#line 94 "1805093.l"
 {
     currentChar += '\\';
     currentExactChar += "\\\\";
 }
 	YY_BREAK
-case 15:
+case 14:
 YY_RULE_SETUP
-#line 101 "1805093.l"
+#line 98 "1805093.l"
 {
     currentChar += '\"';
     currentExactChar += "\\\"";
 }
 	YY_BREAK
-case 16:
+case 15:
 YY_RULE_SETUP
-#line 105 "1805093.l"
+#line 102 "1805093.l"
 {
     currentChar += '\'';
     currentExactChar += "\\\'";    
 }
 	YY_BREAK
-case 17:
+case 16:
 YY_RULE_SETUP
-#line 109 "1805093.l"
+#line 106 "1805093.l"
 {
     currentChar += '\a';
     currentExactChar += "\\a";
 }
 	YY_BREAK
-case 18:
+case 17:
 YY_RULE_SETUP
-#line 113 "1805093.l"
+#line 110 "1805093.l"
 {
     currentChar += '\f';
     currentExactChar += "\\f";
 }
 	YY_BREAK
-case 19:
+case 18:
 YY_RULE_SETUP
-#line 117 "1805093.l"
+#line 114 "1805093.l"
 {
     currentChar += '\r';
     currentExactChar += "\\r";
 }
 	YY_BREAK
-case 20:
+case 19:
 YY_RULE_SETUP
-#line 121 "1805093.l"
+#line 118 "1805093.l"
 {
     currentChar += '\b';
     currentExactChar += "\\b";
 }
 	YY_BREAK
-case 21:
+case 20:
 YY_RULE_SETUP
-#line 125 "1805093.l"
+#line 122 "1805093.l"
 {
     currentChar += '\v';
     currentExactChar += "\\v";
 }
 	YY_BREAK
-case 22:
+case 21:
 YY_RULE_SETUP
-#line 129 "1805093.l"
+#line 126 "1805093.l"
 {
     currentChar += '\0';
     currentExactChar += "\\0";
 }
 	YY_BREAK
 case YY_STATE_EOF(CHAR):
-#line 133 "1805093.l"
+#line 130 "1805093.l"
 {
     logOut << endl << "Error at line no " << lineNo << ": Unterminated character '" << currentExactChar << endl;
     errorNo++;
     BEGIN INITIAL;
 }
 	YY_BREAK
-case 23:
+case 22:
 YY_RULE_SETUP
-#line 138 "1805093.l"
+#line 135 "1805093.l"
 {
     logOut << endl << "Error at line no " << lineNo << ": Unterminated character '" << currentExactChar << endl;
     errorNo++;
@@ -1130,9 +950,9 @@ YY_RULE_SETUP
     BEGIN INITIAL;
 }
 	YY_BREAK
-case 24:
+case 23:
 YY_RULE_SETUP
-#line 144 "1805093.l"
+#line 141 "1805093.l"
 {
     if ((currentChar.length() == 1) || (currentChar.length() == 0 && currentExactChar == "\\0")) {
         logOut << endl << "Line no " << lineNo << ": Token <CONST_CHAR> Lexeme '" << currentExactChar << "' found ";
@@ -1151,139 +971,139 @@ YY_RULE_SETUP
     BEGIN INITIAL;
 }
 	YY_BREAK
-case 25:
+case 24:
 YY_RULE_SETUP
-#line 161 "1805093.l"
+#line 158 "1805093.l"
 {
     currentChar += yytext;
     currentExactChar += yytext;
 }
 	YY_BREAK
-case 26:
+case 25:
 YY_RULE_SETUP
-#line 165 "1805093.l"
+#line 162 "1805093.l"
 {
     logOut << endl << "Line no " << lineNo << ": Token <ADDOP> Lexeme " << yytext << " found" << endl;
     tokenOut << "<ADDOP, " << yytext << "> ";
 }
 	YY_BREAK
-case 27:
+case 26:
 YY_RULE_SETUP
-#line 169 "1805093.l"
+#line 166 "1805093.l"
 {
     logOut << endl << "Line no " << lineNo << ": Token <MULOP> Lexeme " << yytext << " found" << endl;
     tokenOut << "<MULOP, " << yytext << "> ";
 }
 	YY_BREAK
-case 28:
+case 27:
 YY_RULE_SETUP
-#line 173 "1805093.l"
+#line 170 "1805093.l"
 {
     logOut << endl << "Line no " << lineNo << ": Token <INCOP> Lexeme " << yytext << " found" << endl;
     tokenOut << "<INCOP, " << yytext << "> ";
 }
 	YY_BREAK
-case 29:
+case 28:
 YY_RULE_SETUP
-#line 177 "1805093.l"
+#line 174 "1805093.l"
 {
     logOut << endl << "Line no " << lineNo << ": Token <RELOP> Lexeme " << yytext << " found" << endl;
     tokenOut << "<RELOP, " << yytext << "> ";
 }
 	YY_BREAK
-case 30:
+case 29:
 YY_RULE_SETUP
-#line 181 "1805093.l"
+#line 178 "1805093.l"
 {
     logOut << endl << "Line no " << lineNo << ": Token <ASSIGNOP> Lexeme " << yytext << " found" << endl;
     tokenOut << "<ASSIGNOP, " << yytext << "> ";
 }
 	YY_BREAK
-case 31:
+case 30:
 YY_RULE_SETUP
-#line 185 "1805093.l"
+#line 182 "1805093.l"
 {
     logOut << endl << "Line no " << lineNo << ": Token <logOutICOP> Lexeme " << yytext << " found" << endl;
     tokenOut << "<logOutICOP, " << yytext << "> ";
 }
 	YY_BREAK
-case 32:
+case 31:
 YY_RULE_SETUP
-#line 189 "1805093.l"
+#line 186 "1805093.l"
 {
     logOut << endl << "Line no " << lineNo << ": Token <NOT> Lexeme " << yytext << " found" << endl;
     tokenOut << "<NOT, " << yytext << "> ";
 }
 	YY_BREAK
-case 33:
+case 32:
 YY_RULE_SETUP
-#line 193 "1805093.l"
+#line 190 "1805093.l"
 {
     logOut << endl << "Line no " << lineNo << ": Token <LPAREN> Lexeme " << yytext << " found" << endl;
     tokenOut << "<LPAREN, " << yytext << "> ";
 }
 	YY_BREAK
-case 34:
+case 33:
 YY_RULE_SETUP
-#line 197 "1805093.l"
+#line 194 "1805093.l"
 {
     logOut << endl << "Line no " << lineNo << ": Token <RPAREN> Lexeme " << yytext << " found" << endl;
     tokenOut << "<RPAREN, " << yytext << "> ";
 }
 	YY_BREAK
-case 35:
+case 34:
 YY_RULE_SETUP
-#line 201 "1805093.l"
+#line 198 "1805093.l"
 {
     logOut << endl << "Line no " << lineNo << ": Token <LCURL> Lexeme " << yytext << " found" << endl;
     tokenOut << "<LCURL, " << yytext << "> ";
     st.enterScope();
 }
 	YY_BREAK
-case 36:
+case 35:
 YY_RULE_SETUP
-#line 206 "1805093.l"
+#line 203 "1805093.l"
 {
     logOut << endl << "Line no " << lineNo << ": Token <RCURL> Lexeme " << yytext << " found" << endl;
     tokenOut << "<RCURL, " << yytext << "> ";
     st.exitScope();
 }
 	YY_BREAK
-case 37:
+case 36:
 YY_RULE_SETUP
-#line 211 "1805093.l"
+#line 208 "1805093.l"
 {
     logOut << endl << "Line no " << lineNo << ": Token <LTHIRD> Lexeme " << yytext << " found" << endl;
     tokenOut << "<LTHIRD, " << yytext << "> ";
 }
 	YY_BREAK
-case 38:
+case 37:
 YY_RULE_SETUP
-#line 215 "1805093.l"
+#line 212 "1805093.l"
 {
     logOut << endl << "Line no " << lineNo << ": Token <RTHIRD> Lexeme " << yytext << " found" << endl;
     tokenOut << "<RTHIRD, " << yytext << "> ";
 }
 	YY_BREAK
-case 39:
+case 38:
 YY_RULE_SETUP
-#line 219 "1805093.l"
+#line 216 "1805093.l"
 {
     logOut << endl << "Line no " << lineNo << ": Token <COMMA> Lexeme " << yytext << " found" << endl;
     tokenOut << "<COMMA, " << yytext << "> ";
 }
 	YY_BREAK
-case 40:
+case 39:
 YY_RULE_SETUP
-#line 223 "1805093.l"
+#line 220 "1805093.l"
 {
     logOut << endl << "Line no " << lineNo << ": Token <SEMICOLON> Lexeme " << yytext << " found" << endl;
     tokenOut << "<SEMICOLON, " << yytext << "> ";
 }
 	YY_BREAK
-case 41:
+case 40:
 YY_RULE_SETUP
-#line 227 "1805093.l"
+#line 224 "1805093.l"
 {
     currentStr = "";
     currentExactStr = "";
@@ -1291,113 +1111,113 @@ YY_RULE_SETUP
     BEGIN STR;
 }
 	YY_BREAK
-case 42:
+case 41:
 YY_RULE_SETUP
-#line 233 "1805093.l"
+#line 230 "1805093.l"
 {
     currentStr += '\n';
     currentExactStr += "\\n";
 }
 	YY_BREAK
-case 43:
+case 42:
 YY_RULE_SETUP
-#line 237 "1805093.l"
+#line 234 "1805093.l"
 {
     currentStr += '\t';
     currentExactStr += "\\t";
 }
 	YY_BREAK
-case 44:
+case 43:
 YY_RULE_SETUP
-#line 241 "1805093.l"
+#line 238 "1805093.l"
 {
     currentStr += '\\';
     currentExactStr += "\\\\";
 }
 	YY_BREAK
-case 45:
+case 44:
 YY_RULE_SETUP
-#line 245 "1805093.l"
+#line 242 "1805093.l"
 {
     currentStr += '\"';
     currentExactStr += "\\\"";
 }
 	YY_BREAK
-case 46:
+case 45:
 YY_RULE_SETUP
-#line 249 "1805093.l"
+#line 246 "1805093.l"
 {
     currentStr += '\'';
     currentExactStr += "\\\'";
 }
 	YY_BREAK
-case 47:
+case 46:
 YY_RULE_SETUP
-#line 253 "1805093.l"
+#line 250 "1805093.l"
 {
     currentStr += '\a';
     currentExactStr += "\\a";
 }
 	YY_BREAK
-case 48:
+case 47:
 YY_RULE_SETUP
-#line 257 "1805093.l"
+#line 254 "1805093.l"
 {
     currentStr += '\f';
     currentExactStr += "\\f";
 }
 	YY_BREAK
-case 49:
+case 48:
 YY_RULE_SETUP
-#line 261 "1805093.l"
+#line 258 "1805093.l"
 {
     currentStr += '\r';
     currentExactStr += "\\r";
 }
 	YY_BREAK
-case 50:
+case 49:
 YY_RULE_SETUP
-#line 265 "1805093.l"
+#line 262 "1805093.l"
 {
     currentStr += '\b';
     currentExactStr += "\\b";
 }
 	YY_BREAK
-case 51:
+case 50:
 YY_RULE_SETUP
-#line 269 "1805093.l"
+#line 266 "1805093.l"
 {
     currentStr += '\v';
     currentExactStr += "\\v";
 }
 	YY_BREAK
-case 52:
+case 51:
 YY_RULE_SETUP
-#line 273 "1805093.l"
+#line 270 "1805093.l"
 {
     currentStr += '\0';
     currentExactStr += "\\0";
 }
 	YY_BREAK
-case 53:
+case 52:
 YY_RULE_SETUP
-#line 277 "1805093.l"
+#line 274 "1805093.l"
 {
     currentExactStr += "\\\r\n";
     lineNo++;
 }
 	YY_BREAK
-case 54:
+case 53:
 YY_RULE_SETUP
-#line 281 "1805093.l"
+#line 278 "1805093.l"
 {
     currentExactStr += "\\\n";
     lineNo++;
 }
 	YY_BREAK
-case 55:
+case 54:
 YY_RULE_SETUP
-#line 285 "1805093.l"
+#line 282 "1805093.l"
 {
     logOut << endl << "Error at line no " << startLineNo << ": Unterminated String \"" << currentExactStr << endl;
     errorNo++;
@@ -1406,16 +1226,16 @@ YY_RULE_SETUP
 }
 	YY_BREAK
 case YY_STATE_EOF(STR):
-#line 291 "1805093.l"
+#line 288 "1805093.l"
 {
     logOut << endl << "Error at line no " << startLineNo << ": Unterminated String \"" << currentExactStr << "\"" << endl;
     errorNo++;
     BEGIN INITIAL;
 }
 	YY_BREAK
-case 56:
+case 55:
 YY_RULE_SETUP
-#line 296 "1805093.l"
+#line 293 "1805093.l"
 {
     logOut << endl << "Line no " << startLineNo << ": Token <STRING> Lexeme \"" << currentExactStr << "\" found ";
     logOut << "--> <STRING, \"" << currentStr << "\"> " << endl;
@@ -1423,34 +1243,34 @@ YY_RULE_SETUP
     BEGIN INITIAL;
 }
 	YY_BREAK
-case 57:
+case 56:
 YY_RULE_SETUP
-#line 302 "1805093.l"
+#line 299 "1805093.l"
 {
     currentStr += yytext;
     currentExactStr += yytext;
 }
 	YY_BREAK
-case 58:
+case 57:
 YY_RULE_SETUP
-#line 306 "1805093.l"
+#line 303 "1805093.l"
 {
     currExact = "";
     startLineNo = lineNo;
     BEGIN S_CMNT;
 }
 	YY_BREAK
-case 59:
+case 58:
 YY_RULE_SETUP
-#line 311 "1805093.l"
+#line 308 "1805093.l"
 {
     currExact += yytext;
     lineNo++;
 }
 	YY_BREAK
-case 60:
+case 59:
 YY_RULE_SETUP
-#line 315 "1805093.l"
+#line 312 "1805093.l"
 {
     logOut << endl << "Line no " << startLineNo << ": Token <COMMENT> Lexeme //" << currExact << " found" << endl;
     lineNo++;
@@ -1458,77 +1278,73 @@ YY_RULE_SETUP
 }
 	YY_BREAK
 case YY_STATE_EOF(S_CMNT):
-#line 320 "1805093.l"
+#line 317 "1805093.l"
 {
     logOut << endl << "Line no " << startLineNo << ": Token <COMMENT> Lexeme //" << currExact << " found" << endl;
     BEGIN INITIAL;
+}
+	YY_BREAK
+case 60:
+YY_RULE_SETUP
+#line 321 "1805093.l"
+{
+    currExact += yytext;
 }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
 #line 324 "1805093.l"
 {
-    currExact += yytext;
-}
-	YY_BREAK
-case 62:
-YY_RULE_SETUP
-#line 327 "1805093.l"
-{
     currExact = "";
     startLineNo = lineNo;
     BEGIN M_CMNT;
 }
 	YY_BREAK
-case 63:
+case 62:
 YY_RULE_SETUP
-#line 332 "1805093.l"
+#line 329 "1805093.l"
 {
     logOut << endl << "Line no " << startLineNo << ": Token <COMMENT> Lexeme /*" << currExact << "*/ found" << endl;
     BEGIN INITIAL;
 }
 	YY_BREAK
 case YY_STATE_EOF(M_CMNT):
-#line 336 "1805093.l"
+#line 333 "1805093.l"
 {
     logOut << endl << "Error at line no " << startLineNo << ": Unterminated Comment /*" << currExact << endl;
     errorNo++;
     BEGIN INITIAL;
 }
 	YY_BREAK
-case 64:
+case 63:
 YY_RULE_SETUP
-#line 341 "1805093.l"
+#line 338 "1805093.l"
 {
     currExact += yytext;
     lineNo++;
+}
+	YY_BREAK
+case 64:
+YY_RULE_SETUP
+#line 342 "1805093.l"
+{
+    currExact += yytext;
 }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
 #line 345 "1805093.l"
 {
-    currExact += yytext;
-}
-	YY_BREAK
-case 66:
-YY_RULE_SETUP
-#line 348 "1805093.l"
-{
     logOut << endl << "Error at line no " << lineNo << ": Unrecognized character '" << yytext << "'" << endl;
     errorNo++;
 }
 	YY_BREAK
-case 67:
+case 66:
 YY_RULE_SETUP
-#line 354 "1805093.l"
+#line 351 "1805093.l"
 ECHO;
 	YY_BREAK
-<<<<<<< HEAD
-#line 1370 "lex.yy.c"
-=======
-#line 1354 "lex.yy.c"
->>>>>>> 1ac60d036137f0b403fd7ebbb3765c68b227ec56
+#line 1348 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1820,11 +1636,7 @@ static yy_state_type yy_get_previous_state()
 		while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 			{
 			yy_current_state = (int) yy_def[yy_current_state];
-<<<<<<< HEAD
 			if ( yy_current_state >= 174 )
-=======
-			if ( yy_current_state >= 173 )
->>>>>>> 1ac60d036137f0b403fd7ebbb3765c68b227ec56
 				yy_c = yy_meta[(unsigned int) yy_c];
 			}
 		yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
@@ -1859,19 +1671,11 @@ yy_state_type yy_current_state;
 	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 		{
 		yy_current_state = (int) yy_def[yy_current_state];
-<<<<<<< HEAD
 		if ( yy_current_state >= 174 )
 			yy_c = yy_meta[(unsigned int) yy_c];
 		}
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
 	yy_is_jam = (yy_current_state == 173);
-=======
-		if ( yy_current_state >= 173 )
-			yy_c = yy_meta[(unsigned int) yy_c];
-		}
-	yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
-	yy_is_jam = (yy_current_state == 172);
->>>>>>> 1ac60d036137f0b403fd7ebbb3765c68b227ec56
 
 	return yy_is_jam ? 0 : yy_current_state;
 	}
@@ -2104,21 +1908,11 @@ YY_BUFFER_STATE b;
 	}
 
 
-<<<<<<< HEAD
-#ifndef _WIN32
-#include <unistd.h>
-#else
-=======
->>>>>>> 1ac60d036137f0b403fd7ebbb3765c68b227ec56
 #ifndef YY_ALWAYS_INTERACTIVE
 #ifndef YY_NEVER_INTERACTIVE
 extern int isatty YY_PROTO(( int ));
 #endif
 #endif
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> 1ac60d036137f0b403fd7ebbb3765c68b227ec56
 
 #ifdef YY_USE_PROTOS
 void yy_init_buffer( YY_BUFFER_STATE b, FILE *file )
@@ -2436,7 +2230,7 @@ int main()
 	return 0;
 	}
 #endif
-#line 354 "1805093.l"
+#line 351 "1805093.l"
 
 int main(int argc, char** argv) {
     if (argc < 2) {

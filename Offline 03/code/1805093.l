@@ -1,6 +1,6 @@
 %option noyywrap
 
-%x CHAR
+%x CHAR_STATE
 %x STR
 %x S_CMNT
 %x M_CMNT
@@ -8,28 +8,23 @@
 %{
 #include <bits/stdc++.h>
 #include "SymbolTable.h"
+#include "y.tab.h"
+
 using namespace std;
 
-SymbolTable st(7);
-ofstream logOut;
-ofstream tokenOut;
+extern YYSTYPE yylval;
+extern SymbolTable st;
+void yyerror(char *);
+
+extern ofstream logOut;
+extern ofstream errorOut;
 
 unsigned long lineNo = 1;
 unsigned long startLineNo;
 unsigned long errorNo = 0;
-string currentChar;
-string currentExactChar;
-string currentStr;
-string currentExactStr;
+
 string curr;
 string currExact;
-
-string toUpper(string s) {
-    for (int i = 0; i < s.length(); i++) {
-        s[i] = toupper(s[i]);
-    }
-    return s;
-}
 
 %}
 
@@ -46,262 +41,256 @@ digit [0-9]
 {newline} {
     lineNo++;
 }
-if|else|for|while|do|break|int|char|float|double|void|return|switch|case|default|continue {
-    logOut << endl << "Line no " << lineNo << ": Token <" + toUpper(yytext) + "> Lexeme " << yytext << " found" << endl;
-    tokenOut << "<" + toUpper(yytext) + "> ";
-}
+"if" {return IF;}
+"else" {return ELSE;}
+"for" {return FOR;}
+"while" {return WHILE;}
+"do" {return DO;}
+"int" {return INT;}
+"float" {return FLOAT;}
+"double" {return DOUBLE;}
+"char" {return CHAR;}
+"return" {return RETURN;}
+"continue" {return CONTINUE;}
+"void" {return VOID;}
+"printf" {return PRINTLN;}
+
 {letter_}({letter_}|{digit})* {
-    logOut << endl << "Line no " << lineNo << ": Token <ID> Lexeme " << yytext << " found" << endl;
-    st.insert(yytext, "ID", logOut);
-    tokenOut << "<ID, " << yytext << "> ";
+    yylval.st = new SymbolInfo(yytext, "ID");
+    return ID;
 }
 {digit}+ {
-    logOut << endl << "Line no " << lineNo << ": Token <CONST_INT> Lexeme " << yytext << " found" << endl;
-    st.insert(yytext, "CONST_INT", logOut);
-    tokenOut << "<CONST_INT, " << yytext << "> ";
+    yylval.st = new SymbolInfo(yytext, "CONST_INT");
+    return CONST_INT;
 }
 {digit}*(\.{digit}+)?(([eE][+-])?{digit}+)? {
-    logOut << endl << "Line no " << lineNo << ": Token <CONST_FLOAT> Lexeme " << yytext << " found" << endl;
-    st.insert(yytext, "CONST_FLOAT", logOut);
-    tokenOut << "<CONST_FLOAT, " << yytext << "> ";
+    yylval.st = new SymbolInfo(yytext, "CONST_FLOAT");
+    return CONST_FLOAT;
 }
 ({digit}*\.{digit}+(\.{digit}*)+)+ {
     logOut << endl << "Error at line no " << lineNo << ": Too many decimal points " << yytext << endl;
+    errorOut << endl << "Error at line no " << lineNo << ": Too many decimal points " << yytext << endl;
     errorNo++;
+
+    yylval.st = new SymbolInfo(yytext, "ERROR_FLOAT");
+    return ERROR_FLOAT;
 }
-{digit}*\.?{digit}*[eE][+-]?{digit}*\.{digit}* {
+({digit}*\.?{digit}*[eE][+-]?{digit}*\.{digit}*)|({digit}*\.([eE][+-]?{digit}*\.?{digit}*)?) {
     logOut << endl << "Error at line no " << lineNo << ": Ill formed number " << yytext << endl;
+    errorOut << endl << "Error at line no " << lineNo << ": Ill formed number " << yytext << endl;
     errorNo++;
-}
-{digit}*\.([eE][+-]?{digit}*\.?{digit}*)? {
-    logOut << endl << "Error at line no " << lineNo << ": Ill formed number " << yytext << endl;
-    errorNo++;
+
+    yylval.st = new SymbolInfo(yytext, "ERROR_FLOAT");
+    return ERROR_FLOAT;
 }
 {digit}+{letter_}+ {
     logOut << endl << "Error at line no " << lineNo << ": Invalid prefix on ID or invalid suffix on Number " << yytext << endl;
+    errorOut << endl << "Error at line no " << lineNo << ": Invalid prefix on ID or invalid suffix on Number " << yytext << endl;
     errorNo++;
+
+    // considering this ID for error recovery
+    yylval.st = new SymbolInfo(yytext, "ID");
+    return ID;
 }
+"+"|"-" {
+    yylval.st = new SymbolInfo(yytext, "ADDOP");
+    return ADDOP;
+}
+"*"|"/"|"%" {
+    yylval.st = new SymbolInfo(yytext, "MULOP");
+    return MULOP;
+}
+"++" {return INCOP;}
+"--" {return DECOP;}
+"<"|"<="|">"|">="|"=="|"!=" {
+    yylval.st = new SymbolInfo(yytext, "RELOP");
+    return RELOP;
+}
+"=" {return ASSIGNOP;}
+"&&"|"||" {
+    yylval.st = new SymbolInfo(yytext, "LOGICOP");
+    return LOGICOP;
+}
+"!" {return NOT;}
+"(" {return LPAREN;}
+")" {return RPAREN;}
+"{" {
+    // enter scope
+    return LCURL;
+}
+"}" {
+    // exit scope
+    return RCURL;
+}
+"[" {return LTHIRD;}
+"]" {return RTHIRD;}
+"," {return COMMA;}
+";" {return SEMICOLON;}
 \' {
-    currentChar = "";
-    currentExactChar = "";
-    BEGIN CHAR;
+    curr = "";
+    currExact = "";
+    BEGIN CHAR_STATE;
 }
-<CHAR>\\n {
-    currentChar += '\n';
-    currentExactChar += "\\n";
+<CHAR_STATE>\\n {
+    curr += '\n';
+    currExact += "\\n";
 }
-<CHAR>\\t {
-    currentChar += '\t';
-    currentExactChar += "\\t";
+<CHAR_STATE>\\t {
+    curr += '\t';
+    currExact += "\\t";
 }
-<CHAR>\\\\ {
-    currentChar += '\\';
-    currentExactChar += "\\\\";
+<CHAR_STATE>\\\\ {
+    curr += '\\';
+    currExact += "\\\\";
 }
-<CHAR>\\\" {
-    currentChar += '\"';
-    currentExactChar += "\\\"";
+<CHAR_STATE>\\\" {
+    curr += '\"';
+    currExact += "\\\"";
 }
-<CHAR>\\\' {
-    currentChar += '\'';
-    currentExactChar += "\\\'";    
+<CHAR_STATE>\\\' {
+    curr += '\'';
+    currExact += "\\\'";    
 }
-<CHAR>\\a {
-    currentChar += '\a';
-    currentExactChar += "\\a";
+<CHAR_STATE>\\a {
+    curr += '\a';
+    currExact += "\\a";
 }
-<CHAR>\\f {
-    currentChar += '\f';
-    currentExactChar += "\\f";
+<CHAR_STATE>\\f {
+    curr += '\f';
+    currExact += "\\f";
 }
-<CHAR>\\r {
-    currentChar += '\r';
-    currentExactChar += "\\r";
+<CHAR_STATE>\\r {
+    curr += '\r';
+    currExact += "\\r";
 }
-<CHAR>\\b {
-    currentChar += '\b';
-    currentExactChar += "\\b";
+<CHAR_STATE>\\b {
+    curr += '\b';
+    currExact += "\\b";
 }
-<CHAR>\\v {
-    currentChar += '\v';
-    currentExactChar += "\\v";
+<CHAR_STATE>\\v {
+    curr += '\v';
+    currExact += "\\v";
 }
-<CHAR>\\0 {
-    currentChar += '\0';
-    currentExactChar += "\\0";
+<CHAR_STATE>\\0 {
+    curr += '\0';
+    currExact += "\\0";
 }
-<CHAR><<EOF>> {
-    logOut << endl << "Error at line no " << lineNo << ": Unterminated character '" << currentExactChar << endl;
+<CHAR_STATE><<EOF>> {
+    logOut << endl << "Error at line no " << lineNo << ": Unterminated character '" << currExact << endl;
+    errorOut << endl << "Error at line no " << lineNo << ": Unterminated character '" << currExact << endl;
     errorNo++;
     BEGIN INITIAL;
 }
-<CHAR>{newline} {
-    logOut << endl << "Error at line no " << lineNo << ": Unterminated character '" << currentExactChar << endl;
+<CHAR_STATE>{newline} {
+    logOut << endl << "Error at line no " << lineNo << ": Unterminated character '" << currExact << endl;
+    errorOut << endl << "Error at line no " << lineNo << ": Unterminated character '" << currExact << endl;
     errorNo++;
     lineNo++;
     BEGIN INITIAL;
 }
-<CHAR>\' {
-    if ((currentChar.length() == 1) || (currentChar.length() == 0 && currentExactChar == "\\0")) {
-        logOut << endl << "Line no " << lineNo << ": Token <CONST_CHAR> Lexeme '" << currentExactChar << "' found ";
-        logOut << "--> <CHAR_CONST, " << currentChar << "> " << endl;
-        st.insert("'"+currentExactChar+"'", "CONST_CHAR", logOut);
+<CHAR_STATE>\' {
+    if ((curr.length() == 1) || (curr.length() == 0 && currExact == "\\0")) {
+        logOut << endl << "Line no " << lineNo << ": Token <CONST_CHAR> Lexeme '" << currExact << "' found ";
+        logOut << "--> <CHAR_CONST, " << curr << "> " << endl;
+        st.insert("'"+currExact+"'", "CONST_CHAR", logOut);
         logOut << endl;
-        tokenOut << "<CHAR_CONST, " << currentChar << "> ";
-    } else if(currentChar.length() == 0) {
-        logOut << endl << "Error at line no " << lineNo << ": Empty character constant error '" << currentExactChar << "'" << endl;
+        // tokenOut << "<CHAR_CONST, " << curr << "> ";
+    } else if(curr.length() == 0) {
+        logOut << endl << "Error at line no " << lineNo << ": Empty character constant error '" << currExact << "'" << endl;
+        errorOut << endl << "Error at line no " << lineNo << ": Empty character constant error '" << currExact << "'" << endl;
         errorNo++;
     } else {
-        logOut << endl << "Error at line no " << lineNo << ": Multi character constant error '" << currentExactChar << "'" << endl;
+        logOut << endl << "Error at line no " << lineNo << ": Multi character constant error '" << currExact << "'" << endl;
+        errorOut << endl << "Error at line no " << lineNo << ": Multi character constant error '" << currExact << "'" << endl;
         errorNo++;
     }
 
     BEGIN INITIAL;
 }
-<CHAR>. {
-    currentChar += yytext;
-    currentExactChar += yytext;
-}
-"+"|"-" {
-    logOut << endl << "Line no " << lineNo << ": Token <ADDOP> Lexeme " << yytext << " found" << endl;
-    tokenOut << "<ADDOP, " << yytext << "> ";
-}
-"*"|"/"|"%" {
-    logOut << endl << "Line no " << lineNo << ": Token <MULOP> Lexeme " << yytext << " found" << endl;
-    tokenOut << "<MULOP, " << yytext << "> ";
-}
-"++"|"--" {
-    logOut << endl << "Line no " << lineNo << ": Token <INCOP> Lexeme " << yytext << " found" << endl;
-    tokenOut << "<INCOP, " << yytext << "> ";
-}
-"<"|"<="|">"|">="|"=="|"!=" {
-    logOut << endl << "Line no " << lineNo << ": Token <RELOP> Lexeme " << yytext << " found" << endl;
-    tokenOut << "<RELOP, " << yytext << "> ";
-}
-"=" {
-    logOut << endl << "Line no " << lineNo << ": Token <ASSIGNOP> Lexeme " << yytext << " found" << endl;
-    tokenOut << "<ASSIGNOP, " << yytext << "> ";
-}
-"&&"|"||" {
-    logOut << endl << "Line no " << lineNo << ": Token <logOutICOP> Lexeme " << yytext << " found" << endl;
-    tokenOut << "<logOutICOP, " << yytext << "> ";
-}
-"!" {
-    logOut << endl << "Line no " << lineNo << ": Token <NOT> Lexeme " << yytext << " found" << endl;
-    tokenOut << "<NOT, " << yytext << "> ";
-}
-"(" {
-    logOut << endl << "Line no " << lineNo << ": Token <LPAREN> Lexeme " << yytext << " found" << endl;
-    tokenOut << "<LPAREN, " << yytext << "> ";
-}
-")" {
-    logOut << endl << "Line no " << lineNo << ": Token <RPAREN> Lexeme " << yytext << " found" << endl;
-    tokenOut << "<RPAREN, " << yytext << "> ";
-}
-"{" {
-    logOut << endl << "Line no " << lineNo << ": Token <LCURL> Lexeme " << yytext << " found" << endl;
-    tokenOut << "<LCURL, " << yytext << "> ";
-    st.enterScope();
-}
-"}" {
-    logOut << endl << "Line no " << lineNo << ": Token <RCURL> Lexeme " << yytext << " found" << endl;
-    tokenOut << "<RCURL, " << yytext << "> ";
-    st.exitScope();
-}
-"[" {
-    logOut << endl << "Line no " << lineNo << ": Token <LTHIRD> Lexeme " << yytext << " found" << endl;
-    tokenOut << "<LTHIRD, " << yytext << "> ";
-}
-"]" {
-    logOut << endl << "Line no " << lineNo << ": Token <RTHIRD> Lexeme " << yytext << " found" << endl;
-    tokenOut << "<RTHIRD, " << yytext << "> ";
-}
-"," {
-    logOut << endl << "Line no " << lineNo << ": Token <COMMA> Lexeme " << yytext << " found" << endl;
-    tokenOut << "<COMMA, " << yytext << "> ";
-}
-";" {
-    logOut << endl << "Line no " << lineNo << ": Token <SEMICOLON> Lexeme " << yytext << " found" << endl;
-    tokenOut << "<SEMICOLON, " << yytext << "> ";
+<CHAR_STATE>. {
+    curr += yytext;
+    currExact += yytext;
 }
 \" {
-    currentStr = "";
-    currentExactStr = "";
+    curr = "";
+    currExact = "";
     startLineNo = lineNo;
     BEGIN STR;
 }
 <STR>\\n {
-    currentStr += '\n';
-    currentExactStr += "\\n";
+    curr += '\n';
+    currExact += "\\n";
 }
 <STR>\\t {
-    currentStr += '\t';
-    currentExactStr += "\\t";
+    curr += '\t';
+    currExact += "\\t";
 }
 <STR>\\\\ {
-    currentStr += '\\';
-    currentExactStr += "\\\\";
+    curr += '\\';
+    currExact += "\\\\";
 }
 <STR>\\\" {
-    currentStr += '\"';
-    currentExactStr += "\\\"";
+    curr += '\"';
+    currExact += "\\\"";
 }
 <STR>\\\' {
-    currentStr += '\'';
-    currentExactStr += "\\\'";
+    curr += '\'';
+    currExact += "\\\'";
 }
 <STR>\\a {
-    currentStr += '\a';
-    currentExactStr += "\\a";
+    curr += '\a';
+    currExact += "\\a";
 }
 <STR>\\f {
-    currentStr += '\f';
-    currentExactStr += "\\f";
+    curr += '\f';
+    currExact += "\\f";
 }
 <STR>\\r {
-    currentStr += '\r';
-    currentExactStr += "\\r";
+    curr += '\r';
+    currExact += "\\r";
 }
 <STR>\\b {
-    currentStr += '\b';
-    currentExactStr += "\\b";
+    curr += '\b';
+    currExact += "\\b";
 }
 <STR>\\v {
-    currentStr += '\v';
-    currentExactStr += "\\v";
+    curr += '\v';
+    currExact += "\\v";
 }
 <STR>\\0 {
-    currentStr += '\0';
-    currentExactStr += "\\0";
+    curr += '\0';
+    currExact += "\\0";
 }
 <STR>\\\r\n {
-    currentExactStr += "\\\r\n";
+    currExact += "\\\r\n";
     lineNo++;
 }
 <STR>\\\n {
-    currentExactStr += "\\\n";
+    currExact += "\\\n";
     lineNo++;
 }
 <STR>{newline} {
-    logOut << endl << "Error at line no " << startLineNo << ": Unterminated String \"" << currentExactStr << endl;
+    logOut << endl << "Error at line no " << startLineNo << ": Unterminated String \"" << currExact << endl;
+    errorOut << endl << "Error at line no " << startLineNo << ": Unterminated String \"" << currExact << endl;
     errorNo++;
     lineNo++;
     BEGIN INITIAL;
 }
 <STR><<EOF>> {
-    logOut << endl << "Error at line no " << startLineNo << ": Unterminated String \"" << currentExactStr << "\"" << endl;
+    logOut << endl << "Error at line no " << startLineNo << ": Unterminated String \"" << currExact << "\"" << endl;
+    errorOut << endl << "Error at line no " << startLineNo << ": Unterminated String \"" << currExact << "\"" << endl;
     errorNo++;
     BEGIN INITIAL;
 }
 <STR>\" {
-    logOut << endl << "Line no " << startLineNo << ": Token <STRING> Lexeme \"" << currentExactStr << "\" found ";
-    logOut << "--> <STRING, \"" << currentStr << "\"> " << endl;
-    tokenOut << "<STRING, \"" << currentStr << "\"> ";
+    logOut << endl << "Line no " << startLineNo << ": Token <STRING> Lexeme \"" << currExact << "\" found ";
+    logOut << "--> <STRING, \"" << curr << "\"> " << endl;
+    // tokenOut << "<STRING, \"" << curr << "\"> ";
     BEGIN INITIAL;
 }
 <STR>. {
-    currentStr += yytext;
-    currentExactStr += yytext;
+    curr += yytext;
+    currExact += yytext;
 }
 \/\/ {
     currExact = "";
@@ -335,6 +324,7 @@ if|else|for|while|do|break|int|char|float|double|void|return|switch|case|default
 }
 <M_CMNT><<EOF>> {
     logOut << endl << "Error at line no " << startLineNo << ": Unterminated Comment /*" << currExact << endl;
+    errorOut << endl << "Error at line no " << startLineNo << ": Unterminated Comment /*" << currExact << endl;
     errorNo++;
     BEGIN INITIAL;
 }
@@ -347,5 +337,6 @@ if|else|for|while|do|break|int|char|float|double|void|return|switch|case|default
 }
 . {
     logOut << endl << "Error at line no " << lineNo << ": Unrecognized character '" << yytext << "'" << endl;
+    errorOut << endl << "Error at line no " << lineNo << ": Unrecognized character '" << yytext << "'" << endl;
     errorNo++;
 }
