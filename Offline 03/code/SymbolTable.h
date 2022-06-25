@@ -1,27 +1,58 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+// this is an extended version of the previous symbol info
 
 class SymbolInfo {
     string name;
     string type;
     SymbolInfo* next;
 
+    // for functions
+    vector<SymbolInfo*> funcParams;
+    bool isFunc;
+    bool isFuncDefined;
+    // for arrays
+    // arraySize = 0 not an array, a variable
+    unsigned arraySize = 0; 
+
 public:
     SymbolInfo() {
         name = "NOT DEFINED";
         type = "NOT DEFINED";
         next = nullptr;
+
+        isFunc = false;
+        isFuncDefined = false;
     }
 
     SymbolInfo(const string &name, const string &type) {
         this->name = name;
         this->type = type;
         next = nullptr;
+
+        isFunc = false;
+        isFuncDefined = false;
     }
 
+    // function constructor
+    SymbolInfo* setAsFunction(const string &name, const string &type, const vector<SymbolInfo*> &funcParams) {
+        this->name = name;
+        this->type = type;
+        next = nullptr;
+        
+        this->funcParams = funcParams;
+        isFunc = true;
+        isFuncDefined = false;
+
+        return this;
+    }
+
+    // array constructor
+
     ~SymbolInfo() {
-//        if(next != nullptr) delete next;
+        // no dynamic memory allocation
+        // so no need to delete anything
     }
 
     string getName() const {
@@ -40,12 +71,28 @@ public:
         this->type = type;
     }
 
-    SymbolInfo *getNext() {
+    SymbolInfo *getNext() const {
         return next;
     }
 
     void setNext(SymbolInfo *next) {
         this->next = next;
+    }
+
+    bool getIsFunc() const {
+        return isFunc;
+    }
+
+    void setIsFunc(const bool &isFunc) {
+        this->isFunc = isFunc;
+    }
+
+    bool getIsFuncDefined() const {
+        return isFuncDefined;
+    }
+
+    void setIsFuncDefined(const bool &isFuncDefined) {
+        this->isFuncDefined = isFuncDefined;
     }
 };
 

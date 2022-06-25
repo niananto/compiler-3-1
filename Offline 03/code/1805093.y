@@ -1,6 +1,7 @@
 %{
 #include<bits/stdc++.h>
 #include "SymbolTable.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -8,7 +9,7 @@ int yyparse(void);
 int yylex(void);
 extern FILE *yyin;
 
-SymbolTable st = SymbolTable(7);
+SymbolTable st(30);
 ofstream logOut;
 ofstream errorOut;
 
@@ -20,16 +21,11 @@ void yyerror(char *s) {
 	errorOut << "Error at line " << lineNo << ": " << s << endl;
     errorNo++;
 }
-
-void logGrammer(string left, string right) {
-    logOut << "Line " << lineNo << ": " << left << " : " << right << endl;
-}
 %}
 
 %error-verbose
 %union {
     SymbolInfo* st;
-    vector<SymbolInfo*>* vst;
 }
 
 %token IF ELSE FOR WHILE DO INT CHAR FLOAT DOUBLE VOID RETURN CONTINUE PRINTLN
@@ -42,243 +38,246 @@ void logGrammer(string left, string right) {
 %%
 
 start : program {
-        logGrammer("start", "program");
+        printLog(logOut, lineNo, "start", "program", $$->getName());
 	}
 	;
 
 program : program unit {
-        logGrammer("program", "program unit");
+        printLog(logOut, lineNo, "program", "program unit", $$->getName());
     }
     | unit {
-        logGrammer("program", "unit");
+        printLog(logOut, lineNo, "program", "unit", $$->getName());
     }
     ;
 
 unit : var_declaration {
-        logGrammer("unit", "var_declaration");
+        printLog(logOut, lineNo, "unit", "var_declaration", $$->getName());
     }
     | func_declaration {
-        logGrammer("unit", "func_declaration");
+        printLog(logOut, lineNo, "unit", "func_declaration", $$->getName());
     }
     | func_definition {
-        logGrammer("unit", "func_definition");
+        printLog(logOut, lineNo, "unit", "func_definition", $$->getName());
     }
     ;
      
 func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON {
-        logGrammer("func_declaration", "type_specifier ID LPAREN parameter_list RPAREN SEMICOLON");
-        // st.addFunction(yylval.st->getName(), yylval.st->getType(), yylval.st->getParams());
+        printLog(logOut, lineNo, "func_declaration", "type_specifier ID LPAREN parameter_list RPAREN SEMICOLON", $$->getName());
+        // st.addFunction(yylval.st->getName(), yylval.st->getType(), yylval.st->getParams(), $$->getName());
     }
 	| type_specifier ID LPAREN RPAREN SEMICOLON {
-        logGrammer("func_declaration", "type_specifier ID LPAREN RPAREN SEMICOLON");
-        // st.addFunction(yylval.st->getName(), yylval.st->getType(), yylval.st->getParams());
+        printLog(logOut, lineNo, "func_declaration", "type_specifier ID LPAREN RPAREN SEMICOLON", $$->getName());
+        // st.addFunction(yylval.st->getName(), yylval.st->getType(), yylval.st->getParams(), $$->getName());
     }
 	;
 		 
 func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement {
-        logGrammer("func_definition", "type_specifier ID LPAREN parameter_list RPAREN compound_statement");
-        // st.addFunction(yylval.st->getName(), yylval.st->getType(), yylval.st->getParams());
+        printLog(logOut, lineNo, "func_definition", "type_specifier ID LPAREN parameter_list RPAREN compound_statement", $$->getName());
+        // st.addFunction(yylval.st->getName(), yylval.st->getType(), yylval.st->getParams(), $$->getName());
     }
     | type_specifier ID LPAREN RPAREN compound_statement {
-        logGrammer("func_definition", "type_specifier ID LPAREN RPAREN compound_statement");
-        // st.addFunction(yylval.st->getName(), yylval.st->getType(), yylval.st->getParams());
+        printLog(logOut, lineNo, "func_definition", "type_specifier ID LPAREN RPAREN compound_statement", $$->getName());
+        // st.addFunction(yylval.st->getName(), yylval.st->getType(), yylval.st->getParams(), $$->getName());
     }
     ;
 
 parameter_list  : parameter_list COMMA type_specifier ID {
-        logGrammer("parameter_list", "parameter_list COMMA type_specifier ID");
-        // yylval.vst->push_back(new SymbolInfo(yylval.st->getName(), yylval.st->getType()));
+        printLog(logOut, lineNo, "parameter_list", "parameter_list COMMA type_specifier ID", $$->getName());
+        // yylval.vst->push_back(new SymbolInfo(yylval.st->getName(), yylval.st->getType()), $$->getName());
     }
     | parameter_list COMMA type_specifier {
-        logGrammer("parameter_list", "parameter_list COMMA type_specifier");
-        // yylval.vst->push_back(new SymbolInfo(yylval.st->getName(), yylval.st->getType()));
+        printLog(logOut, lineNo, "parameter_list", "parameter_list COMMA type_specifier", $$->getName());
+        // yylval.vst->push_back(new SymbolInfo(yylval.st->getName(), yylval.st->getType()), $$->getName());
     }
     | type_specifier ID {
-        logGrammer("parameter_list", "type_specifier ID");
-        // yylval.vst->push_back(new SymbolInfo(yylval.st->getName(), yylval.st->getType()));
+        printLog(logOut, lineNo, "parameter_list", "type_specifier ID", $$->getName());
+        // yylval.vst->push_back(new SymbolInfo(yylval.st->getName(), yylval.st->getType()), $$->getName());
     }
     | type_specifier {
-        logGrammer("parameter_list", "type_specifier");
-        // yylval.vst->push_back(new SymbolInfo(yylval.st->getName(), yylval.st->getType()));
+        printLog(logOut, lineNo, "parameter_list", "type_specifier", $$->getName());
+        // yylval.vst->push_back(new SymbolInfo(yylval.st->getName(), yylval.st->getType()), $$->getName());
     }
     ;
 
 compound_statement : LCURL statements RCURL {
-        logGrammer("compound_statement", "LCURL statements RCURL");
+        printLog(logOut, lineNo, "compound_statement", "LCURL statements RCURL", $$->getName());
     }
     | LCURL RCURL {
-        logGrammer("compound_statement", "LCURL RCURL");
+        printLog(logOut, lineNo, "compound_statement", "LCURL RCURL", $$->getName());
     }
     ;
  		    
 var_declaration : type_specifier declaration_list SEMICOLON {
-        logGrammer("var_declaration", "type_specifier declaration_list SEMICOLON");
-        // st.addVariable(yylval.st->getName(), yylval.st->getType());
+        printLog(logOut, lineNo, "var_declaration", "type_specifier declaration_list SEMICOLON", $$->getName());
+        // st.addVariable(yylval.st->getName(), yylval.st->getType(), $$->getName());
     }
     ;
  		 
 type_specifier : INT {
-        logGrammer("type_specifier", "INT");
+        printLog(logOut, lineNo, "type_specifier", "INT", $$->getName());
     }
     | FLOAT {
-        logGrammer("type_specifier", "FLOAT");
+        printLog(logOut, lineNo, "type_specifier", "FLOAT", $$->getName());
     }
     | VOID {
-        logGrammer("type_specifier", "VOID");
+        printLog(logOut, lineNo, "type_specifier", "VOID", $$->getName());
     }
     ;
  		
 declaration_list : declaration_list COMMA ID {
-        logGrammer("declaration_list", "declaration_list COMMA ID");
+        printLog(logOut, lineNo, "declaration_list", "declaration_list COMMA ID", $$->getName());
     }
     | declaration_list COMMA ID LTHIRD CONST_INT RTHIRD {
-        logGrammer("declaration_list", "declaration_list COMMA ID LTHIRD CONST_INT RTHIRD");
+        printLog(logOut, lineNo, "declaration_list", "declaration_list COMMA ID LTHIRD CONST_INT RTHIRD", $$->getName());
     }
     | ID {
-        logGrammer("declaration_list", "ID");
+        printLog(logOut, lineNo, "declaration_list", "ID", $$->getName());
     }
     | ID LTHIRD CONST_INT RTHIRD {
-        logGrammer("declaration_list", "ID LTHIRD CONST_INT RTHIRD");
+        printLog(logOut, lineNo, "declaration_list", "ID LTHIRD CONST_INT RTHIRD", $$->getName());
     }
     ;
  		  
 statements : statement {
-        logGrammer("statements", "statement");
+        printLog(logOut, lineNo, "statements", "statement", $$->getName());
     }
     | statements statement {
-        logGrammer("statements", "statements statement");
+        printLog(logOut, lineNo, "statements", "statements statement", $$->getName());
     }
     ;
 	   
 statement : var_declaration {
-        logGrammer("statement", "var_declaration");
+        printLog(logOut, lineNo, "statement", "var_declaration", $$->getName());
     }
     | expression_statement {
-        logGrammer("statement", "expression_statement");
+        printLog(logOut, lineNo, "statement", "expression_statement", $$->getName());
     }
     | compound_statement {
-        logGrammer("statement", "compound_statement");
+        printLog(logOut, lineNo, "statement", "compound_statement", $$->getName());
     }
     | FOR LPAREN expression_statement expression_statement expression RPAREN statement {
-        logGrammer("statement", "FOR LPAREN expression_statement expression_statement expression RPAREN statement");
+        printLog(logOut, lineNo, "statement", "FOR LPAREN expression_statement expression_statement expression RPAREN statement", $$->getName());
     }
     | IF LPAREN expression RPAREN statement %prec LOWER_THAN_ELSE {
-        logGrammer("statement", "IF LPAREN expression RPAREN statement");
+        printLog(logOut, lineNo, "statement", "IF LPAREN expression RPAREN statement", $$->getName());
     }
     | IF LPAREN expression RPAREN statement ELSE statement {
-        logGrammer("statement", "IF LPAREN expression RPAREN statement ELSE statement");
+        printLog(logOut, lineNo, "statement", "IF LPAREN expression RPAREN statement ELSE statement", $$->getName());
     }
     | WHILE LPAREN expression RPAREN statement {
-        logGrammer("statement", "WHILE LPAREN expression RPAREN statement");
+        printLog(logOut, lineNo, "statement", "WHILE LPAREN expression RPAREN statement", $$->getName());
     }
     | PRINTLN LPAREN ID RPAREN SEMICOLON {
-        logGrammer("statement", "PRINTLN LPAREN ID RPAREN SEMICOLON");
+        printLog(logOut, lineNo, "statement", "PRINTLN LPAREN ID RPAREN SEMICOLON", $$->getName());
     }
     | RETURN expression SEMICOLON {
-        logGrammer("statement", "RETURN expression SEMICOLON");
+        printLog(logOut, lineNo, "statement", "RETURN expression SEMICOLON", $$->getName());
     }
     ;
 	  
 expression_statement : SEMICOLON {
-        logGrammer("expression_statement", "SEMICOLON");
+        printLog(logOut, lineNo, "expression_statement", "SEMICOLON", $$->getName());
     }
     | expression SEMICOLON {
-        logGrammer("expression_statement", "expression SEMICOLON");
+        printLog(logOut, lineNo, "expression_statement", "expression SEMICOLON", $$->getName());
     }
     ;
 
 variable : ID {
-        logGrammer("variable", "ID");
+        printLog(logOut, lineNo, "variable", "ID", $$->getName());
     } 		
     | ID LTHIRD expression RTHIRD {
-        logGrammer("variable", "ID LTHIRD expression RTHIRD");
+        printLog(logOut, lineNo, "variable", "ID LTHIRD expression RTHIRD", $$->getName());
     }
     ;
 	 
 expression : logic_expression {
-        logGrammer("expression", "logic_expression");
+        printLog(logOut, lineNo, "expression", "logic_expression", $$->getName());
     }	
     | variable ASSIGNOP logic_expression {
-        logGrammer("expression", "variable ASSIGNOP logic_expression");
+        printLog(logOut, lineNo, "expression", "variable ASSIGNOP logic_expression", $$->getName());
     }
     ;
 			
 logic_expression : rel_expression {
-        logGrammer("logic_expression", "rel_expression");
+        printLog(logOut, lineNo, "logic_expression", "rel_expression", $$->getName());
     } 	
     | rel_expression LOGICOP rel_expression {
-        logGrammer("logic_expression", "rel_expression LOGICOP rel_expression");
+        printLog(logOut, lineNo, "logic_expression", "rel_expression LOGICOP rel_expression", $$->getName());
     }
     ;
 			
 rel_expression : simple_expression {
-        logGrammer("rel_expression", "simple_expression");
+        printLog(logOut, lineNo, "rel_expression", "simple_expression", $$->getName());
     }
     | simple_expression RELOP simple_expression	{
-        logGrammer("rel_expression", "simple_expression RELOP simple_expression");
+        printLog(logOut, lineNo, "rel_expression", "simple_expression RELOP simple_expression", $$->getName());
     }
     ;
 				
 simple_expression : term {
-        logGrammer("simple_expression", "term");
+        printLog(logOut, lineNo, "simple_expression", "term", $$->getName());
     }
     | simple_expression ADDOP term {
-        logGrammer("simple_expression", "simple_expression ADDOP term");
+        printLog(logOut, lineNo, "simple_expression", "simple_expression ADDOP term", $$->getName());
     }
     ;
 					
 term :	unary_expression {
-        logGrammer("term", "unary_expression");
+        printLog(logOut, lineNo, "term", "unary_expression", $$->getName());
     }
     | term MULOP unary_expression {
-        logGrammer("term", "term MULOP unary_expression");
+        printLog(logOut, lineNo, "term", "term MULOP unary_expression", $$->getName());
     }
     ;
 
 unary_expression : ADDOP unary_expression {
-        logGrammer("unary_expression", "ADDOP unary_expression");
+        printLog(logOut, lineNo, "unary_expression", "ADDOP unary_expression", $$->getName());
     } 
     | NOT unary_expression {
-        logGrammer("unary_expression", "NOT unary_expression");
+        printLog(logOut, lineNo, "unary_expression", "NOT unary_expression", $$->getName());
     }
     | factor {
-        logGrammer("unary_expression", "factor");
+        printLog(logOut, lineNo, "unary_expression", "factor", $$->getName());
     }
     ;
 	
-factor	: variable {
-        logGrammer("factor", "variable");
+factor : variable {
+        printLog(logOut, lineNo, "factor", "variable", $$->getName());
     }
 	| ID LPAREN argument_list RPAREN {
-        logGrammer("factor", "ID LPAREN argument_list RPAREN");
+        printLog(logOut, lineNo, "factor", "ID LPAREN argument_list RPAREN", $$->getName());
     }
 	| LPAREN expression RPAREN {
-        logGrammer("factor", "LPAREN expression RPAREN");
+        printLog(logOut, lineNo, "factor", "LPAREN expression RPAREN", $$->getName());
     }
 	| CONST_INT {
-        logGrammer("factor", "CONST_INT");
+        printLog(logOut, lineNo, "factor", "CONST_INT", $$->getName());
     }
 	| CONST_FLOAT {
-        logGrammer("factor", "CONST_FLOAT");
+        printLog(logOut, lineNo, "factor", "CONST_FLOAT", $$->getName());
     }
 	| variable INCOP {
-        logGrammer("factor", "variable INCOP");
+        printLog(logOut, lineNo, "factor", "variable INCOP", $$->getName());
     }
 	| variable DECOP {
-        logGrammer("factor", "variable DECOP");
+        printLog(logOut, lineNo, "factor", "variable DECOP", $$->getName());
     }
 	;
 	
 argument_list : arguments {
-        logGrammer("argument_list", "arguments");
+        printLog(logOut, lineNo, "argument_list", "arguments", $$->getName());
+    }
+    | {
+        printLog(logOut, lineNo, "argument_list", "", $$->getName());
     }
     ;
 	
 arguments : arguments COMMA logic_expression {
-        logGrammer("arguments", "arguments COMMA logic_expression");
+        printLog(logOut, lineNo, "arguments", "arguments COMMA logic_expression", $$->getName());
     }
     | logic_expression {
-        logGrammer("arguments", "logic_expression");
+        printLog(logOut, lineNo, "arguments", "logic_expression", $$->getName());
     }
     ;
 
