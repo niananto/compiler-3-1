@@ -19,7 +19,7 @@ input:              /* empty string */
     | input line
     ;
 line: NEWLINE
-    | expr NEWLINE           { printf("\t%.10g\n",$1); }
+    | expr NEWLINE           { printf("%.10g\n",$1); }
     ;
 expr: expr PLUS term         { $$ = $1 + $3; }
     | expr MINUS term        { $$ = $1 - $3; }
