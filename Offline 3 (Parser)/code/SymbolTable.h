@@ -43,9 +43,9 @@ public:
         currentScope = temp;
     }
 
-    bool insert(string name, string type) {
+    bool insert(string name, string type, string varType = "NOT DEFINED") {
         if(currentScope == nullptr) enterScope();
-        return currentScope->insert(name, type);
+        return currentScope->insert(name, type, varType);
     }
 
     bool remove(string name) {
@@ -79,16 +79,29 @@ public:
         currentScope->print();
     }
 
-    void printAll() {
+    // void printAll() {
+    //     if(currentScope == nullptr) {
+    //         cout << "NO CURRENT SCOPE\n";
+    //         return;
+    //     }
+    //     ScopeTable* itr = currentScope;
+    //     while(itr != nullptr) {
+    //         itr->print();
+    //         itr = itr->getParentScope();
+    //         cout << "\n";
+    //     }
+    // }
+
+    void printAll(ofstream &logOut) {
         if(currentScope == nullptr) {
-            cout << "NO CURRENT SCOPE\n";
+            logOut << "NO CURRENT SCOPE\n";
             return;
         }
         ScopeTable* itr = currentScope;
         while(itr != nullptr) {
-            itr->print();
+            itr->print(logOut);
             itr = itr->getParentScope();
-            cout << "\n";
+            logOut << "\n";
         }
     }
 };

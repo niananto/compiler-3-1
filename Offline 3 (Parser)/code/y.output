@@ -115,14 +115,14 @@ Terminals, with rules where they appear
     RETURN (268) 35
     CONTINUE (269)
     PRINTLN (270) 34
-    ID <st> (271) 7 8 9 10 11 13 21 22 23 24 34 38 39 54
-    CONST_INT <st> (272) 22 24 56
-    CONST_FLOAT <st> (273) 57
-    ERROR_FLOAT <st> (274)
-    ADDOP <st> (275) 47 50
-    MULOP <st> (276) 49
-    RELOP <st> (277) 45
-    LOGICOP <st> (278) 43
+    ID <symbol> (271) 7 8 9 10 11 13 21 22 23 24 34 38 39 54
+    CONST_INT <symbol> (272) 22 24 56
+    CONST_FLOAT <symbol> (273) 57
+    ERROR_FLOAT <symbol> (274)
+    ADDOP <symbol> (275) 47 50
+    MULOP <symbol> (276) 49
+    RELOP <symbol> (277) 45
+    LOGICOP <symbol> (278) 43
     INCOP (279) 58
     DECOP (280) 59
     ASSIGNOP (281) 41
@@ -142,73 +142,73 @@ Nonterminals, with rules where they appear
 
     $accept (37)
         on left: 0
-    start <st> (38)
+    start <symbol> (38)
         on left: 1
         on right: 0
-    program <st> (39)
+    program <symbol> (39)
         on left: 2 3
         on right: 1 2
-    unit <st> (40)
+    unit <symbol> (40)
         on left: 4 5 6
         on right: 2 3
-    func_declaration <st> (41)
+    func_declaration <symbol> (41)
         on left: 7 8
         on right: 5
-    func_definition <st> (42)
+    func_definition <symbol> (42)
         on left: 9 10
         on right: 6
-    parameter_list <st> (43)
+    parameter_list <symbol> (43)
         on left: 11 12 13 14
         on right: 7 9 11 12
-    compound_statement <st> (44)
+    compound_statement <symbol> (44)
         on left: 15 16
         on right: 9 10 29
-    var_declaration <st> (45)
+    var_declaration <symbol> (45)
         on left: 17
         on right: 4 27
-    type_specifier <st> (46)
+    type_specifier <symbol> (46)
         on left: 18 19 20
         on right: 7 8 9 10 11 12 13 14 17
-    declaration_list <st> (47)
+    declaration_list <symbol> (47)
         on left: 21 22 23 24
         on right: 17 21 22
-    statements <st> (48)
+    statements <symbol> (48)
         on left: 25 26
         on right: 15 26
-    statement <st> (49)
+    statement <symbol> (49)
         on left: 27 28 29 30 31 32 33 34 35
         on right: 25 26 30 31 32 33
-    expression_statement <st> (50)
+    expression_statement <symbol> (50)
         on left: 36 37
         on right: 28 30
-    variable <st> (51)
+    variable <symbol> (51)
         on left: 38 39
         on right: 41 53 58 59
-    expression <st> (52)
+    expression <symbol> (52)
         on left: 40 41
         on right: 30 31 32 33 35 37 39 55
-    logic_expression <st> (53)
+    logic_expression <symbol> (53)
         on left: 42 43
         on right: 40 41 62 63
-    rel_expression <st> (54)
+    rel_expression <symbol> (54)
         on left: 44 45
         on right: 42 43
-    simple_expression <st> (55)
+    simple_expression <symbol> (55)
         on left: 46 47
         on right: 44 45 47
-    term <st> (56)
+    term <symbol> (56)
         on left: 48 49
         on right: 46 47 49
-    unary_expression <st> (57)
+    unary_expression <symbol> (57)
         on left: 50 51 52
         on right: 48 49 50 51
-    factor <st> (58)
+    factor <symbol> (58)
         on left: 53 54 55 56 57 58 59
         on right: 52
-    argument_list <st> (59)
+    argument_list <symbol> (59)
         on left: 60 61
         on right: 54
-    arguments <st> (60)
+    arguments <symbol> (60)
         on left: 62 63
         on right: 60 62
 

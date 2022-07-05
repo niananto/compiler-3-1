@@ -59,18 +59,15 @@ digit [0-9]
 "printf" {return PRINTLN;}
 
 {letter_}({letter_}|{digit})* {
-    SymbolInfo* s = new SymbolInfo(yytext, "ID");
-    yylval.st = s;
+    yylval.symbol = new SymbolInfo(yytext, "ID");
     return ID;
 }
 {digit}+ {
-    SymbolInfo* s = new SymbolInfo(yytext, "CONST_INT");
-    yylval.st = s;
+    yylval.symbol = new SymbolInfo(yytext, "CONST_INT");
     return CONST_INT;
 }
 {digit}*(\.{digit}+)?(([eE][+-])?{digit}+)? {
-    SymbolInfo* s = new SymbolInfo(yytext, "CONST_FLOAT");
-    yylval.st = s;
+    yylval.symbol = new SymbolInfo(yytext, "CONST_FLOAT");
     return CONST_FLOAT;
 }
 ({digit}*\.{digit}+(\.{digit}*)+)+ {
@@ -78,8 +75,7 @@ digit [0-9]
     errorOut << endl << "Error at line no " << lineNo << ": Too many decimal points " << yytext << endl;
     errorNo++;
 
-    SymbolInfo* s = new SymbolInfo(yytext, "ERROR_FLOAT");
-    yylval.st = s;
+    yylval.symbol = new SymbolInfo(yytext, "ERROR_FLOAT");
     return ERROR_FLOAT;
 }
 ({digit}*\.?{digit}*[eE][+-]?{digit}*\.{digit}*)|({digit}*\.([eE][+-]?{digit}*\.?{digit}*)?) {
@@ -87,8 +83,7 @@ digit [0-9]
     errorOut << endl << "Error at line no " << lineNo << ": Ill formed number " << yytext << endl;
     errorNo++;
 
-    SymbolInfo* s = new SymbolInfo(yytext, "ERROR_FLOAT");
-    yylval.st = s;
+    yylval.symbol = new SymbolInfo(yytext, "ERROR_FLOAT");
     return ERROR_FLOAT;
 }
 {digit}+{letter_}+ {
@@ -97,31 +92,27 @@ digit [0-9]
     errorNo++;
 
     // considering this ID for error recovery
-    SymbolInfo* s = new SymbolInfo(yytext, "ID");
-    yylval.st = s;
+    yylval.symbol = new SymbolInfo(yytext, "ID");
     return ID;
 }
 "+"|"-" {
     SymbolInfo* s = new SymbolInfo(yytext, "ADDOP");
-    yylval.st = (YYSTYPE)s;
+    yylval.symbol = (YYSTYPE)s;
     return ADDOP;
 }
 "*"|"/"|"%" {
-    SymbolInfo* s = new SymbolInfo(yytext, "MULOP");
-    yylval.st = s;
+    yylval.symbol = new SymbolInfo(yytext, "MULOP");
     return MULOP;
 }
 "++" {return INCOP;}
 "--" {return DECOP;}
 "<"|"<="|">"|">="|"=="|"!=" {
-    SymbolInfo* s = new SymbolInfo(yytext, "RELOP");
-    yylval.st = s;
+    yylval.symbol = new SymbolInfo(yytext, "RELOP");
     return RELOP;
 }
 "=" {return ASSIGNOP;}
 "&&"|"||" {
-    SymbolInfo* s = new SymbolInfo(yytext, "LOGICOP");
-    yylval.st = s;
+    yylval.symbol = new SymbolInfo(yytext, "LOGICOP");
     return LOGICOP;
 }
 "!" {return NOT;}

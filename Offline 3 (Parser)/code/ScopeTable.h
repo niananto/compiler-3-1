@@ -64,8 +64,8 @@ public:
         return hash % totalBuckets;
     }
 
-    bool insert(string name, string type) {
-        SymbolInfo* symbol = new SymbolInfo(name, type);
+    bool insert(string name, string type, string varType) {
+        SymbolInfo* symbol = new SymbolInfo(name, type, varType);
 
         unsigned long index = hashFunction(&name[0]);
 
@@ -165,6 +165,20 @@ public:
                 itr = itr->getNext();
             }
             cout << "\n";
+        }
+    }
+
+    void print(ofstream &logOut) {
+        logOut << "ScopeTable #" + id + "\n";
+        SymbolInfo* itr;
+        for(unsigned long i=0; i<totalBuckets; i++) {
+            logOut << to_string(i) + " --> ";
+            itr = buckets[i];
+            while(itr != nullptr) {
+                logOut << "< " + itr->getName() + " : " + itr->getType() + ">  ";
+                itr = itr->getNext();
+            }
+            logOut << "\n";
         }
     }
 

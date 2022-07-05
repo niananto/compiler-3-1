@@ -829,138 +829,129 @@ case 16:
 YY_RULE_SETUP
 #line 61 "1805093.l"
 {
-    SymbolInfo* s = new SymbolInfo(yytext, "ID");
-    yylval.st = s;
+    yylval.symbol = new SymbolInfo(yytext, "ID");
     return ID;
 }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 66 "1805093.l"
+#line 65 "1805093.l"
 {
-    SymbolInfo* s = new SymbolInfo(yytext, "CONST_INT");
-    yylval.st = s;
+    yylval.symbol = new SymbolInfo(yytext, "CONST_INT");
     return CONST_INT;
 }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 71 "1805093.l"
+#line 69 "1805093.l"
 {
-    SymbolInfo* s = new SymbolInfo(yytext, "CONST_FLOAT");
-    yylval.st = s;
+    yylval.symbol = new SymbolInfo(yytext, "CONST_FLOAT");
     return CONST_FLOAT;
 }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 76 "1805093.l"
+#line 73 "1805093.l"
 {
     logOut << endl << "Error at line no " << lineNo << ": Too many decimal points " << yytext << endl;
     errorOut << endl << "Error at line no " << lineNo << ": Too many decimal points " << yytext << endl;
     errorNo++;
 
-    SymbolInfo* s = new SymbolInfo(yytext, "ERROR_FLOAT");
-    yylval.st = s;
+    yylval.symbol = new SymbolInfo(yytext, "ERROR_FLOAT");
     return ERROR_FLOAT;
 }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 85 "1805093.l"
+#line 81 "1805093.l"
 {
     logOut << endl << "Error at line no " << lineNo << ": Ill formed number " << yytext << endl;
     errorOut << endl << "Error at line no " << lineNo << ": Ill formed number " << yytext << endl;
     errorNo++;
 
-    SymbolInfo* s = new SymbolInfo(yytext, "ERROR_FLOAT");
-    yylval.st = s;
+    yylval.symbol = new SymbolInfo(yytext, "ERROR_FLOAT");
     return ERROR_FLOAT;
 }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 94 "1805093.l"
+#line 89 "1805093.l"
 {
     logOut << endl << "Error at line no " << lineNo << ": Invalid prefix on ID or invalid suffix on Number " << yytext << endl;
     errorOut << endl << "Error at line no " << lineNo << ": Invalid prefix on ID or invalid suffix on Number " << yytext << endl;
     errorNo++;
 
     // considering this ID for error recovery
-    SymbolInfo* s = new SymbolInfo(yytext, "ID");
-    yylval.st = s;
+    yylval.symbol = new SymbolInfo(yytext, "ID");
     return ID;
 }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 104 "1805093.l"
+#line 98 "1805093.l"
 {
     SymbolInfo* s = new SymbolInfo(yytext, "ADDOP");
-    yylval.st = (YYSTYPE)s;
+    yylval.symbol = (YYSTYPE)s;
     return ADDOP;
 }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 109 "1805093.l"
+#line 103 "1805093.l"
 {
-    SymbolInfo* s = new SymbolInfo(yytext, "MULOP");
-    yylval.st = s;
+    yylval.symbol = new SymbolInfo(yytext, "MULOP");
     return MULOP;
 }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 114 "1805093.l"
+#line 107 "1805093.l"
 {return INCOP;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 115 "1805093.l"
+#line 108 "1805093.l"
 {return DECOP;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 116 "1805093.l"
+#line 109 "1805093.l"
 {
-    SymbolInfo* s = new SymbolInfo(yytext, "RELOP");
-    yylval.st = s;
+    yylval.symbol = new SymbolInfo(yytext, "RELOP");
     return RELOP;
 }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 121 "1805093.l"
+#line 113 "1805093.l"
 {return ASSIGNOP;}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 122 "1805093.l"
+#line 114 "1805093.l"
 {
-    SymbolInfo* s = new SymbolInfo(yytext, "LOGICOP");
-    yylval.st = s;
+    yylval.symbol = new SymbolInfo(yytext, "LOGICOP");
     return LOGICOP;
 }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 127 "1805093.l"
+#line 118 "1805093.l"
 {return NOT;}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 128 "1805093.l"
+#line 119 "1805093.l"
 {return LPAREN;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 129 "1805093.l"
+#line 120 "1805093.l"
 {return RPAREN;}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 130 "1805093.l"
+#line 121 "1805093.l"
 {
     // enter scope
     return LCURL;
@@ -968,7 +959,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 134 "1805093.l"
+#line 125 "1805093.l"
 {
     // exit scope
     return RCURL;
@@ -976,27 +967,27 @@ YY_RULE_SETUP
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 138 "1805093.l"
+#line 129 "1805093.l"
 {return LTHIRD;}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 139 "1805093.l"
+#line 130 "1805093.l"
 {return RTHIRD;}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 140 "1805093.l"
+#line 131 "1805093.l"
 {return COMMA;}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 141 "1805093.l"
+#line 132 "1805093.l"
 {return SEMICOLON;}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 142 "1805093.l"
+#line 133 "1805093.l"
 {
     currExact = "";
     startLineNo = lineNo;
@@ -1005,7 +996,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 147 "1805093.l"
+#line 138 "1805093.l"
 {
     currExact += yytext;
     lineNo++;
@@ -1013,7 +1004,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 151 "1805093.l"
+#line 142 "1805093.l"
 {
     logOut << endl << "Line no " << startLineNo << ": Token <COMMENT> Lexeme //" << currExact << " found" << endl;
     lineNo++;
@@ -1021,7 +1012,7 @@ YY_RULE_SETUP
 }
 	YY_BREAK
 case YY_STATE_EOF(S_CMNT):
-#line 156 "1805093.l"
+#line 147 "1805093.l"
 {
     logOut << endl << "Line no " << startLineNo << ": Token <COMMENT> Lexeme //" << currExact << " found" << endl;
     BEGIN INITIAL;
@@ -1029,14 +1020,14 @@ case YY_STATE_EOF(S_CMNT):
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 160 "1805093.l"
+#line 151 "1805093.l"
 {
     currExact += yytext;
 }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 163 "1805093.l"
+#line 154 "1805093.l"
 {
     currExact = "";
     startLineNo = lineNo;
@@ -1045,14 +1036,14 @@ YY_RULE_SETUP
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 168 "1805093.l"
+#line 159 "1805093.l"
 {
     logOut << endl << "Line no " << startLineNo << ": Token <COMMENT> Lexeme /*" << currExact << "*/ found" << endl;
     BEGIN INITIAL;
 }
 	YY_BREAK
 case YY_STATE_EOF(M_CMNT):
-#line 172 "1805093.l"
+#line 163 "1805093.l"
 {
     logOut << endl << "Error at line no " << startLineNo << ": Unterminated Comment /*" << currExact << endl;
     errorOut << endl << "Error at line no " << startLineNo << ": Unterminated Comment /*" << currExact << endl;
@@ -1062,7 +1053,7 @@ case YY_STATE_EOF(M_CMNT):
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 178 "1805093.l"
+#line 169 "1805093.l"
 {
     currExact += yytext;
     lineNo++;
@@ -1070,14 +1061,14 @@ YY_RULE_SETUP
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 182 "1805093.l"
+#line 173 "1805093.l"
 {
     currExact += yytext;
 }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 185 "1805093.l"
+#line 176 "1805093.l"
 {
     logOut << endl << "Error at line no " << lineNo << ": Unrecognized character '" << yytext << "'" << endl;
     errorOut << endl << "Error at line no " << lineNo << ": Unrecognized character '" << yytext << "'" << endl;
@@ -1086,10 +1077,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 190 "1805093.l"
+#line 181 "1805093.l"
 ECHO;
 	YY_BREAK
-#line 1093 "lex.yy.c"
+#line 1084 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(CHAR_STATE):
 case YY_STATE_EOF(STR):
@@ -1981,4 +1972,4 @@ int main()
 	return 0;
 	}
 #endif
-#line 190 "1805093.l"
+#line 181 "1805093.l"

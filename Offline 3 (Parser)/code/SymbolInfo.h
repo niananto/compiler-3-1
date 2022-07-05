@@ -13,17 +13,31 @@ class SymbolInfo {
     string type;
     SymbolInfo* next;
 
+    string varType;
+
 public:
     SymbolInfo() {
         name = "NOT DEFINED";
         type = "NOT DEFINED";
         next = nullptr;
+
+        varType = "NOT DEFINED";
     }
 
-    SymbolInfo(const string &name, const string &type) {
+    // SymbolInfo(const string &name, const string &type) {
+    //     this->name = name;
+    //     this->type = type;
+    //     next = nullptr;
+
+    //     varType = "NOT DEFINED";
+    // }
+
+    SymbolInfo(const string &name, const string &type, const string &varType = "NOT DEFINED") {
         this->name = name;
         this->type = type;
         next = nullptr;
+
+        this->varType = varType;
     }
 
     ~SymbolInfo() {
@@ -52,6 +66,14 @@ public:
 
     void setNext(SymbolInfo *next) {
         this->next = next;
+    }
+
+    string getVarType() const {
+        return varType;
+    }
+
+    void setVarType(const string &varType) {
+        this->varType = varType;
     }
 };
 
