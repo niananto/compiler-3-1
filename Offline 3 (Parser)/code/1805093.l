@@ -10,10 +10,12 @@
 #include "SymbolTable.h"
 #include "y.tab.h"
 
+#define YYSTYPE SymbolInfo*
+
 using namespace std;
 
-extern YYSTYPE yylval;
-extern SymbolTable st;
+// extern YYSTYPE yylval;
+// extern SymbolTable st;
 void yyerror(char *);
 
 extern ofstream logOut;
@@ -39,6 +41,7 @@ digit [0-9]
     // ignore whitespace
 }
 {newline} {
+    // cout << lineNo << endl;
     lineNo++;
 }
 "if" {return IF;}
@@ -56,15 +59,18 @@ digit [0-9]
 "printf" {return PRINTLN;}
 
 {letter_}({letter_}|{digit})* {
-    yylval.st = new SymbolInfo(yytext, "ID");
+    SymbolInfo* s = new SymbolInfo(yytext, "ID");
+    yylval.st = s;
     return ID;
 }
 {digit}+ {
-    yylval.st = new SymbolInfo(yytext, "CONST_INT");
+    SymbolInfo* s = new SymbolInfo(yytext, "CONST_INT");
+    yylval.st = s;
     return CONST_INT;
 }
 {digit}*(\.{digit}+)?(([eE][+-])?{digit}+)? {
-    yylval.st = new SymbolInfo(yytext, "CONST_FLOAT");
+    SymbolInfo* s = new SymbolInfo(yytext, "CONST_FLOAT");
+    yylval.st = s;
     return CONST_FLOAT;
 }
 ({digit}*\.{digit}+(\.{digit}*)+)+ {
@@ -72,7 +78,8 @@ digit [0-9]
     errorOut << endl << "Error at line no " << lineNo << ": Too many decimal points " << yytext << endl;
     errorNo++;
 
-    yylval.st = new SymbolInfo(yytext, "ERROR_FLOAT");
+    SymbolInfo* s = new SymbolInfo(yytext, "ERROR_FLOAT");
+    yylval.st = s;
     return ERROR_FLOAT;
 }
 ({digit}*\.?{digit}*[eE][+-]?{digit}*\.{digit}*)|({digit}*\.([eE][+-]?{digit}*\.?{digit}*)?) {
@@ -80,7 +87,8 @@ digit [0-9]
     errorOut << endl << "Error at line no " << lineNo << ": Ill formed number " << yytext << endl;
     errorNo++;
 
-    yylval.st = new SymbolInfo(yytext, "ERROR_FLOAT");
+    SymbolInfo* s = new SymbolInfo(yytext, "ERROR_FLOAT");
+    yylval.st = s;
     return ERROR_FLOAT;
 }
 {digit}+{letter_}+ {
@@ -89,26 +97,31 @@ digit [0-9]
     errorNo++;
 
     // considering this ID for error recovery
-    yylval.st = new SymbolInfo(yytext, "ID");
+    SymbolInfo* s = new SymbolInfo(yytext, "ID");
+    yylval.st = s;
     return ID;
 }
 "+"|"-" {
-    yylval.st = new SymbolInfo(yytext, "ADDOP");
+    SymbolInfo* s = new SymbolInfo(yytext, "ADDOP");
+    yylval.st = (YYSTYPE)s;
     return ADDOP;
 }
 "*"|"/"|"%" {
-    yylval.st = new SymbolInfo(yytext, "MULOP");
+    SymbolInfo* s = new SymbolInfo(yytext, "MULOP");
+    yylval.st = s;
     return MULOP;
 }
 "++" {return INCOP;}
 "--" {return DECOP;}
 "<"|"<="|">"|">="|"=="|"!=" {
-    yylval.st = new SymbolInfo(yytext, "RELOP");
+    SymbolInfo* s = new SymbolInfo(yytext, "RELOP");
+    yylval.st = s;
     return RELOP;
 }
 "=" {return ASSIGNOP;}
 "&&"|"||" {
-    yylval.st = new SymbolInfo(yytext, "LOGICOP");
+    SymbolInfo* s = new SymbolInfo(yytext, "LOGICOP");
+    yylval.st = s;
     return LOGICOP;
 }
 "!" {return NOT;}
@@ -126,172 +139,6 @@ digit [0-9]
 "]" {return RTHIRD;}
 "," {return COMMA;}
 ";" {return SEMICOLON;}
-\' {
-    curr = "";
-    currExact = "";
-    BEGIN CHAR_STATE;
-}
-<CHAR_STATE>\\n {
-    curr += '\n';
-    currExact += "\\n";
-}
-<CHAR_STATE>\\t {
-    curr += '\t';
-    currExact += "\\t";
-}
-<CHAR_STATE>\\\\ {
-    curr += '\\';
-    currExact += "\\\\";
-}
-<CHAR_STATE>\\\" {
-    curr += '\"';
-    currExact += "\\\"";
-}
-<CHAR_STATE>\\\' {
-    curr += '\'';
-    currExact += "\\\'";    
-}
-<CHAR_STATE>\\a {
-    curr += '\a';
-    currExact += "\\a";
-}
-<CHAR_STATE>\\f {
-    curr += '\f';
-    currExact += "\\f";
-}
-<CHAR_STATE>\\r {
-    curr += '\r';
-    currExact += "\\r";
-}
-<CHAR_STATE>\\b {
-    curr += '\b';
-    currExact += "\\b";
-}
-<CHAR_STATE>\\v {
-    curr += '\v';
-    currExact += "\\v";
-}
-<CHAR_STATE>\\0 {
-    curr += '\0';
-    currExact += "\\0";
-}
-<CHAR_STATE><<EOF>> {
-    logOut << endl << "Error at line no " << lineNo << ": Unterminated character '" << currExact << endl;
-    errorOut << endl << "Error at line no " << lineNo << ": Unterminated character '" << currExact << endl;
-    errorNo++;
-    BEGIN INITIAL;
-}
-<CHAR_STATE>{newline} {
-    logOut << endl << "Error at line no " << lineNo << ": Unterminated character '" << currExact << endl;
-    errorOut << endl << "Error at line no " << lineNo << ": Unterminated character '" << currExact << endl;
-    errorNo++;
-    lineNo++;
-    BEGIN INITIAL;
-}
-<CHAR_STATE>\' {
-    if ((curr.length() == 1) || (curr.length() == 0 && currExact == "\\0")) {
-        logOut << endl << "Line no " << lineNo << ": Token <CONST_CHAR> Lexeme '" << currExact << "' found ";
-        logOut << "--> <CHAR_CONST, " << curr << "> " << endl;
-        st.insert("'"+currExact+"'", "CONST_CHAR", logOut);
-        logOut << endl;
-        // tokenOut << "<CHAR_CONST, " << curr << "> ";
-    } else if(curr.length() == 0) {
-        logOut << endl << "Error at line no " << lineNo << ": Empty character constant error '" << currExact << "'" << endl;
-        errorOut << endl << "Error at line no " << lineNo << ": Empty character constant error '" << currExact << "'" << endl;
-        errorNo++;
-    } else {
-        logOut << endl << "Error at line no " << lineNo << ": Multi character constant error '" << currExact << "'" << endl;
-        errorOut << endl << "Error at line no " << lineNo << ": Multi character constant error '" << currExact << "'" << endl;
-        errorNo++;
-    }
-
-    BEGIN INITIAL;
-}
-<CHAR_STATE>. {
-    curr += yytext;
-    currExact += yytext;
-}
-\" {
-    curr = "";
-    currExact = "";
-    startLineNo = lineNo;
-    BEGIN STR;
-}
-<STR>\\n {
-    curr += '\n';
-    currExact += "\\n";
-}
-<STR>\\t {
-    curr += '\t';
-    currExact += "\\t";
-}
-<STR>\\\\ {
-    curr += '\\';
-    currExact += "\\\\";
-}
-<STR>\\\" {
-    curr += '\"';
-    currExact += "\\\"";
-}
-<STR>\\\' {
-    curr += '\'';
-    currExact += "\\\'";
-}
-<STR>\\a {
-    curr += '\a';
-    currExact += "\\a";
-}
-<STR>\\f {
-    curr += '\f';
-    currExact += "\\f";
-}
-<STR>\\r {
-    curr += '\r';
-    currExact += "\\r";
-}
-<STR>\\b {
-    curr += '\b';
-    currExact += "\\b";
-}
-<STR>\\v {
-    curr += '\v';
-    currExact += "\\v";
-}
-<STR>\\0 {
-    curr += '\0';
-    currExact += "\\0";
-}
-<STR>\\\r\n {
-    currExact += "\\\r\n";
-    lineNo++;
-}
-<STR>\\\n {
-    currExact += "\\\n";
-    lineNo++;
-}
-<STR>{newline} {
-    logOut << endl << "Error at line no " << startLineNo << ": Unterminated String \"" << currExact << endl;
-    errorOut << endl << "Error at line no " << startLineNo << ": Unterminated String \"" << currExact << endl;
-    errorNo++;
-    lineNo++;
-    BEGIN INITIAL;
-}
-<STR><<EOF>> {
-    logOut << endl << "Error at line no " << startLineNo << ": Unterminated String \"" << currExact << "\"" << endl;
-    errorOut << endl << "Error at line no " << startLineNo << ": Unterminated String \"" << currExact << "\"" << endl;
-    errorNo++;
-    BEGIN INITIAL;
-}
-<STR>\" {
-    logOut << endl << "Line no " << startLineNo << ": Token <STRING> Lexeme \"" << currExact << "\" found ";
-    logOut << "--> <STRING, \"" << curr << "\"> " << endl;
-    // tokenOut << "<STRING, \"" << curr << "\"> ";
-    BEGIN INITIAL;
-}
-<STR>. {
-    curr += yytext;
-    currExact += yytext;
-}
 \/\/ {
     currExact = "";
     startLineNo = lineNo;
