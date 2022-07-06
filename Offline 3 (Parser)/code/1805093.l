@@ -8,14 +8,15 @@
 %{
 #include <bits/stdc++.h>
 #include "SymbolTable.h"
+// #include "Token.h"
 #include "y.tab.h"
 
-#define YYSTYPE SymbolInfo*
+// #define YYSTYPE SymbolInfo*
 
 using namespace std;
 
 // extern YYSTYPE yylval;
-// extern SymbolTable st;
+extern SymbolTable st;
 void yyerror(char *);
 
 extern ofstream logOut;
@@ -41,7 +42,6 @@ digit [0-9]
     // ignore whitespace
 }
 {newline} {
-    // cout << lineNo << endl;
     lineNo++;
 }
 "if" {return IF;}
@@ -59,6 +59,7 @@ digit [0-9]
 "printf" {return PRINTLN;}
 
 {letter_}({letter_}|{digit})* {
+    // will be changing this "ID" type later
     yylval.symbol = new SymbolInfo(yytext, "ID");
     return ID;
 }
@@ -96,8 +97,7 @@ digit [0-9]
     return ID;
 }
 "+"|"-" {
-    SymbolInfo* s = new SymbolInfo(yytext, "ADDOP");
-    yylval.symbol = (YYSTYPE)s;
+    yylval.symbol = new SymbolInfo(yytext, "ADDOP");
     return ADDOP;
 }
 "*"|"/"|"%" {
@@ -120,10 +120,12 @@ digit [0-9]
 ")" {return RPAREN;}
 "{" {
     // enter scope
+    // handled in bison
     return LCURL;
 }
 "}" {
     // exit scope
+    // handled in bison
     return RCURL;
 }
 "[" {return LTHIRD;}

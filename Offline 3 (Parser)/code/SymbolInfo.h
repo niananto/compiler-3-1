@@ -1,9 +1,5 @@
-//
-// Created by Admin on 5/24/2022.
-//
-
-#ifndef OFFLINE_01_SYMBOLINFO_H
-#define OFFLINE_01_SYMBOLINFO_H
+#ifndef SYMBOLINFO_H
+#define SYMBOLINFO_H
 
 #include "iostream"
 using namespace std;
@@ -13,7 +9,8 @@ class SymbolInfo {
     string type;
     SymbolInfo* next;
 
-    string varType;
+    vector<SymbolInfo*> params; // for function & declaration_list
+    unsigned arraySize; // for array
 
 public:
     SymbolInfo() {
@@ -21,61 +18,70 @@ public:
         type = "NOT DEFINED";
         next = nullptr;
 
-        varType = "NOT DEFINED";
+        arraySize = -1;
     }
 
-    // SymbolInfo(const string &name, const string &type) {
-    //     this->name = name;
-    //     this->type = type;
-    //     next = nullptr;
-
-    //     varType = "NOT DEFINED";
-    // }
-
-    SymbolInfo(const string &name, const string &type, const string &varType = "NOT DEFINED") {
+    SymbolInfo(const string &name, const string &type) {
         this->name = name;
         this->type = type;
         next = nullptr;
 
-        this->varType = varType;
+        arraySize = -1;
     }
 
     ~SymbolInfo() {
-//        if(next != nullptr) delete next;
     }
 
     string getName() const {
         return name;
     }
 
-    void setName(const string &name) {
+    SymbolInfo* setName(const string &name) {
         this->name = name;
+        return this;
     }
 
     string getType() const {
         return type;
     }
 
-    void setType(const string &type) {
+    SymbolInfo* setType(const string &type) {
         this->type = type;
+        return this;
     }
 
     SymbolInfo *getNext() {
         return next;
     }
 
-    void setNext(SymbolInfo *next) {
+    SymbolInfo* setNext(SymbolInfo *next) {
         this->next = next;
+        return this;
     }
 
-    string getVarType() const {
-        return varType;
+    vector<SymbolInfo*> getParams() const {
+        return this->params;
     }
 
-    void setVarType(const string &varType) {
-        this->varType = varType;
+    SymbolInfo* setParams(const vector<SymbolInfo*> &params) {
+        this->params = params;
+        return this;
+    }
+
+    SymbolInfo* addParam(SymbolInfo* param) {
+        params.push_back(param);
+        return this;
+    }
+
+    unsigned getArraySize() const {
+        return arraySize;
+    }
+
+    SymbolInfo* setArraySize(unsigned arraySize) {
+        this->arraySize = arraySize;
+        return this;
     }
 };
 
 
-#endif //OFFLINE_01_SYMBOLINFO_H
+#endif //SYMBOLINFO_H

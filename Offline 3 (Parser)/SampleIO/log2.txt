@@ -38,7 +38,7 @@ Line 2: logic_expression : rel_expression
 
 a
 
-Line 2: expression : logic expression
+Line 2: expression : logic_expression
 
 a
 
@@ -180,7 +180,7 @@ Line 7: logic_expression : rel_expression
 
 2.50
 
-Line 7: expression : logic expression
+Line 7: expression : logic_expression
 
 2.50
 
@@ -464,7 +464,7 @@ Line 11: logic_expression : rel_expression
 
 func(a)
 
-Line 11: expression : logic expression
+Line 11: expression : logic_expression
 
 func(a)
 
@@ -567,7 +567,7 @@ Line 13: logic_expression : rel_expression
 
 0
 
-Line 13: expression : logic expression
+Line 13: expression : logic_expression
 
 0
 

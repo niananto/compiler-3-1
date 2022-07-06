@@ -1,9 +1,5 @@
-//
-// Created by Admin on 5/24/2022.
-//
-
-#ifndef OFFLINE_01_SCOPETABLE_H
-#define OFFLINE_01_SCOPETABLE_H
+#ifndef SCOPETABLE_H
+#define SCOPETABLE_H
 
 #include <bits/stdc++.h>
 #include "SymbolInfo.h"
@@ -56,16 +52,23 @@ public:
     }
 
 
-    unsigned long hashFunction(char *str) {
-        uint32_t hash = 0;
-        int c;
-        while (c = *str++)
-            hash = c + (hash << 6) + (hash << 16) - hash;
-        return hash % totalBuckets;
+    // uint32_t hashFunction(char *str) {
+    //     uint32_t hash = 0;
+    //     int c;
+    //     while (c = *str++)
+    //         hash = c + (hash << 6) + (hash << 16) - hash;
+    //     return hash % totalBuckets; 
+    // }
+
+    uint32_t hashFunction(string str) {
+        uint32_t h = 0;
+        for(int i=0;i<(int)str.size();i++)
+            h = (h + str[i]);
+        return h % totalBuckets;
     }
 
-    bool insert(string name, string type, string varType) {
-        SymbolInfo* symbol = new SymbolInfo(name, type, varType);
+    bool insert(string name, string type) {
+        SymbolInfo* symbol = new SymbolInfo(name, type);
 
         unsigned long index = hashFunction(&name[0]);
 
@@ -79,6 +82,44 @@ public:
             cout << "This word already exists\n";
             cout << "<" + name + ", " + buckets[index]->getType() + "> already exists in current ScopeTable\n";
             delete symbol;
+            return false;
+        }
+
+        SymbolInfo* prev = buckets[index];
+        SymbolInfo* itr = prev->getNext();
+        unsigned secondaryIndex = 1;
+        while(itr != nullptr) {
+            if(itr->getName() == name) {
+                cout << "<" + name + "," + buckets[index]->getType() + "> already exists in current ScopeTable\n";
+                return false;
+            }
+            prev = itr;
+            itr = itr->getNext();
+            secondaryIndex++;
+        }
+        prev->setNext(symbol);
+        cout << "Inserted in ScopeTable# " + id + " at position " + to_string(index) + ", " + to_string(secondaryIndex) + "\n";
+        return true;
+    }
+
+    bool insert(SymbolInfo* symbol) {
+        string name = symbol->getName();
+        unsigned long index = hashFunction(&name[0]);
+
+        if(buckets[index] == nullptr) {
+            buckets[index] = symbol;
+            cout << "Inserted in ScopeTable# " + id + " at position " + to_string(index) + ", 0\n";
+            return true;
+        }
+
+        if(buckets[index]->getName() == name) {
+            cout << "This word already exists\n";
+            cout << "<" + name + ", " + buckets[index]->getType() + "> already exists in current ScopeTable\n";
+            
+            // do not delete it if unsuccessful
+            // cause it wasn't allocated here
+            // delete symbol;
+
             return false;
         }
 
@@ -169,16 +210,32 @@ public:
     }
 
     void print(ofstream &logOut) {
-        logOut << "ScopeTable #" + id + "\n";
+        logOut << "ScopeTable # " + id + "\n";
         SymbolInfo* itr;
+
+        string toBePrinted;
+        bool gotSomething = false;
         for(unsigned long i=0; i<totalBuckets; i++) {
-            logOut << to_string(i) + " --> ";
+            string toBePrinted = " " + to_string(i) + " --> ";
+
             itr = buckets[i];
             while(itr != nullptr) {
-                logOut << "< " + itr->getName() + " : " + itr->getType() + ">  ";
+                gotSomething = true;
+                toBePrinted += "< " + itr->getName() + " , ";
+                
+                if(itr->getType() == "int" || itr->getType() == "float" || itr->getType() == "void" || itr->getType() == "FUNCTION") {
+                    toBePrinted += "ID > ";
+                } else {
+                    toBePrinted += itr->getType() + " > ";
+                }
+
                 itr = itr->getNext();
             }
-            logOut << "\n";
+
+            if(gotSomething) {
+                logOut << toBePrinted << endl;
+                gotSomething = false;
+            }
         }
     }
 
@@ -192,4 +249,4 @@ public:
 };
 
 
-#endif //OFFLINE_01_SCOPETABLE_H
+#endif //SCOPETABLE_H

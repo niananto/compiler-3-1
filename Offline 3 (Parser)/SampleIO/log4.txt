@@ -170,7 +170,7 @@ Line 8: logic_expression : rel_expression
 
 7
 
-Line 8: expression : logic expression
+Line 8: expression : logic_expression
 
 7
 
@@ -300,7 +300,7 @@ Line 12: logic_expression : rel_expression
 
 a+3
 
-Line 12: expression : logic expression
+Line 12: expression : logic_expression
 
 a+3
 
@@ -564,7 +564,7 @@ Line 21: logic_expression : rel_expression
 
 a+2
 
-Line 21: expression : logic expression
+Line 21: expression : logic_expression
 
 a+2
 
@@ -826,7 +826,7 @@ Line 29: logic_expression : rel_expression
 
 d
 
-Line 29: expression : logic expression
+Line 29: expression : logic_expression
 
 d
 
@@ -956,7 +956,7 @@ Line 33: logic_expression : rel_expression
 
 a
 
-Line 33: expression : logic expression
+Line 33: expression : logic_expression
 
 a
 
@@ -1104,7 +1104,7 @@ Line 37: logic_expression : rel_expression
 
 a+3
 
-Line 37: expression : logic expression
+Line 37: expression : logic_expression
 
 a+3
 
@@ -1386,7 +1386,7 @@ Line 45: logic_expression : rel_expression
 
 func(2.50,3.50)
 
-Line 45: expression : logic expression
+Line 45: expression : logic_expression
 
 func(2.50,3.50)
 
@@ -1710,7 +1710,7 @@ Line 52: logic_expression : rel_expression
 
 5
 
-Line 52: expression : logic expression
+Line 52: expression : logic_expression
 
 5
 
@@ -1793,7 +1793,7 @@ Line 53: logic_expression : rel_expression
 
 2.50
 
-Line 53: expression : logic expression
+Line 53: expression : logic_expression
 
 2.50
 
@@ -1877,7 +1877,7 @@ Line 54: logic_expression : rel_expression
 
 0
 
-Line 54: expression : logic expression
+Line 54: expression : logic_expression
 
 0
 
@@ -2022,7 +2022,7 @@ Line 55: logic_expression : rel_expression
 
 1
 
-Line 55: expression : logic expression
+Line 55: expression : logic_expression
 
 1
 
@@ -2106,7 +2106,7 @@ Line 56: logic_expression : rel_expression
 
 1
 
-Line 56: expression : logic expression
+Line 56: expression : logic_expression
 
 1
 
@@ -2170,7 +2170,7 @@ Line 56: logic_expression : rel_expression
 
 foo4(c[1])
 
-Line 56: expression : logic expression
+Line 56: expression : logic_expression
 
 foo4(c[1])
 
@@ -2223,7 +2223,7 @@ Line 57: logic_expression : rel_expression
 
 2
 
-Line 57: expression : logic expression
+Line 57: expression : logic_expression
 
 2
 
@@ -2255,7 +2255,7 @@ Line 57: logic_expression : rel_expression
 
 1
 
-Line 57: expression : logic expression
+Line 57: expression : logic_expression
 
 1
 
@@ -2375,7 +2375,7 @@ Line 58: logic_expression : rel_expression
 
 3
 
-Line 58: expression : logic expression
+Line 58: expression : logic_expression
 
 3
 
@@ -2742,7 +2742,7 @@ Line 68: logic_expression : rel_expression
 
 0
 
-Line 68: expression : logic expression
+Line 68: expression : logic_expression
 
 0
 

@@ -1,9 +1,5 @@
-//
-// Created by Admin on 5/24/2022.
-//
-
-#ifndef OFFLINE_01_SYMBOLTABLE_H
-#define OFFLINE_01_SYMBOLTABLE_H
+#ifndef SYMBOLTABLE_H
+#define SYMBOLTABLE_H
 
 #include<bits/stdc++.h>
 #include "ScopeTable.h"
@@ -43,9 +39,21 @@ public:
         currentScope = temp;
     }
 
-    bool insert(string name, string type, string varType = "NOT DEFINED") {
+    bool insert(string name, string type) {
         if(currentScope == nullptr) enterScope();
-        return currentScope->insert(name, type, varType);
+        return currentScope->insert(name, type);
+    }
+
+    bool insert(SymbolInfo* symbol) {
+        if(currentScope == nullptr) enterScope();
+        return currentScope->insert(symbol);
+    }
+
+    bool insertIntoParent(SymbolInfo* symbol) {
+        if(currentScope == nullptr) return false;
+        ScopeTable* temp = currentScope->getParentScope();
+        if(temp == nullptr) return false;
+        return temp->insert(symbol);
     }
 
     bool remove(string name) {
@@ -93,18 +101,20 @@ public:
     // }
 
     void printAll(ofstream &logOut) {
+        logOut << endl;
         if(currentScope == nullptr) {
             logOut << "NO CURRENT SCOPE\n";
             return;
         }
         ScopeTable* itr = currentScope;
         while(itr != nullptr) {
+            logOut << endl;
             itr->print(logOut);
             itr = itr->getParentScope();
-            logOut << "\n";
+            logOut << endl << endl;
         }
     }
 };
 
 
-#endif //OFFLINE_01_SYMBOLTABLE_H
+#endif //SYMBOLTABLE_H

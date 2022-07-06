@@ -200,7 +200,7 @@ Line 11: logic_expression : rel_expression
 
 6
 
-Line 11: expression : logic expression
+Line 11: expression : logic_expression
 
 6
 
@@ -278,7 +278,7 @@ Line 14: logic_expression : rel_expression
 
 0
 
-Line 14: expression : logic expression
+Line 14: expression : logic_expression
 
 0
 

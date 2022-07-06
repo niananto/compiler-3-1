@@ -260,7 +260,7 @@ Line 9: logic_expression : rel_expression
 
 a+b
 
-Line 9: expression : logic expression
+Line 9: expression : logic_expression
 
 a+b
 
@@ -737,7 +737,7 @@ Line 24: logic_expression : rel_expression
 
 0
 
-Line 24: expression : logic expression
+Line 24: expression : logic_expression
 
 0
 
@@ -811,7 +811,7 @@ Line 25: logic_expression : rel_expression
 
 1
 
-Line 25: expression : logic expression
+Line 25: expression : logic_expression
 
 1
 
@@ -1011,7 +1011,7 @@ Line 27: logic_expression : rel_expression
 
 0
 
-Line 27: expression : logic expression
+Line 27: expression : logic_expression
 
 0
 
@@ -1059,7 +1059,7 @@ Line 27: logic_expression : rel_expression
 
 1
 
-Line 27: expression : logic expression
+Line 27: expression : logic_expression
 
 1
 
@@ -1162,7 +1162,7 @@ Line 29: logic_expression : rel_expression
 
 0
 
-Line 29: expression : logic expression
+Line 29: expression : logic_expression
 
 0
 
@@ -1194,7 +1194,7 @@ Line 29: logic_expression : rel_expression
 
 c<a[0]
 
-Line 29: expression : logic expression
+Line 29: expression : logic_expression
 
 c<a[0]
 
@@ -1354,7 +1354,7 @@ Line 34: logic_expression : rel_expression
 
 c<d
 
-Line 34: expression : logic expression
+Line 34: expression : logic_expression
 
 c<d
 
@@ -1382,7 +1382,7 @@ Line 35: logic_expression : rel_expression
 
 1
 
-Line 35: expression : logic expression
+Line 35: expression : logic_expression
 
 1
 
@@ -1414,7 +1414,7 @@ Line 35: logic_expression : rel_expression
 
 1
 
-Line 35: expression : logic expression
+Line 35: expression : logic_expression
 
 1
 
@@ -1583,7 +1583,7 @@ Line 37: logic_expression : rel_expression
 
 c<2*d
 
-Line 37: expression : logic expression
+Line 37: expression : logic_expression
 
 c<2*d
 
@@ -1611,7 +1611,7 @@ Line 38: logic_expression : rel_expression
 
 0
 
-Line 38: expression : logic expression
+Line 38: expression : logic_expression
 
 0
 
@@ -1659,7 +1659,7 @@ Line 38: logic_expression : rel_expression
 
 7<5
 
-Line 38: expression : logic expression
+Line 38: expression : logic_expression
 
 7<5
 
@@ -1671,7 +1671,7 @@ Line 38: unary_expression : factor
 
 (7<5)
 
-Line 38: unary_expression : NOT unary expression
+Line 38: unary_expression : NOT unary_expression
 
 !(7<5)
 
@@ -1999,7 +1999,7 @@ Line 44: logic_expression : rel_expression
 
 c<2*d+3
 
-Line 44: expression : logic expression
+Line 44: expression : logic_expression
 
 c<2*d+3
 
@@ -2035,7 +2035,7 @@ Line 44: logic_expression : rel_expression
 
 c++
 
-Line 44: expression : logic expression
+Line 44: expression : logic_expression
 
 c++
 
@@ -2063,7 +2063,7 @@ Line 45: logic_expression : rel_expression
 
 0
 
-Line 45: expression : logic expression
+Line 45: expression : logic_expression
 
 0
 
@@ -2095,7 +2095,7 @@ Line 45: logic_expression : rel_expression
 
 0
 
-Line 45: expression : logic expression
+Line 45: expression : logic_expression
 
 0
 
@@ -2258,7 +2258,7 @@ Line 48: logic_expression : rel_expression
 
 0
 
-Line 48: expression : logic expression
+Line 48: expression : logic_expression
 
 0
 
@@ -2290,7 +2290,7 @@ Line 48: logic_expression : rel_expression
 
 a[0]--
 
-Line 48: expression : logic expression
+Line 48: expression : logic_expression
 
 a[0]--
 
@@ -2585,7 +2585,7 @@ Line 56: logic_expression : rel_expression LOGICOP rel_expression
 
 5%3<4&&8
 
-Line 56: expression : logic expression
+Line 56: expression : logic_expression
 
 5%3<4&&8
 
@@ -2886,7 +2886,7 @@ Line 58: logic_expression : rel_expression
 
 0
 
-Line 58: expression : logic expression
+Line 58: expression : logic_expression
 
 0
 

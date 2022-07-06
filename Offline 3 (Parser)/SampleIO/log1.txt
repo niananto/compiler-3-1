@@ -140,7 +140,7 @@ Line 6: logic_expression : rel_expression
 
 a+b
 
-Line 6: expression : logic expression
+Line 6: expression : logic_expression
 
 a+b
 
@@ -462,7 +462,7 @@ Line 16: logic_expression : rel_expression
 
 0
 
-Line 16: expression : logic expression
+Line 16: expression : logic_expression
 
 0
 
@@ -494,7 +494,7 @@ Line 16: logic_expression : rel_expression
 
 a[0]
 
-Line 16: expression : logic expression
+Line 16: expression : logic_expression
 
 a[0]
 
@@ -538,7 +538,7 @@ Line 17: logic_expression : rel_expression
 
 1
 
-Line 17: expression : logic expression
+Line 17: expression : logic_expression
 
 1
 
@@ -619,7 +619,7 @@ Line 18: logic_expression : rel_expression
 
 0
 
-Line 18: expression : logic expression
+Line 18: expression : logic_expression
 
 0
 
@@ -667,7 +667,7 @@ Line 18: logic_expression : rel_expression
 
 1
 
-Line 18: expression : logic expression
+Line 18: expression : logic_expression
 
 1
 
@@ -825,7 +825,7 @@ Line 19: logic_expression : rel_expression LOGICOP rel_expression
 
 5%3<4&&8
 
-Line 19: expression : logic expression
+Line 19: expression : logic_expression
 
 5%3<4&&8
 
@@ -1072,7 +1072,7 @@ Line 21: logic_expression : rel_expression
 
 0
 
-Line 21: expression : logic expression
+Line 21: expression : logic_expression
 
 0
 
