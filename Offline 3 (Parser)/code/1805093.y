@@ -78,7 +78,7 @@ bool typeMatch(string type1, string type2) {
         return true;
     } else if((type1 == "int") && (type2 == "CONST_INT")) {
         return true;
-    } else if((type1 == "float") && (type2 == "CONST_FLOAT")) {
+    } else if((type1 == "float") && (type2 == "CONST_FLOAT" || type2 == "CONST_INT" || type2 == "int")) {
         return true;
     }
     return false;
@@ -177,7 +177,11 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN { // compound_s
 
             // was that a function too
             if(previous->getType() != "FUNCTION") {
-                yyerror(("Variable " + $2->getName() + " has been used before").c_str());
+                yyerror(("Multiple declaration of " + $2->getName()).c_str());
+
+                // cannot insert the function
+                // but insert this scope's params
+                paramsToBeInserted = $4->getParams();
 
             } else {
                 // check if the return type and params are the same
@@ -188,7 +192,10 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN { // compound_s
                 }
 
                 if (returnType->getType() != $1->getName()) {
-                    yyerror(("Return type of function " + $2->getName() + " is different from the previous definition").c_str());
+                    yyerror(("Return type mismatch with function declaration in function " + $2->getName()).c_str());
+                
+                } else if (params.size() != $4->getParams().size()) {
+                    yyerror(("Total number of arguments mismatch with declaration in function " + $2->getName()).c_str());
 
                 } else if(compareTypes(params, $4->getParams()) == false) {
                     yyerror(("Function " + $2->getName() + " has different parameters from the previous definition").c_str());
@@ -197,9 +204,12 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN { // compound_s
                     // all is well
                     // later I will check if some paramters don't have a name
                     
-                    // handling the parameters
-                    paramsToBeInserted = params;
                 }
+
+                // whatever happens, params should be paramsToBeInserted
+                // into the scope. huh
+                // handling the parameters
+                paramsToBeInserted = $4->getParams();
             }
 
         } else {
@@ -243,19 +253,18 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN { // compound_s
 
             // was that a function too
             if(previous->getType() != "FUNCTION") {
-                yyerror(("Variable " + $2->getName() + " has been used before").c_str());
-
+                yyerror(("Multiple declaration of " + $2->getName()).c_str());
             } else {
                 // check if the return type and params are the same
                 // in this case params should be empty
                 SymbolInfo *returnType = previous->getParams()[0];
 
                 if (returnType->getType() != $1->getName()) {
-                    yyerror(("Return type of function " + $2->getName() + " is different from the previous definition").c_str());
+                    yyerror(("Return type mismatch with function declaration in function " + $2->getName()).c_str());
 
                 } else if(previous->getParams().size() != 1) {
-                    yyerror(("Function " + $2->getName() + " has different parameters from the previous definition").c_str());
-                
+                    yyerror(("Total number of arguments mismatch with declaration in function " + $2->getName()).c_str());
+                                    
                 } else {
                     // all is well
             
@@ -288,11 +297,18 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN { // compound_s
 
 parameter_list  : parameter_list COMMA type_specifier ID {
         $$ = new SymbolInfo(($1->getName() + "," + $3->getName() + " "  + $4->getName()), "PARAMETER_LIST");
-        yylog(lineNo, "parameter_list", "parameter_list COMMA type_specifier ID", $$->getName());
 
         // adding the params
         $$->setParams($1->getParams());
+        // check if there was a parameter with same name before
+        for (SymbolInfo* param : $1->getParams()) {
+            if(param->getName() == $4->getName()) {
+                yyerror(("Multiple declaration of " + $4->getName() + " in parameter").c_str());
+            }
+        }
         $$->addParam(new SymbolInfo($4->getName(), $3->getName()));
+
+        yylog(lineNo, "parameter_list", "parameter_list COMMA type_specifier ID", $$->getName());
     }
     | parameter_list COMMA type_specifier {
         $$ = new SymbolInfo(($1->getName() + "," + $3->getName()), "PARAMETER_LIST");
@@ -332,24 +348,12 @@ var_declaration : type_specifier declaration_list SEMICOLON {
         $$ = new SymbolInfo(($1->getName() + " " + $2->getName() + ";"), "VAR_DECLARATION");
         
         // inserting the variables into current scope
-        // vector<string> vars = splitString($2->getName(), ',');
-        // for(string var : vars) {
-        //     unsigned size = extractArraySize(var);
-
-        //     if (size == -1){ // not an array
-        //         if (st.insert(var, $1->getName()) == false) {
-        //             yyerror(("Multiple declaration of " + var).c_str());
-        //         }
-
-        //     } else { // array
-        //         if (st.insert((new SymbolInfo((splitString(var, '[')[0]), $1->getName()))->setArraySize(size)) == false) {
-        //             yyerror(("Multiple declaration of " + var).c_str());
-        //         }
-        //     }
-        // }
         for (SymbolInfo* var : $2->getParams()) {
             // setting type of each var to type_specifier
-            if (st.insert(var->setType($1->getName())) == false) {
+            // unless it's void
+            if ($1->getName() == "void") {
+                yyerror("Variable type cannot be void");
+            } else if (st.insert(var->setType($1->getName())) == false) {
                 yyerror(("Multiple declaration of " + var->getName()).c_str());
             }
         }
@@ -623,28 +627,29 @@ factor : variable {
     }
 	| ID LPAREN argument_list RPAREN {
         $$ = new SymbolInfo(($1->getName() + "(" + $3->getName() + ")"), "FUNCTION_CALL");
+        
         // check if function is declared
         // assign the return type of function to this factor's type
+        SymbolInfo* previous = st.lookup($1->getName());
+        if (previous == nullptr) {
+            $$->setType("ERROR");
+            yyerror(("Undeclared function " + $1->getName()).c_str());
+        } else {
+            if (previous->getType() == "FUNCTION") {
+                if (previous->getParams().size() > 0) {
+                    // all is well
+                    SymbolInfo* s = previous->getParams()[0];
+                    $$->setType(previous->getParams()[0]->getType());
+                } else {
+                    $$->setType("ERROR");
+                    yyerror(("Function " + $1->getName() + " has no return type / parameters declared").c_str());
+                }
+            } else {
+                $$->setType("ERROR");
+                yyerror(("Type mismatch, " + $1->getName() + " is not a function").c_str());
+            }
+        }
 
-
-
-
-
-
-
-
-
-
-        $$->setType($1->getParams()[0]->getType());
-
-
-
-
-
-
-
-
-        
         yylog(lineNo, "factor", "ID LPAREN argument_list RPAREN", $$->getName());
     }
 	| LPAREN expression RPAREN {
