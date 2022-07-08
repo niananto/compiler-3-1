@@ -21,3 +21,9 @@ what I am doing
 06 not considering char and string for the moment
 
 idk why my looked up function from symboltable when that function got called, giving weird params
+solved it fuckkkkkkkk
+
+to-do
+- is the function double defined
+- is it defined already when beign called
+- is it defined already when being declared

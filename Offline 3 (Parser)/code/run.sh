@@ -11,7 +11,7 @@ g++ -w -c -o l.o lex.yy.c
 # echo 'Generated the scanner object file'
 g++ y.o l.o -lfl -o a
 # echo 'All ready, running'
-./a ../SampleIO/input4.txt
+./a ../SampleIO/input5.txt
 
 
 rm y.o lex.yy.c l.o a y.tab.c y.tab.h

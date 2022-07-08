@@ -51,6 +51,7 @@ public:
     }
 
     ~SymbolInfo() {
+        params.clear();
     }
 
     string getName() const {

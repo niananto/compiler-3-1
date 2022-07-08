@@ -511,6 +511,11 @@ statement : var_declaration {
     }
     | PRINTLN LPAREN ID RPAREN SEMICOLON {
         $$ = new SymbolInfo(("printf(" + $3->getName() + ");\n"), "PRINT_STATEMENT");
+
+        if (st->lookup($3->getName()) == nullptr) {
+            yyerror(("Undeclared variable " + $3->getName()).c_str());
+        }
+        
         yylog(lineNo, "statement", "PRINTLN LPAREN ID RPAREN SEMICOLON", $$->getName());
 
         delete $3;
@@ -676,6 +681,13 @@ term :	unary_expression {
             }
         }
 
+        // check for divide by zero
+        if ($2->getName() == "/" || $2->getName() == "%") {
+            if ($3->getType() == "CONST_INT" && $3->getName() == "0") {
+                yyerror("Divide by zero");
+            } // how to check for expressions evaluating into 0? later
+        }
+
         delete $1; delete $2; delete $3;
     }
     ;
@@ -735,7 +747,12 @@ factor : variable {
                         }
                     }
                     // set previous's return type to it's type
-                    $$->setType(previous->getParams()[0]->getType());
+                    if (previous->getParams()[0]->getType() == "void") {
+                        $$->setType("UNDEFINED");
+                        yyerror("Void function used in expression");
+                    } else {
+                        $$->setType(previous->getParams()[0]->getType());
+                    }
                 } else {
                     $$->setType("UNDEFINED");
                     yyerror(("Function " + $1->getName() + " has no return type / parameters declared").c_str());
