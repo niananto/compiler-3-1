@@ -29,6 +29,27 @@ public:
         arraySize = -1;
     }
 
+    // copy constructor
+    // SymbolInfo(const SymbolInfo &other) {
+    //     name = other.name;
+    //     type = other.type;
+    //     next = other.next;
+
+    //     params = other.params;
+    //     arraySize = other.arraySize;
+    // }
+
+    SymbolInfo* copySymbol(SymbolInfo* symbol) {
+        name = symbol->name;
+        type = symbol->type;
+        next = symbol->next;
+
+        params = symbol->params;
+        arraySize = symbol->arraySize;
+
+        return this;
+    }
+
     ~SymbolInfo() {
     }
 

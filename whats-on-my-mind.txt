@@ -9,3 +9,15 @@ not ours one, sdbm, that's why the symbol tables aren't matching
 I have tried with previous hash and then it matches.
 
 Assignment 2 done
+
+Assignment 3 is pain
+
+what I am doing
+01 symbolinfo has a vector called params
+02 return types are stored in the 0th position of that param vector
+03 other params are stored after that
+04 I am using this params for other purposes like - parameter_list and argument_list and declaration_list
+05 arrays has size, others have this defaulted to -1
+06 not considering char and string for the moment
+
+idk why my looked up function from symboltable when that function got called, giving weird params

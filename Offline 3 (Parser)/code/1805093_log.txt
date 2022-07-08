@@ -1360,6 +1360,8 @@ Line 45: argument_list : arguments
 
 2.50,3.50
 
+Error at line 45: 1th argument mismatch in function func
+
 Line 45: factor : ID LPAREN argument_list RPAREN
 
 func(2.50,3.50)
@@ -1479,6 +1481,8 @@ Line 48: argument_list : arguments
 
 a,c
 
+Error at line 48: 1th argument mismatch in function correct_foo
+
 Line 48: factor : ID LPAREN argument_list RPAREN
 
 correct_foo(a,c)
@@ -1564,6 +1568,8 @@ a
 Line 49: argument_list : arguments
 
 a
+
+Error at line 49: Total number of arguments mismatch in function correct_foo
 
 Line 49: factor : ID LPAREN argument_list RPAREN
 
@@ -1710,7 +1716,7 @@ Line 52: expression : logic_expression
 
 5
 
-Error at line 52: Type mismatch, b is an array
+Error at line 52: b not an array
 
 Line 52: variable : ID LTHIRD expression RTHIRD
 
@@ -1941,6 +1947,8 @@ Line 54: argument_list : arguments
 
 7
 
+Error at line 54: 1th argument mismatch in function foo4
+
 Line 54: factor : ID LPAREN argument_list RPAREN
 
 foo4(7)
@@ -2142,6 +2150,8 @@ Line 56: argument_list : arguments
 
 c[1]
 
+Error at line 56: 1th argument mismatch in function foo4
+
 Line 56: factor : ID LPAREN argument_list RPAREN
 
 foo4(c[1])
@@ -2290,6 +2300,8 @@ c[1]
 Line 57: argument_list : arguments
 
 c[1]
+
+Error at line 57: 1th argument mismatch in function foo4
 
 Line 57: factor : ID LPAREN argument_list RPAREN
 
@@ -2952,4 +2964,4 @@ ScopeTable # 1
 
 
 Total lines: 72
-Total errors: 17
+Total errors: 23

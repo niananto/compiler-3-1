@@ -27,16 +27,17 @@ public:
 
     void exitScope() {
         if(currentScope == nullptr) {
-            cout << "NO CURRENT SCOPE\n";
+            // cout << "NO CURRENT SCOPE\n";
             return;
         }
         ScopeTable* temp = currentScope->getParentScope();
-        cout << "ScopeTable with id " + currentScope->getId() + " removed\n";
-        if(currentScope->getParentScope() == nullptr) {
-            cout << "Destroying the First Scope\n";
+        if(temp == nullptr) {
+            // cout << "Cannot destroy the global scope\n";
+        } else {
+            // cout << "ScopeTable with id " + currentScope->getId() + " removed\n";
+            delete currentScope;
+            currentScope = temp;
         }
-        delete currentScope;
-        currentScope = temp;
     }
 
     bool insert(string name, string type) {
@@ -49,21 +50,21 @@ public:
         return currentScope->insert(symbol);
     }
 
-    bool insertIntoParent(SymbolInfo* symbol) {
-        if(currentScope == nullptr) return false;
-        ScopeTable* temp = currentScope->getParentScope();
-        if(temp == nullptr) return false;
-        return temp->insert(symbol);
-    }
+    // bool insertIntoParent(SymbolInfo* symbol) {
+    //     if(currentScope == nullptr) return false;
+    //     ScopeTable* temp = currentScope->getParentScope();
+    //     if(temp == nullptr) return false;
+    //     return temp->insert(symbol);
+    // }
 
-    bool remove(string name) {
-        if(currentScope == nullptr) {
-//            cout << "NO CURRENT SCOPE\n";
-            cout << "Not found\n";
-            return false;
-        }
-        return currentScope->remove(name);
-    }
+//     bool remove(string name) {
+//         if(currentScope == nullptr) {
+// //            cout << "NO CURRENT SCOPE\n";
+//             cout << "Not found\n";
+//             return false;
+//         }
+//         return currentScope->remove(name);
+//     }
 
     SymbolInfo* lookup(string name) {
         ScopeTable* itr = currentScope;
@@ -75,17 +76,17 @@ public:
             }
             itr = itr->getParentScope();
         }
-        cout << "Not found\n";
+        // cout << "Not found\n";
         return nullptr;
     }
 
-    void printThis() {
-        if(currentScope == nullptr) {
-            cout << "NO CURRENT SCOPE\n";
-            return;
-        }
-        currentScope->print();
-    }
+    // void printThis() {
+    //     if(currentScope == nullptr) {
+    //         cout << "NO CURRENT SCOPE\n";
+    //         return;
+    //     }
+    //     currentScope->print();
+    // }
 
     // void printAll() {
     //     if(currentScope == nullptr) {
@@ -103,7 +104,7 @@ public:
     void printAll(ofstream &logOut) {
         logOut << endl;
         if(currentScope == nullptr) {
-            logOut << "NO CURRENT SCOPE\n";
+            // logOut << "NO CURRENT SCOPE\n";
             return;
         }
         ScopeTable* itr = currentScope;
