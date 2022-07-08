@@ -7,7 +7,7 @@
 
 %{
 #include <bits/stdc++.h>
-#include "SymbolTable.h"
+#include "includes/SymbolTable.h"
 // #include "Token.h"
 #include "y.tab.h"
 
