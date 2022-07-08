@@ -1,9 +1,7 @@
 %{
 #include<bits/stdc++.h>
 #include "includes/SymbolTable.h"
-// #include "Token.h"
-// #include "utils.h"
-
+#include "includes/utils.h"
 using namespace std;
 
 int yyparse(void);
@@ -21,67 +19,6 @@ void yyerror(const char *s) {
 	logOut << "Error at line " << lineNo << ": " << s << endl << endl;
 	errorOut << "Error at line " << lineNo << ": " << s << endl << endl;
     errorNo++;
-}
-
-void yylog(unsigned long lineNo, string left, string right, string symbolName) {
-    logOut << "Line " << lineNo << ": " << left << " : " << right << endl << endl;
-    logOut << symbolName << endl << endl;
-}
-
-vector<string> splitString(string line, char delim) {
-    stringstream ss(line);
-    vector<string> tokens;
-    string intermediate;
-
-    while(getline(ss, intermediate, delim)) {
-        tokens.push_back(intermediate);
-    }
-    return tokens;
-}
-
-// unsigned extractArraySize(string var) {
-//     unsigned size = 0;
-//     size = var.find(']');
-//     if(size == string::npos) {
-//         return -1;
-//     }
-//     size = var.find('[');
-//     if(size == string::npos) {
-//         return -1;
-//     }
-//     string sizeStr = var.substr(size+1, var.length()-size-1);
-//     stringstream ss; ss << sizeStr; ss >> size; // stoi isn't working for some reason
-//     return size;
-// }
-
-bool compareTypes(vector<SymbolInfo*> v1, vector<SymbolInfo*> v2) {
-    if(v1.size() != v2.size()) {
-        return false;
-    }
-    for(int i = 0; i < v1.size(); i++) {
-        if(v1[i]->getType() != v2[i]->getType()) {
-            return false;
-        }
-    }
-    return true;
-}
-
-// string toUpper(string s) {
-//     for (int i = 0; i < s.length(); i++) {
-//         s[i] = toupper(s[i]);
-//     }
-//     return s;
-// }
-
-bool typeMatch(string type1, string type2) {
-    if(type1 == type2) {
-        return true;
-    } else if((type1 == "int") && (type2 == "CONST_INT")) {
-        return true;
-    } else if((type1 == "float") && (type2 == "CONST_FLOAT" || type2 == "CONST_INT" || type2 == "int")) {
-        return true;
-    }
-    return false;
 }
 
 %}
@@ -105,41 +42,41 @@ bool typeMatch(string type1, string type2) {
 
 start : program {
         $$ = $1;
-        yylog(lineNo, "start", "program", "");
+        yylog(logOut, lineNo, "start", "program", "");
 	}
 	;
 
 program : program unit {
         $$ = new SymbolInfo(($1->getName() + $2->getName()), "PROGRAM");
-        yylog(lineNo, "program", "program unit", $$->getName());
+        yylog(logOut, lineNo, "program", "program unit", $$->getName());
         delete $1; delete $2;
     }
     | unit {
         $$ = $1;
-        yylog(lineNo, "program", "unit", $$->getName());
+        yylog(logOut, lineNo, "program", "unit", $$->getName());
     }
     ;
 
 unit : var_declaration {
         $$ = new SymbolInfo($1->getName() + "\n", "UNIT");
-        yylog(lineNo, "unit", "var_declaration", $$->getName());
+        yylog(logOut, lineNo, "unit", "var_declaration", $$->getName());
         delete $1;
     }
     | func_declaration {
         $$ = new SymbolInfo($1->getName(), "UNIT");
-        yylog(lineNo, "unit", "func_declaration", $$->getName());
+        yylog(logOut, lineNo, "unit", "func_declaration", $$->getName());
         delete $1;
     }
     | func_definition {
         $$ = new SymbolInfo($1->getName() + "\n", "UNIT");
-        yylog(lineNo, "unit", "func_definition", $$->getName());
+        yylog(logOut, lineNo, "unit", "func_definition", $$->getName());
         delete $1;
     }
     ;
      
 func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON {
         $$ = new SymbolInfo(($1->getName() + " " + $2->getName() + "(" + $4->getName() + ");\n"), "FUNC_DECLARATION");
-        yylog(lineNo, "func_declaration", "type_specifier ID LPAREN parameter_list RPAREN SEMICOLON", $$->getName());
+        yylog(logOut, lineNo, "func_declaration", "type_specifier ID LPAREN parameter_list RPAREN SEMICOLON", $$->getName());
         
         // dummy enter and exit scope
         st->enterScope();
@@ -159,7 +96,7 @@ func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON {
     }
 	| type_specifier ID LPAREN RPAREN SEMICOLON {
         $$ = new SymbolInfo(($1->getName() + " "  + $2->getName() + "();\n"), "FUNC_DECLARATION");
-        yylog(lineNo, "func_declaration", "type_specifier ID LPAREN RPAREN SEMICOLON", $$->getName());
+        yylog(logOut, lineNo, "func_declaration", "type_specifier ID LPAREN RPAREN SEMICOLON", $$->getName());
 
         // dummy enter and exit scope
         st->enterScope();
@@ -248,7 +185,7 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN { // compound_s
         // print scopes
         st->printAll(logOut);
 
-        yylog(lineNo, "func_definition", "type_specifier ID LPAREN parameter_list RPAREN compound_statement", $$->getName());
+        yylog(logOut, lineNo, "func_definition", "type_specifier ID LPAREN parameter_list RPAREN compound_statement", $$->getName());
 
         // exit scope
         st->exitScope();
@@ -299,7 +236,7 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN { // compound_s
         // print scopes
         st->printAll(logOut);
 
-        yylog(lineNo, "func_definition", "type_specifier ID LPAREN RPAREN compound_statement", $$->getName());
+        yylog(logOut, lineNo, "func_definition", "type_specifier ID LPAREN RPAREN compound_statement", $$->getName());
 
         // exit scope
         st->exitScope();
@@ -322,13 +259,13 @@ parameter_list  : parameter_list COMMA type_specifier ID {
         $$->addParam(new SymbolInfo($4->getName(), $3->getName()));
         
 
-        yylog(lineNo, "parameter_list", "parameter_list COMMA type_specifier ID", $$->getName());
+        yylog(logOut, lineNo, "parameter_list", "parameter_list COMMA type_specifier ID", $$->getName());
 
         delete $1; delete $3; delete $4;
     }
     | parameter_list COMMA type_specifier {
         $$ = new SymbolInfo(($1->getName() + "," + $3->getName()), "PARAMETER_LIST");
-        yylog(lineNo, "parameter_list", "parameter_list COMMA type_specifier", $$->getName());
+        yylog(logOut, lineNo, "parameter_list", "parameter_list COMMA type_specifier", $$->getName());
 
         // adding the params
         $$->setParams($1->getParams());
@@ -338,7 +275,7 @@ parameter_list  : parameter_list COMMA type_specifier ID {
     }
     | type_specifier ID {
         $$ = new SymbolInfo(($1->getName() + " "  + $2->getName()), "PARAMETER_LIST");
-        yylog(lineNo, "parameter_list", "type_specifier ID", $$->getName());
+        yylog(logOut, lineNo, "parameter_list", "type_specifier ID", $$->getName());
 
         // adding the params
         $$->addParam(new SymbolInfo($2->getName(), $1->getName()));
@@ -347,7 +284,7 @@ parameter_list  : parameter_list COMMA type_specifier ID {
     }
     | type_specifier {
         $$ = new SymbolInfo(($1->getName()), "PARAMETER_LIST");
-        yylog(lineNo, "parameter_list", "type_specifier", $$->getName());
+        yylog(logOut, lineNo, "parameter_list", "type_specifier", $$->getName());
 
         // adding the params
         $$->addParam(new SymbolInfo("NOT DEFINED", $1->getName()));
@@ -358,13 +295,13 @@ parameter_list  : parameter_list COMMA type_specifier ID {
 
 compound_statement : LCURL statements RCURL {
         $$ = new SymbolInfo(("{\n" + $2->getName() + "}\n"), "COMPOUND_STATEMENT");
-        yylog(lineNo, "compound_statement", "LCURL statements RCURL", $$->getName());
+        yylog(logOut, lineNo, "compound_statement", "LCURL statements RCURL", $$->getName());
 
         delete $2;
     }
     | LCURL RCURL {
         $$ = new SymbolInfo("{}", "COMPOUND_STATEMENT");
-        yylog(lineNo, "compound_statement", "LCURL RCURL", $$->getName());
+        yylog(logOut, lineNo, "compound_statement", "LCURL RCURL", $$->getName());
     }
     ;
  		    
@@ -381,7 +318,7 @@ var_declaration : type_specifier declaration_list SEMICOLON {
                 yyerror(("Multiple declaration of " + var->getName()).c_str());
             }
         }
-        yylog(lineNo, "var_declaration", "type_specifier declaration_list SEMICOLON", $$->getName());
+        yylog(logOut, lineNo, "var_declaration", "type_specifier declaration_list SEMICOLON", $$->getName());
 
         delete $1; delete $2;
     }
@@ -389,15 +326,15 @@ var_declaration : type_specifier declaration_list SEMICOLON {
  		 
 type_specifier : INT {
         $$ = new SymbolInfo("int", "TYPE_SPECIFIER");
-        yylog(lineNo, "type_specifier", "INT", $$->getName());
+        yylog(logOut, lineNo, "type_specifier", "INT", $$->getName());
     }
     | FLOAT {
         $$ = new SymbolInfo("float", "TYPE_SPECIFIER");
-        yylog(lineNo, "type_specifier", "FLOAT", $$->getName());
+        yylog(logOut, lineNo, "type_specifier", "FLOAT", $$->getName());
     }
     | VOID {
         $$ = new SymbolInfo("void", "TYPE_SPECIFIER");
-        yylog(lineNo, "type_specifier", "VOID", $$->getName());
+        yylog(logOut, lineNo, "type_specifier", "VOID", $$->getName());
     }
     ;
  		
@@ -409,7 +346,7 @@ declaration_list : declaration_list COMMA ID {
         }
         // now adding this id
         $$->addParam((new SymbolInfo())->copySymbol($3));
-        yylog(lineNo, "declaration_list", "declaration_list COMMA ID", $$->getName());
+        yylog(logOut, lineNo, "declaration_list", "declaration_list COMMA ID", $$->getName());
 
 
         delete $1; delete $3;
@@ -422,7 +359,7 @@ declaration_list : declaration_list COMMA ID {
         }
         // now adding this array
         $$->addParam((new SymbolInfo())->copySymbol($3)->setArraySize(stoi($5->getName())));
-        yylog(lineNo, "declaration_list", "declaration_list COMMA ID LTHIRD CONST_INT RTHIRD", $$->getName());
+        yylog(logOut, lineNo, "declaration_list", "declaration_list COMMA ID LTHIRD CONST_INT RTHIRD", $$->getName());
 
         delete $1; delete $3; delete $5;
     }
@@ -432,7 +369,7 @@ declaration_list : declaration_list COMMA ID {
         // adding this id to declaration_list for assigning type later
         $$->addParam((new SymbolInfo())->copySymbol($1));
 
-        yylog(lineNo, "declaration_list", "ID", $$->getName());
+        yylog(logOut, lineNo, "declaration_list", "ID", $$->getName());
 
         delete $1;
     }
@@ -442,7 +379,7 @@ declaration_list : declaration_list COMMA ID {
         // adding this array to declaration_list for assiginng type later
         $$->addParam((new SymbolInfo())->copySymbol($1)->setArraySize(stoi($3->getName())));
 
-        yylog(lineNo, "declaration_list", "ID LTHIRD CONST_INT RTHIRD", $$->getName());
+        yylog(logOut, lineNo, "declaration_list", "ID LTHIRD CONST_INT RTHIRD", $$->getName());
 
         delete $1; delete $3;
     }
@@ -450,11 +387,11 @@ declaration_list : declaration_list COMMA ID {
  		  
 statements : statement {
         $$ = $1;
-        yylog(lineNo, "statements", "statement", $$->getName());
+        yylog(logOut, lineNo, "statements", "statement", $$->getName());
     }
     | statements statement {
         $$ = new SymbolInfo(($1->getName() + $2->getName()), "STATEMENTS");
-        yylog(lineNo, "statements", "statements statement", $$->getName());
+        yylog(logOut, lineNo, "statements", "statements statement", $$->getName());
 
         delete $1; delete $2;
     }
@@ -462,13 +399,13 @@ statements : statement {
 	   
 statement : var_declaration {
         $$ = new SymbolInfo(($1->getName() + "\n"), "STATEMENT");
-        yylog(lineNo, "statement", "var_declaration", $$->getName());
+        yylog(logOut, lineNo, "statement", "var_declaration", $$->getName());
 
         delete $1;
     }
     | expression_statement {
         $$ = new SymbolInfo(($1->getName() + "\n"), "STATEMENT");
-        yylog(lineNo, "statement", "expression_statement", $$->getName());
+        yylog(logOut, lineNo, "statement", "expression_statement", $$->getName());
 
         delete $1;
     }
@@ -478,7 +415,7 @@ statement : var_declaration {
         // print scopes
         st->printAll(logOut);
 
-        yylog(lineNo, "statement", "compound_statement", $$->getName());
+        yylog(logOut, lineNo, "statement", "compound_statement", $$->getName());
 
         // exit scope
         st->exitScope();
@@ -487,25 +424,25 @@ statement : var_declaration {
     }
     | FOR LPAREN expression_statement expression_statement expression RPAREN statement {
         $$ = new SymbolInfo(("for(" + $3->getName() + $4->getName() + $5->getName() + ")" + $7->getName()), "FOR_LOOP");
-        yylog(lineNo, "statement", "FOR LPAREN expression_statement expression_statement expression RPAREN statement", $$->getName());
+        yylog(logOut, lineNo, "statement", "FOR LPAREN expression_statement expression_statement expression RPAREN statement", $$->getName());
 
         delete $3; delete $4; delete $5; delete $7;
     }
     | IF LPAREN expression RPAREN statement %prec LOWER_THAN_ELSE {
         $$ = new SymbolInfo(("if (" + $3->getName() + ")" + $5->getName()), "IF");
-        yylog(lineNo, "statement", "IF LPAREN expression RPAREN statement", $$->getName());
+        yylog(logOut, lineNo, "statement", "IF LPAREN expression RPAREN statement", $$->getName());
 
         delete $3; delete $5;
     }
     | IF LPAREN expression RPAREN statement ELSE statement {
         $$ = new SymbolInfo(("if (" + $3->getName() + ")" + $5->getName() + "else\n" + $7->getName()), "IF_ELSE");
-        yylog(lineNo, "statement", "IF LPAREN expression RPAREN statement ELSE statement", $$->getName());
+        yylog(logOut, lineNo, "statement", "IF LPAREN expression RPAREN statement ELSE statement", $$->getName());
 
         delete $3; delete $5; delete $7;
     }
     | WHILE LPAREN expression RPAREN statement {
         $$ = new SymbolInfo(("while (" + $3->getName() + ")" + $5->getName()), "WHILE_LOOP");
-        yylog(lineNo, "statement", "WHILE LPAREN expression RPAREN statement", $$->getName());
+        yylog(logOut, lineNo, "statement", "WHILE LPAREN expression RPAREN statement", $$->getName());
 
         delete $3; delete $5;
     }
@@ -516,13 +453,13 @@ statement : var_declaration {
             yyerror(("Undeclared variable " + $3->getName()).c_str());
         }
         
-        yylog(lineNo, "statement", "PRINTLN LPAREN ID RPAREN SEMICOLON", $$->getName());
+        yylog(logOut, lineNo, "statement", "PRINTLN LPAREN ID RPAREN SEMICOLON", $$->getName());
 
         delete $3;
     }
     | RETURN expression SEMICOLON {
         $$ = new SymbolInfo(("return " + $2->getName() + ";\n"), "RETURN_STATEMENT");
-        yylog(lineNo, "statement", "RETURN expression SEMICOLON", $$->getName());
+        yylog(logOut, lineNo, "statement", "RETURN expression SEMICOLON", $$->getName());
 
         delete $2;
     }
@@ -530,11 +467,11 @@ statement : var_declaration {
 	  
 expression_statement : SEMICOLON {
         $$ = new SymbolInfo(";", "EXPRESSION_STATEMENT");
-        yylog(lineNo, "expression_statement", "SEMICOLON", $$->getName());
+        yylog(logOut, lineNo, "expression_statement", "SEMICOLON", $$->getName());
     }
     | expression SEMICOLON {
         $$ = new SymbolInfo(($1->getName() + ";"), "EXPRESSION_STATEMENT");
-        yylog(lineNo, "expression_statement", "expression SEMICOLON", $$->getName());
+        yylog(logOut, lineNo, "expression_statement", "expression SEMICOLON", $$->getName());
 
         delete $1;
     }
@@ -556,7 +493,7 @@ variable : ID {
             $$->setType("UNDEFINED");
             yyerror(("Undeclared variable " + $1->getName()).c_str());
         }
-        yylog(lineNo, "variable", "ID", $$->getName());
+        yylog(logOut, lineNo, "variable", "ID", $$->getName());
     } 		
     | ID LTHIRD expression RTHIRD {
         $$ = new SymbolInfo(($1->getName() + "[" + $3->getName() + "]"), "ARRAY");
@@ -594,7 +531,7 @@ variable : ID {
         
         // check if expression is within bounds of array
 
-        yylog(lineNo, "variable", "ID LTHIRD expression RTHIRD", $$->getName());
+        yylog(logOut, lineNo, "variable", "ID LTHIRD expression RTHIRD", $$->getName());
 
         delete $1; delete $3;
     }
@@ -602,11 +539,11 @@ variable : ID {
 	 
 expression : logic_expression {
         $$ = $1;
-        yylog(lineNo, "expression", "logic_expression", $$->getName());
+        yylog(logOut, lineNo, "expression", "logic_expression", $$->getName());
     }	
     | variable ASSIGNOP logic_expression {
         $$ = new SymbolInfo(($1->getName() + "=" + $3->getName()), $3->getType());
-        yylog(lineNo, "expression", "variable ASSIGNOP logic_expression", $$->getName());
+        yylog(logOut, lineNo, "expression", "variable ASSIGNOP logic_expression", $$->getName());
 
         // check for type mismatch
         if (typeMatch($1->getType(), $3->getType())) {
@@ -627,12 +564,12 @@ expression : logic_expression {
 			
 logic_expression : rel_expression {
         $$ = $1;
-        yylog(lineNo, "logic_expression", "rel_expression", $$->getName());
+        yylog(logOut, lineNo, "logic_expression", "rel_expression", $$->getName());
     } 	
     | rel_expression LOGICOP rel_expression {
         // check if both of them are BOOL/int or not later
         $$ = new SymbolInfo(($1->getName() + $2->getName() + $3->getName()), "int");
-        yylog(lineNo, "logic_expression", "rel_expression LOGICOP rel_expression", $$->getName());
+        yylog(logOut, lineNo, "logic_expression", "rel_expression LOGICOP rel_expression", $$->getName());
 
         delete $1; delete $2; delete $3;
     }
@@ -640,12 +577,12 @@ logic_expression : rel_expression {
 			
 rel_expression : simple_expression {
         $$ = $1;
-        yylog(lineNo, "rel_expression", "simple_expression", $$->getName());
+        yylog(logOut, lineNo, "rel_expression", "simple_expression", $$->getName());
     }
     | simple_expression RELOP simple_expression	{
         // check if both of them are BOOL/int or not later
         $$ = new SymbolInfo(($1->getName() + $2->getName() + $3->getName()), "int");
-        yylog(lineNo, "rel_expression", "simple_expression RELOP simple_expression", $$->getName());
+        yylog(logOut, lineNo, "rel_expression", "simple_expression RELOP simple_expression", $$->getName());
 
         delete $1; delete $2; delete $3;
     }
@@ -653,11 +590,11 @@ rel_expression : simple_expression {
 				
 simple_expression : term {
         $$ = $1;
-        yylog(lineNo, "simple_expression", "term", $$->getName());
+        yylog(logOut, lineNo, "simple_expression", "term", $$->getName());
     }
     | simple_expression ADDOP term {
         $$ = new SymbolInfo(($1->getName() + $2->getName() + $3->getName()), $3->getType());
-        yylog(lineNo, "simple_expression", "simple_expression ADDOP term", $$->getName());
+        yylog(logOut, lineNo, "simple_expression", "simple_expression ADDOP term", $$->getName());
 
         delete $1; delete $2; delete $3;
     }
@@ -665,11 +602,11 @@ simple_expression : term {
 					
 term :	unary_expression {
         $$ = $1;
-        yylog(lineNo, "term", "unary_expression", $$->getName());
+        yylog(logOut, lineNo, "term", "unary_expression", $$->getName());
     }
     | term MULOP unary_expression {
         $$ = new SymbolInfo(($1->getName() + $2->getName() + $3->getName()), $3->getType());
-        yylog(lineNo, "term", "term MULOP unary_expression", $$->getName());
+        yylog(logOut, lineNo, "term", "term MULOP unary_expression", $$->getName());
 
         // check for non-integer in modulus
         if ($2->getName() == "%") {
@@ -694,25 +631,25 @@ term :	unary_expression {
 
 unary_expression : ADDOP unary_expression {
         $$ = new SymbolInfo(($1->getName() + $2->getName()), $2->getType());
-        yylog(lineNo, "unary_expression", "ADDOP unary_expression", $$->getName());
+        yylog(logOut, lineNo, "unary_expression", "ADDOP unary_expression", $$->getName());
 
         delete $1; delete $2;
     } 
     | NOT unary_expression {
         $$ = new SymbolInfo(("!" + $2->getName()), $2->getType());
-        yylog(lineNo, "unary_expression", "NOT unary_expression", $$->getName());
+        yylog(logOut, lineNo, "unary_expression", "NOT unary_expression", $$->getName());
 
         delete $2;
     }
     | factor {
         $$ = $1;
-        yylog(lineNo, "unary_expression", "factor", $$->getName());
+        yylog(logOut, lineNo, "unary_expression", "factor", $$->getName());
     }
     ;
 	
 factor : variable {
         $$ = $1;
-        yylog(lineNo, "factor", "variable", $$->getName());
+        yylog(logOut, lineNo, "factor", "variable", $$->getName());
     }
 	| ID LPAREN argument_list RPAREN {
         $$ = new SymbolInfo(($1->getName() + "(" + $3->getName() + ")"), "FUNCTION_CALL");        
@@ -764,36 +701,36 @@ factor : variable {
         }
 
 
-        yylog(lineNo, "factor", "ID LPAREN argument_list RPAREN", $$->getName());
+        yylog(logOut, lineNo, "factor", "ID LPAREN argument_list RPAREN", $$->getName());
 
         delete $1; delete $3;
     }
 	| LPAREN expression RPAREN {
         $$ = new SymbolInfo(("(" + $2->getName() + ")"), $2->getType());
-        yylog(lineNo, "factor", "LPAREN expression RPAREN", $$->getName());
+        yylog(logOut, lineNo, "factor", "LPAREN expression RPAREN", $$->getName());
 
         delete $2;
     }
 	| CONST_INT {
         $$ = $1;
-        yylog(lineNo, "factor", "CONST_INT", $$->getName());
+        yylog(logOut, lineNo, "factor", "CONST_INT", $$->getName());
     }
 	| CONST_FLOAT {
         $$ = new SymbolInfo(($1->getName() + "0"), "CONST_FLOAT"); // just to match the samples
-        yylog(lineNo, "factor", "CONST_FLOAT", $$->getName());
+        yylog(logOut, lineNo, "factor", "CONST_FLOAT", $$->getName());
 
         // why can't I delete this?
         // delete $1;
     }
 	| variable INCOP {
         $$ = new SymbolInfo(($1->getName() + "++"), $1->getType());
-        yylog(lineNo, "factor", "variable INCOP", $$->getName());
+        yylog(logOut, lineNo, "factor", "variable INCOP", $$->getName());
 
         delete $1;
     }
 	| variable DECOP {
         $$ = new SymbolInfo(($1->getName() + "--"), $1->getType());
-        yylog(lineNo, "factor", "variable DECOP", $$->getName());
+        yylog(logOut, lineNo, "factor", "variable DECOP", $$->getName());
 
         delete $1;
     }
@@ -801,11 +738,11 @@ factor : variable {
 	
 argument_list : arguments {
         $$ = $1;
-        yylog(lineNo, "argument_list", "arguments", $$->getName());
+        yylog(logOut, lineNo, "argument_list", "arguments", $$->getName());
     }
     | {
         $$ = new SymbolInfo("", "VOID");
-        yylog(lineNo, "argument_list", "", $$->getName());
+        yylog(logOut, lineNo, "argument_list", "", $$->getName());
     }
     ;
 	
@@ -816,14 +753,14 @@ arguments : arguments COMMA logic_expression {
             $$->addParam((new SymbolInfo())->copySymbol(s));
         }
         $$->addParam((new SymbolInfo())->copySymbol($3));
-        yylog(lineNo, "arguments", "arguments COMMA logic_expression", $$->getName());
+        yylog(logOut, lineNo, "arguments", "arguments COMMA logic_expression", $$->getName());
 
         delete $1; delete $3;
     }
     | logic_expression {
         $$ = $1;
         $$->addParam($1);
-        yylog(lineNo, "arguments", "logic_expression", $$->getName());
+        yylog(logOut, lineNo, "arguments", "logic_expression", $$->getName());
     }
     ;
 

@@ -8,15 +8,9 @@
 %{
 #include <bits/stdc++.h>
 #include "includes/SymbolTable.h"
-// #include "Token.h"
 #include "y.tab.h"
-
-// #define YYSTYPE SymbolInfo*
-
 using namespace std;
 
-// extern YYSTYPE yylval;
-extern SymbolTable st;
 void yyerror(char *);
 
 extern ofstream logOut;
