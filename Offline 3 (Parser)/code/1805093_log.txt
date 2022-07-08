@@ -1481,8 +1481,6 @@ Line 48: argument_list : arguments
 
 a,c
 
-Error at line 48: 1th argument mismatch in function correct_foo
-
 Line 48: factor : ID LPAREN argument_list RPAREN
 
 correct_foo(a,c)
@@ -1947,8 +1945,6 @@ Line 54: argument_list : arguments
 
 7
 
-Error at line 54: 1th argument mismatch in function foo4
-
 Line 54: factor : ID LPAREN argument_list RPAREN
 
 foo4(7)
@@ -2150,8 +2146,6 @@ Line 56: argument_list : arguments
 
 c[1]
 
-Error at line 56: 1th argument mismatch in function foo4
-
 Line 56: factor : ID LPAREN argument_list RPAREN
 
 foo4(c[1])
@@ -2300,8 +2294,6 @@ c[1]
 Line 57: argument_list : arguments
 
 c[1]
-
-Error at line 57: 1th argument mismatch in function foo4
 
 Line 57: factor : ID LPAREN argument_list RPAREN
 
@@ -2964,4 +2956,4 @@ ScopeTable # 1
 
 
 Total lines: 72
-Total errors: 23
+Total errors: 19

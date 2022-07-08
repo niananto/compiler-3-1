@@ -225,6 +225,11 @@ public:
                 
                 if(itr->getType() == "int" || itr->getType() == "float" || itr->getType() == "void" || itr->getType() == "FUNCTION") {
                     toBePrinted += "ID > ";
+                    // if (itr->getType() == "FUNCTION") {
+                    //     for (auto a : itr->getParams()) {
+                    //         toBePrinted += a->getName() + " " + a->getType() + ", ";
+                    //     }
+                    // }
                 } else {
                     toBePrinted += itr->getType() + " > ";
                 }
