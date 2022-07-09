@@ -115,6 +115,16 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN { // compound_s
         // will insert the params at the end
         vector<SymbolInfo*> paramsToBeInserted;
 
+        // check if some paramters don't have a name
+        bool paramsInDefinitionHaveNames = true;
+        for (SymbolInfo* param : $4->getParams()) {
+            if (param->getName() == "NOT DEFINED") {
+                yyerror(("Function " + $2->getName() + " has unnamed parameters").c_str());
+                paramsInDefinitionHaveNames = false;
+                break;
+            }
+        }
+
         // checking whether this name has been used before
         SymbolInfo *previous = st->lookup($2->getName());
         if(previous != nullptr) {
@@ -132,8 +142,12 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN { // compound_s
                 // params is just for comparing, not inserting parameters
                 SymbolInfo *returnType = previous->getParams()[0];
                 vector<SymbolInfo*> params;
+                bool paramsInDeclarationHaveNames = true;
                 for (int i = 1; i < previous->getParams().size(); i++) {
                     params.push_back(previous->getParams()[i]);
+                    if(previous->getParams()[i]->getName() == "NOT DEFINED") {
+                        paramsInDeclarationHaveNames = false;
+                    }
                 }
 
                 if (returnType->getType() != $1->getName()) {
@@ -146,15 +160,19 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN { // compound_s
                     yyerror(("Function " + $2->getName() + " has different parameters from the previous definition").c_str());
                 
                 } else {
-                    // all is well
-                    // later I will check if some paramters don't have a name
-                    
+                    if (!paramsInDeclarationHaveNames && paramsInDefinitionHaveNames) {
+                        // replace previous's params with $4's params
+                        vector<SymbolInfo*> replaceParams;
+                        for (SymbolInfo* p : $4->getParams()) {
+                            replaceParams.push_back((new SymbolInfo())->copySymbol(p));
+                        }
+                        previous->setParams(replaceParams);
+                    } else if (paramsInDefinitionHaveNames) {
+                        // all is well
+                    } else {
+                        // fall through
+                    }
                 }
-
-                // whatever happens, params should be paramsToBeInserted
-                // into the scope. huh
-                // handling the parameters
-                paramsToBeInserted = $4->getParams();
             }
 
         } else {
@@ -165,16 +183,15 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN { // compound_s
                 params.push_back((new SymbolInfo())->copySymbol(param));
             }
             st->insert((new SymbolInfo($2->getName(), "FUNCTION"))->setParams(params));
-
-            // handling the parameters
-            paramsToBeInserted = $4->getParams();
         }
 
         // enter scope
         st->enterScope();
 
+        // whatever happens, params should be paramsToBeInserted
+        // into the scope. huh
         // inserting the params
-        for (SymbolInfo* param : paramsToBeInserted) {
+        for (SymbolInfo* param : $4->getParams()) {
             st->insert(param);
         }
 

@@ -27,3 +27,12 @@ to-do
 - is the function double defined
 - is it defined already when beign called
 - is it defined already when being declared
+- what happens when we call a function which is declared not defined and then never really define it
+- assign type check
+- array index not integer (both call and declaration)
+- both operands of mod should be int
+- TYPE CONVERSION (details in sped pdf)
+- variable doubel decalartion in the same scope
+- array used as variables and vice versa [have I done it already?]
+- functions used as variables/arrays and vice versa
+- functions declared in scopes other than global scope

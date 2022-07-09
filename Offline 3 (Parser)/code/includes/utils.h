@@ -1,5 +1,8 @@
+#ifndef UTILS_H
+#define UTILS_H
+
 #include <bits/stdc++.h>
-#include "SymbolTable.h"
+#include "SymbolInfo.h"
 using namespace std;
 
 void yylog(ofstream &logOut, unsigned long lineNo, string left, string right, string symbolName) {
@@ -7,14 +10,12 @@ void yylog(ofstream &logOut, unsigned long lineNo, string left, string right, st
     logOut << symbolName << endl << endl;
 }
 
-vector<string> splitString(string line, char delim)
-{
+vector<string> splitString(string line, char delim) {
     stringstream ss(line);
     vector<string> tokens;
     string intermediate;
 
-    while (getline(ss, intermediate, delim))
-    {
+    while (getline(ss, intermediate, delim)) {
         tokens.push_back(intermediate);
     }
     return tokens;
@@ -35,14 +36,11 @@ vector<string> splitString(string line, char delim)
 //     return size;
 // }
 
-bool compareTypes(vector<SymbolInfo *> v1, vector<SymbolInfo *> v2)
-{
-    if (v1.size() != v2.size())
-    {
+bool compareTypes(vector<SymbolInfo*> v1, vector<SymbolInfo*> v2) {
+    if (v1.size() != v2.size()) {
         return false;
     }
-    for (int i = 0; i < v1.size(); i++)
-    {
+    for (int i = 0; i < v1.size(); i++) {
         if (v1[i]->getType() != v2[i]->getType())
         {
             return false;
@@ -58,19 +56,24 @@ bool compareTypes(vector<SymbolInfo *> v1, vector<SymbolInfo *> v2)
 //     return s;
 // }
 
-bool typeMatch(string type1, string type2)
-{
-    if (type1 == type2)
-    {
+bool typeMatch(string type1, string type2) {
+    if (type1 == type2) {
         return true;
     }
-    else if ((type1 == "int") && (type2 == "CONST_INT"))
-    {
+    else if ((type1 == "int") && (type2 == "CONST_INT")) {
         return true;
     }
-    else if ((type1 == "float") && (type2 == "CONST_FLOAT" || type2 == "CONST_INT" || type2 == "int"))
-    {
+    else if ((type1 == "float") && (type2 == "CONST_FLOAT" || type2 == "CONST_INT" || type2 == "int")) {
         return true;
     }
     return false;
 }
+
+// bool containsSubstring(string s1, string s2) {
+//     if (s1.find(s2) != string::npos) {
+//         return true;
+//     }
+//     return false;
+// }
+
+#endif // UTILS_H

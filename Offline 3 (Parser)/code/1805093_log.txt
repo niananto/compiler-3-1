@@ -2,76 +2,120 @@ Line 1: type_specifier : INT
 
 int
 
-Line 1: declaration_list : ID
-
-x
-
-Line 1: declaration_list : declaration_list COMMA ID
-
-x,y
-
-Line 1: declaration_list : declaration_list COMMA ID
-
-x,y,z
-
-Line 1: var_declaration : type_specifier declaration_list SEMICOLON
-
-int x,y,z;
-
-Line 1: unit : var_declaration
-
-int x,y,z;
-
-
-Line 1: program : unit
-
-int x,y,z;
-
-
-Line 1: type_specifier : FLOAT
-
-float
-
-Line 1: declaration_list : ID
-
-a
-
-Line 1: var_declaration : type_specifier declaration_list SEMICOLON
-
-float a;
-
-Line 1: unit : var_declaration
-
-float a;
-
-
-Line 1: program : program unit
-
-int x,y,z;
-float a;
-
-
-Line 3: type_specifier : INT
+Line 1: type_specifier : INT
 
 int
 
-Line 3: type_specifier : INT
+Line 1: parameter_list : type_specifier
 
 int
 
-Line 3: parameter_list : type_specifier
+Line 1: type_specifier : INT
 
 int
 
-Error at line 3: syntax error
+Line 1: parameter_list : parameter_list COMMA type_specifier ID
+
+int,int b
+
+Error at line 1: Function foo has unnamed parameters
+
+Line 2: variable : ID
+
+b
+
+Line 2: factor : CONST_INT
+
+10
+
+Line 2: unary_expression : factor
+
+10
+
+Line 2: term : unary_expression
+
+10
+
+Line 2: simple_expression : term
+
+10
+
+Line 2: rel_expression : simple_expression
+
+10
+
+Line 2: logic_expression : rel_expression
+
+10
+
+Line 2: expression : variable ASSIGNOP logic_expression
+
+b=10
+
+Line 2: expression_statement : expression SEMICOLON
+
+b=10;
+
+Line 2: statement : expression_statement
+
+b=10;
+
+
+Line 2: statements : statement
+
+b=10;
+
+
+Line 3: compound_statement : LCURL statements RCURL
+
+{
+b=10;
+}
+
+
+
+
+ScopeTable # 1.1
+ 8 --> < b , ID > 
+ 18 --> < NOT DEFINED , ID > 
 
 
 
 ScopeTable # 1
- 0 --> < x , ID > 
- 1 --> < y , ID > 
- 2 --> < z , ID > 
- 7 --> < a , ID > 
+ 24 --> < foo , ID > 
+
+
+Line 3: func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement
+
+int foo(int,int b){
+b=10;
+}
+
+
+Line 3: unit : func_definition
+
+int foo(int,int b){
+b=10;
+}
+
+
+
+Line 3: program : unit
+
+int foo(int,int b){
+b=10;
+}
+
+
+
+Line 3: start : program
+
+
+
+
+
+ScopeTable # 1
+ 24 --> < foo , ID > 
 
 
 Total lines: 3

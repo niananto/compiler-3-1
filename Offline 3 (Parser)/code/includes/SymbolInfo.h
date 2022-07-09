@@ -1,6 +1,7 @@
 #ifndef SYMBOLINFO_H
 #define SYMBOLINFO_H
 
+// #include<bits/stdc++.h>
 #include "iostream"
 using namespace std;
 
@@ -103,6 +104,17 @@ public:
         this->arraySize = arraySize;
         return this;
     }
+
+    // SymbolInfo* getReturnType() {
+    //     if (containsSubstring(type, "FUNCTION")) {
+    //         // we are assuming there is always a return type
+    //         // pushed in the 0th index of params
+    //         // if it is a "FUNCTION" type already
+    //         // both declared only and defined ones
+    //         return params[0];
+    //     }
+    //     return nullptr;
+    // }
 };
 
 
