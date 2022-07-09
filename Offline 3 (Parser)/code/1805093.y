@@ -140,7 +140,7 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN { // compound_s
             } else {
                 // check if the return type and params are the same
                 // params is just for comparing, not inserting parameters
-                SymbolInfo *returnType = previous->getParams()[0];
+                SymbolInfo *returnType = previous->getReturnType();
                 vector<SymbolInfo*> params;
                 bool paramsInDeclarationHaveNames = true;
                 for (int i = 1; i < previous->getParams().size(); i++) {
@@ -170,7 +170,7 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN { // compound_s
                     } else if (paramsInDefinitionHaveNames) {
                         // all is well
                     } else {
-                        // fall through
+                        // nothing to do
                     }
                 }
             }
@@ -221,7 +221,7 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN { // compound_s
             } else {
                 // check if the return type and params are the same
                 // in this case params should be empty
-                SymbolInfo *returnType = previous->getParams()[0];
+                SymbolInfo *returnType = previous->getReturnType();
 
                 if (returnType->getType() != $1->getName()) {
                     yyerror(("Return type mismatch with function declaration in function " + $2->getName()).c_str());
@@ -501,7 +501,7 @@ variable : ID {
         SymbolInfo* previous = st->lookup($1->getName());
         if (previous != nullptr) {
             $$->setType(previous->getType());
-            if (previous->getArraySize() == -1) {
+            if (previous->isArray() == false) {
                 // all is well
             } else {
                 yyerror(("Type mismatch, " + $1->getName() + " is an array").c_str());
@@ -519,7 +519,7 @@ variable : ID {
         SymbolInfo* previous = st->lookup($1->getName());
         if (previous != nullptr) {
             $$->setType(previous->getType());
-            if (previous->getArraySize() != -1) {
+            if (previous->isArray() == true) {
                 // all is well
             } else {
                 yyerror(($1->getName() + " not an array").c_str());
@@ -679,8 +679,6 @@ factor : variable {
             yyerror(("Undeclared function " + $1->getName()).c_str());
         } else {
             if (previous->getType() == "FUNCTION") {
-                // should check if the function is defined or just declared
-                // will do this later
                 if (previous->getParams().size() > 0) {
                     // check if number of arguments matches
                     if ((previous->getParams().size() - 1) != $3->getParams().size()) {
@@ -701,11 +699,11 @@ factor : variable {
                         }
                     }
                     // set previous's return type to it's type
-                    if (previous->getParams()[0]->getType() == "void") {
+                    if (previous->getReturnType()->getType() == "void") {
                         $$->setType("UNDEFINED");
                         yyerror("Void function used in expression");
                     } else {
-                        $$->setType(previous->getParams()[0]->getType());
+                        $$->setType(previous->getReturnType()->getType());
                     }
                 } else {
                     $$->setType("UNDEFINED");

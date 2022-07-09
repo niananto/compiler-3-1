@@ -1,8 +1,7 @@
 #ifndef SYMBOLINFO_H
 #define SYMBOLINFO_H
 
-// #include<bits/stdc++.h>
-#include "iostream"
+#include<bits/stdc++.h>
 using namespace std;
 
 class SymbolInfo {
@@ -11,6 +10,7 @@ class SymbolInfo {
     SymbolInfo* next;
 
     vector<SymbolInfo*> params; // for function & declaration_list
+    bool isFuncDefined; // for checking double definition
     unsigned arraySize; // for array
 
 public:
@@ -19,6 +19,7 @@ public:
         type = "NOT DEFINED";
         next = nullptr;
 
+        isFuncDefined = false;
         arraySize = -1;
     }
 
@@ -27,6 +28,7 @@ public:
         this->type = type;
         next = nullptr;
 
+        isFuncDefined = false;
         arraySize = -1;
     }
 
@@ -46,6 +48,7 @@ public:
         next = symbol->next;
 
         params = symbol->params;
+        isFuncDefined = symbol->isFuncDefined;
         arraySize = symbol->arraySize;
 
         return this;
@@ -105,16 +108,38 @@ public:
         return this;
     }
 
-    // SymbolInfo* getReturnType() {
-    //     if (containsSubstring(type, "FUNCTION")) {
-    //         // we are assuming there is always a return type
-    //         // pushed in the 0th index of params
-    //         // if it is a "FUNCTION" type already
-    //         // both declared only and defined ones
-    //         return params[0];
-    //     }
-    //     return nullptr;
-    // }
+    bool isFunction() {
+        if (type.find("FUNCTION") != string::npos) {
+            return true;
+        }
+        return false;
+    }
+
+    SymbolInfo *getReturnType()
+    {
+        if (isFunction())
+        {
+            // we are assuming there is always a return type
+            // pushed in the 0th index of params
+            // if it is a "FUNCTION" type already
+            // both declared only and defined ones
+            return params[0];
+        }
+        return nullptr;
+    }
+
+    bool getIsFuncDefined() {
+        return isFuncDefined;
+    }
+
+    SymbolInfo* setIsFuncDefined(bool isFuncDefined) {
+        this->isFuncDefined = isFuncDefined;
+    }
+
+    bool isArray() {
+        return arraySize != -1;
+    }
+    
 };
 
 
