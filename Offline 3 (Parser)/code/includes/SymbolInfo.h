@@ -10,7 +10,7 @@ class SymbolInfo {
     SymbolInfo* next;
 
     vector<SymbolInfo*> params; // for function & declaration_list
-    bool isFuncDefined; // for checking double definition
+    bool defined; // for checking double definition
     unsigned arraySize; // for array
 
 public:
@@ -19,7 +19,7 @@ public:
         type = "NOT DEFINED";
         next = nullptr;
 
-        isFuncDefined = false;
+        defined = false;
         arraySize = -1;
     }
 
@@ -28,7 +28,7 @@ public:
         this->type = type;
         next = nullptr;
 
-        isFuncDefined = false;
+        defined = false;
         arraySize = -1;
     }
 
@@ -48,7 +48,7 @@ public:
         next = symbol->next;
 
         params = symbol->params;
-        isFuncDefined = symbol->isFuncDefined;
+        defined = symbol->defined;
         arraySize = symbol->arraySize;
 
         return this;
@@ -128,12 +128,16 @@ public:
         return nullptr;
     }
 
-    bool getIsFuncDefined() {
-        return isFuncDefined;
+    bool isDefined() {
+        return defined;
     }
 
-    SymbolInfo* setIsFuncDefined(bool isFuncDefined) {
-        this->isFuncDefined = isFuncDefined;
+    SymbolInfo* setDefined() {
+        this->defined = true;
+    }
+
+    SymbolInfo* unsetDefined() {
+        this->defined = false;
     }
 
     bool isArray() {

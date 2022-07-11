@@ -15,6 +15,12 @@ ofstream errorOut;
 extern unsigned long lineNo;
 extern unsigned long errorNo;
 
+// to check if every declared only (not defined) functions
+// are defined later if that function was called
+// if the function was never called, then declaration with
+// no definition later is not a problem
+vector<<string, unsigned long>> calledFunctions; // but not answered hehe
+
 void yyerror(const char *s) {
 	logOut << "Error at line " << lineNo << ": " << s << endl << endl;
 	errorOut << "Error at line " << lineNo << ": " << s << endl << endl;
@@ -77,6 +83,33 @@ unit : var_declaration {
 func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON {
         $$ = new SymbolInfo(($1->getName() + " " + $2->getName() + "(" + $4->getName() + ");\n"), "FUNC_DECLARATION");
         yylog(logOut, lineNo, "func_declaration", "type_specifier ID LPAREN parameter_list RPAREN SEMICOLON", $$->getName());
+
+        // check if function already exists
+        SymbolInfo* previous = st->lookup($2->getName());
+        if (previous != nullptr) {
+            if (previous->isDefined()) {
+                yyerror(("Function " + $2->getName() + " already defined").c_str());
+            } else {
+                // double declaration
+                // check for matching return type and parameter list
+                // it's only a problem when they don't match
+
+                vector<SymbolInfo*> params;
+                for (int i = 1; i < previous->getParams().size(); i++) {
+                    params.push_back(previous->getParams()[i]);
+                }
+                
+                if (previous->getReturnType()->getType() != $1->getName()) {
+                    yyerror(("Return type mismatch with function declaration in function " + $2->getName()).c_str());
+                } else if (params.size() != $4->getParams().size()) {
+                    yyerror(("Total number of arguments mismatch with declaration in function " + $2->getName()).c_str());
+                } else if(compareTypes(params, $4->getParams()) == false) {
+                    yyerror(("Function " + $2->getName() + " has different parameters from the previous declaration").c_str());
+                } else {
+                    // all is well
+                }
+            }
+        }
         
         // dummy enter and exit scope
         st->enterScope();
@@ -98,6 +131,26 @@ func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON {
         $$ = new SymbolInfo(($1->getName() + " "  + $2->getName() + "();\n"), "FUNC_DECLARATION");
         yylog(logOut, lineNo, "func_declaration", "type_specifier ID LPAREN RPAREN SEMICOLON", $$->getName());
 
+        // check if function already exists
+        SymbolInfo* previous = st->lookup($2->getName());
+        if (previous != nullptr) {
+            if (previous->isDefined()) {
+                yyerror(("Function " + $2->getName() + " already defined").c_str());
+            } else {
+                // double declaration
+                // check for matching return type and parameter list
+                // it's only a problem when they don't match
+                
+                if (previous->getReturnType()->getType() != $1->getName()) {
+                    yyerror(("Return type mismatch with function declaration in function " + $2->getName()).c_str());
+                } else if (previous->getParams().size() > 1) {
+                    yyerror(("Function " + $2->getName() + " should not have any parameter from previous declaration").c_str());
+                } else {
+                    // all is well
+                }
+            }
+        }
+
         // dummy enter and exit scope
         st->enterScope();
         st->exitScope();
@@ -111,9 +164,6 @@ func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON {
 	;
 		 
 func_definition : type_specifier ID LPAREN parameter_list RPAREN { // compound_statement here
-        
-        // will insert the params at the end
-        vector<SymbolInfo*> paramsToBeInserted;
 
         // check if some paramters don't have a name
         bool paramsInDefinitionHaveNames = true;
@@ -133,11 +183,13 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN { // compound_s
             if(previous->getType() != "FUNCTION") {
                 yyerror(("Multiple declaration of " + $2->getName()).c_str());
 
-                // cannot insert the function
-                // but insert this scope's params
-                paramsToBeInserted = $4->getParams();
+            // check for double definition
+            } else if (previous->isDefined()) {
+                yyerror(("Redefinition of " + $2->getName()).c_str());
 
             } else {
+                previous->setDefined();
+
                 // check if the return type and params are the same
                 // params is just for comparing, not inserting parameters
                 SymbolInfo *returnType = previous->getReturnType();
@@ -182,13 +234,13 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN { // compound_s
             for (SymbolInfo* param : $4->getParams()) {
                 params.push_back((new SymbolInfo())->copySymbol(param));
             }
-            st->insert((new SymbolInfo($2->getName(), "FUNCTION"))->setParams(params));
+            st->insert((new SymbolInfo($2->getName(), "FUNCTION"))->setParams(params)->setDefined());
         }
 
         // enter scope
         st->enterScope();
 
-        // whatever happens, params should be paramsToBeInserted
+        // whatever happens, params should be inserted into the symbol table
         // into the scope. huh
         // inserting the params
         for (SymbolInfo* param : $4->getParams()) {
@@ -218,7 +270,14 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN { // compound_s
             // was that a function too
             if(previous->getType() != "FUNCTION") {
                 yyerror(("Multiple declaration of " + $2->getName()).c_str());
+
+            // check for double definition
+            } else if (previous->isDefined()) {
+                yyerror(("Redefinition of " + $2->getName()).c_str());
+
             } else {
+                previous->setDefined();
+
                 // check if the return type and params are the same
                 // in this case params should be empty
                 SymbolInfo *returnType = previous->getReturnType();
@@ -238,7 +297,7 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN { // compound_s
 
         } else {
             // inserting the function
-            st->insert((new SymbolInfo($2->getName(), "FUNCTION"))->addParam(new SymbolInfo("RETURN_TYPE", $1->getName())));
+            st->insert((new SymbolInfo($2->getName(), "FUNCTION"))->addParam(new SymbolInfo("RETURN_TYPE", $1->getName()))->setDefined());
 
             // no params so no insertion
         }

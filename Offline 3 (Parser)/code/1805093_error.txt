@@ -1,2 +1,6 @@
 Error at line 1: Function foo has unnamed parameters
 
+Error at line 5: Redefinition of foo
+
+Error at line 11: Function foo2 has different parameters from the previous declaration
+

@@ -108,9 +108,77 @@ b=10;
 
 
 
-Line 3: start : program
+Line 5: type_specifier : INT
+
+int
+
+Line 5: type_specifier : FLOAT
+
+float
+
+Line 5: parameter_list : type_specifier ID
+
+float f
+
+Error at line 5: Redefinition of foo
+
+Line 6: variable : ID
+
+f
+
+Line 6: factor : CONST_FLOAT
+
+10.00
+
+Line 6: unary_expression : factor
+
+10.00
+
+Line 6: term : unary_expression
+
+10.00
+
+Line 6: simple_expression : term
+
+10.00
+
+Line 6: rel_expression : simple_expression
+
+10.00
+
+Line 6: logic_expression : rel_expression
+
+10.00
+
+Line 6: expression : variable ASSIGNOP logic_expression
+
+f=10.00
+
+Line 6: expression_statement : expression SEMICOLON
+
+f=10.00;
+
+Line 6: statement : expression_statement
+
+f=10.00;
 
 
+Line 6: statements : statement
+
+f=10.00;
+
+
+Line 7: compound_statement : LCURL statements RCURL
+
+{
+f=10.00;
+}
+
+
+
+
+ScopeTable # 1.2
+ 12 --> < f , ID > 
 
 
 
@@ -118,5 +186,251 @@ ScopeTable # 1
  24 --> < foo , ID > 
 
 
-Total lines: 3
-Total errors: 1
+Line 7: func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement
+
+int foo(float f){
+f=10.00;
+}
+
+
+Line 7: unit : func_definition
+
+int foo(float f){
+f=10.00;
+}
+
+
+
+Line 7: program : program unit
+
+int foo(int,int b){
+b=10;
+}
+
+int foo(float f){
+f=10.00;
+}
+
+
+
+Line 9: type_specifier : VOID
+
+void
+
+Line 9: type_specifier : INT
+
+int
+
+Line 9: parameter_list : type_specifier ID
+
+int a
+
+Line 9: func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON
+
+void foo2(int a);
+
+
+Line 9: unit : func_declaration
+
+void foo2(int a);
+
+
+Line 9: program : program unit
+
+int foo(int,int b){
+b=10;
+}
+
+int foo(float f){
+f=10.00;
+}
+
+void foo2(int a);
+
+
+Line 10: type_specifier : VOID
+
+void
+
+Line 10: type_specifier : INT
+
+int
+
+Line 10: parameter_list : type_specifier ID
+
+int a
+
+Line 10: func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON
+
+void foo2(int a);
+
+
+Line 10: unit : func_declaration
+
+void foo2(int a);
+
+
+Line 10: program : program unit
+
+int foo(int,int b){
+b=10;
+}
+
+int foo(float f){
+f=10.00;
+}
+
+void foo2(int a);
+void foo2(int a);
+
+
+Line 11: type_specifier : VOID
+
+void
+
+Line 11: type_specifier : FLOAT
+
+float
+
+Line 11: parameter_list : type_specifier ID
+
+float a
+
+Line 11: func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON
+
+void foo2(float a);
+
+
+Error at line 11: Function foo2 has different parameters from the previous declaration
+
+Line 11: unit : func_declaration
+
+void foo2(float a);
+
+
+Line 11: program : program unit
+
+int foo(int,int b){
+b=10;
+}
+
+int foo(float f){
+f=10.00;
+}
+
+void foo2(int a);
+void foo2(int a);
+void foo2(float a);
+
+
+Line 13: type_specifier : INT
+
+int
+
+
+Line no 14: Token <COMMENT> Lexeme // foo2(2); found
+Line 16: factor : CONST_INT
+
+0
+
+Line 16: unary_expression : factor
+
+0
+
+Line 16: term : unary_expression
+
+0
+
+Line 16: simple_expression : term
+
+0
+
+Line 16: rel_expression : simple_expression
+
+0
+
+Line 16: logic_expression : rel_expression
+
+0
+
+Line 16: expression : logic_expression
+
+0
+
+Line 16: statement : RETURN expression SEMICOLON
+
+return 0;
+
+
+Line 16: statements : statement
+
+return 0;
+
+
+Line 17: compound_statement : LCURL statements RCURL
+
+{
+return 0;
+}
+
+
+
+
+ScopeTable # 1.6
+
+
+
+ScopeTable # 1
+ 1 --> < main , ID > 
+ 14 --> < foo2 , ID > 
+ 24 --> < foo , ID > 
+
+
+Line 17: func_definition : type_specifier ID LPAREN RPAREN compound_statement
+
+int main(){
+return 0;
+}
+
+
+Line 17: unit : func_definition
+
+int main(){
+return 0;
+}
+
+
+
+Line 17: program : program unit
+
+int foo(int,int b){
+b=10;
+}
+
+int foo(float f){
+f=10.00;
+}
+
+void foo2(int a);
+void foo2(int a);
+void foo2(float a);
+int main(){
+return 0;
+}
+
+
+
+Line 17: start : program
+
+
+
+
+
+ScopeTable # 1
+ 1 --> < main , ID > 
+ 14 --> < foo2 , ID > 
+ 24 --> < foo , ID > 
+
+
+Total lines: 17
+Total errors: 3

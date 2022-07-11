@@ -1,3 +1,17 @@
 int foo(int, int b) {
     b = 10;
 }
+
+int foo(float f) {
+    f = 10.0;
+}
+
+void foo2(int a);
+void foo2(int a);
+void foo2(float a);
+
+int main() {
+    // foo2(2);
+
+    return 0;
+}
