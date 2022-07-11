@@ -15,11 +15,10 @@ ofstream errorOut;
 extern unsigned long lineNo;
 extern unsigned long errorNo;
 
-// to check if every declared only (not defined) functions
-// are defined later if that function was called
-// if the function was never called, then declaration with
-// no definition later is not a problem
-vector<<string, unsigned long>> calledFunctions; // but not answered hehe
+// [what happens when we call a function which is declared not defined and then never really define it]
+// to check if every declared only (not defined) functions are defined later if that function was called
+// if the function was never called, then declaration with no definition later is not a problem
+vector< pair <string, unsigned long> > calledFunctions; // only the valid function calls are stored here
 
 void yyerror(const char *s) {
 	logOut << "Error at line " << lineNo << ": " << s << endl << endl;
@@ -49,6 +48,15 @@ void yyerror(const char *s) {
 start : program {
         $$ = $1;
         yylog(logOut, lineNo, "start", "program", "");
+
+        // check if every declared only (not defined) functions are defined later if that function was called
+        for (pair<string, unsigned long> a : calledFunctions) {
+            // these functions will always exist in the symbol table
+            // no need to compare with nullptr
+            if (st->lookup(a.first)->isDefined() == false) {
+                yyerror(("No definition found for function " + a.first + " at line " + to_string(a.second)).c_str());
+            }
+        }
 	}
 	;
 
@@ -746,9 +754,12 @@ factor : variable {
                         // check if types of arguments and parameters match
                         for (int i = 1; i < previous->getParams().size(); i++) {
                             
-
                             if (typeMatch(previous->getParams()[i]->getType(), $3->getParams()[i-1]->getType())) {
-                                // going well so far
+                                // last iteration
+                                if (i == (previous->getParams().size() - 1)) {
+                                    // all is well
+                                    calledFunctions.push_back(make_pair($1->getName(), lineNo));
+                                }
                             } else {
                                 yyerror((to_string(i) + "th argument mismatch in function " + $1->getName()).c_str());
                                 // according to sample log
