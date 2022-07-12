@@ -1,32 +1,8 @@
-Error at line 1: Function foo has unnamed parameters
+Error at line 3: syntax error
 
-Error at line 5: Redefinition of foo
+Error at line 3: 1th parameter's name not given in function definition of var
 
-Error at line 11: Function foo2 has different parameters from the previous declaration
+Error at line 8: syntax error
 
-Error at line 21: Type mismatch
 
-Error at line 29: Expression inside third brackets not an integer
-
-Error at line 30: Expression inside third brackets not an integer
-
-Error at line 31: Expression inside third brackets not an integer
-
-Error at line 33: Multiple declaration of b
-
-Error at line 34: Multiple declaration of b
-
-Error at line 36: Type mismatch, c is not a variable
-
-Error at line 37: Type mismatch, a is not an array
-
-Error at line 39: Type mismatch, a is not a function
-
-Error at line 40: Type mismatch, c is not a function
-
-Error at line 41: Type mismatch, foo is not a variable
-
-Error at line 42: Type mismatch, foo is not an array
-
-Error at line 44: syntax error
-
+Error at line no 10: Unrecognized character '#'

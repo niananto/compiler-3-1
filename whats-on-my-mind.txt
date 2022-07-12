@@ -36,3 +36,5 @@ to-do
 - array used as variables and vice versa [haven't I done it already?][done]
 - functions used as variables/arrays and vice versa [done]
 - functions declared in scopes other than global scope -> {error recovery}
+
+have to deal with all the UNDEFINED"s
