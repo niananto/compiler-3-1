@@ -65,13 +65,13 @@ bool vectorContains(const std::vector<T> &v, T x) {
 }
 
 bool typeMatch(string type1, string type2) {
-    if (type1 == type2) {
+    if (type1 == "UNDEFINED" || type2 == "UNDEFINED") {
         return true;
-    }
-    else if ((vectorContains(intFamily, type1)) && (vectorContains(intFamily, type2))) {
+    } else if (type1 == type2) {
         return true;
-    }
-    else if ((vectorContains(floatFamily, type1)) && (vectorContains(floatFamily, type2) || vectorContains(intFamily, type2))) {
+    } else if ((vectorContains(intFamily, type1)) && (vectorContains(intFamily, type2))) {
+        return true;
+    } else if ((vectorContains(floatFamily, type1)) && (vectorContains(floatFamily, type2) || vectorContains(intFamily, type2))) {
         return true;
     }
     return false;
@@ -85,20 +85,36 @@ bool typeMatch(string type1, string type2) {
 // }
 
 // c++17 features - tuple
-tuple<bool, SymbolInfo*> implicitTypeCast(SymbolInfo* left, SymbolInfo* right) {
+tuple<bool, SymbolInfo*> typeCast(string left, string right) { // ASSIGNOP
     bool successful = true;
     SymbolInfo* s = new SymbolInfo();
 
-    if (left->getType() == right->getType()) { // including void = void
-        s->setType(left->getType());
-    } else if (left->getType() == "float" && right->getType() == "int") {
-        s->setType(left->getType());
-    } else if (left->getType() == "int" && right->getType() == "float") {
-        successful = false;
-    } else { // everything with "void" except void = void
+    if (vectorContains(floatFamily, left) && (right != "void")) {
+        s->setType(left);
+    } else if (vectorContains(intFamily, left) && vectorContains(intFamily, right)) {
+        s->setType(left);
+    } else { 
         successful = false;
     }
 
+    // have to make 1.2 to 1 when assigned to an int????
+
+    return {successful, s};
+}
+
+// c++17 features - tuple
+tuple<bool, SymbolInfo*> implicitTypeCast(string left, string right) { // ADDOP MULOP
+    bool successful = true;
+    SymbolInfo* s = new SymbolInfo();
+
+    if (left == "void" || right == "void") {
+        successful = false;
+    } else if (vectorContains(floatFamily, left) || vectorContains(floatFamily, right)) {
+        s->setType("float");
+    } else { // both int
+        s->setType(left);
+    }
+    
     return {successful, s};
 }
 

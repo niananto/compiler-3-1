@@ -108,6 +108,10 @@ public:
         return this;
     }
 
+    bool isVariable() {
+        return (!isFunction() && !isArray());
+    }
+
     bool isFunction() {
         if (type.find("FUNCTION") != string::npos) {
             return true;

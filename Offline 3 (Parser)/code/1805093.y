@@ -568,10 +568,10 @@ variable : ID {
         SymbolInfo* previous = st->lookup($1->getName());
         if (previous != nullptr) {
             $$->setType(previous->getType());
-            if (previous->isArray() == false) {
+            if (previous->isVariable() == true) {
                 // all is well
             } else {
-                yyerror(("Type mismatch, " + $1->getName() + " is an array").c_str());
+                yyerror(("Type mismatch, " + $1->getName() + " is not a variable").c_str());
             }
         } else {
             $$->setType("UNDEFINED");
@@ -589,7 +589,7 @@ variable : ID {
             if (previous->isArray() == true) {
                 // all is well
             } else {
-                yyerror(($1->getName() + " not an array").c_str());
+                yyerror(("Type mismatch, " + $1->getName() + " is not an array").c_str());
             }
         } else {
             $$->setType("UNDEFINED");
@@ -599,10 +599,10 @@ variable : ID {
         // check if expression is INT
         if ($3->getType() != "CONST_INT") {
             if (st->lookup($3->getName()) == nullptr) {
-                yyerror("Expression inside third brackets not an integer");
+                if ($3->getType() != "int") {
+                    yyerror("Expression inside third brackets not an integer");
+                }
             } else {
-                // have to check for a[1+c] here
-                // will do that later
                 if (st->lookup($3->getName())->getType() != "int") {
                     yyerror("Expression inside third brackets not an integer");
                 } else {
@@ -630,16 +630,19 @@ expression : logic_expression {
         yylog(logOut, lineNo, "expression", "variable ASSIGNOP logic_expression", $$->getName());
 
         // check for type mismatch
-        if (typeMatch($1->getType(), $3->getType())) {
+        // if (typeMatch($1->getType(), $3->getType())) {
+        //     // all is well
+        // } else {
+        //     yyerror("Type mismatch");
+        // }
+        // c++17 features - auto, tuple
+        auto [success, changedSymbol] = typeCast($1->getType(), $3->getType());
+        if (success) {
             // all is well
+            $$->setType(changedSymbol->getType());
         } else {
-            if ($1->getType() == "UNDEFINED") {
-                // do nothing
-            } else {
-                yyerror("Type mismatch");
-                
-            }
-            
+            yyerror("Type mismatch");
+            $$->setType("UNDEFINED");
         }
 
         delete $1; delete $3;
@@ -651,9 +654,16 @@ logic_expression : rel_expression {
         yylog(logOut, lineNo, "logic_expression", "rel_expression", $$->getName());
     } 	
     | rel_expression LOGICOP rel_expression {
-        // check if both of them are BOOL/int or not later
         $$ = new SymbolInfo(($1->getName() + $2->getName() + $3->getName()), "int");
         yylog(logOut, lineNo, "logic_expression", "rel_expression LOGICOP rel_expression", $$->getName());
+
+        // check if both of them are int or not
+        if ($1->getType() != "int" || $3->getType() != "int") {
+            yyerror("Type mismatch - LOGICOP expects int");
+            $$->setType("UNDEFINED");
+        } else {
+            // all is well
+        }
 
         delete $1; delete $2; delete $3;
     }
@@ -664,9 +674,16 @@ rel_expression : simple_expression {
         yylog(logOut, lineNo, "rel_expression", "simple_expression", $$->getName());
     }
     | simple_expression RELOP simple_expression	{
-        // check if both of them are BOOL/int or not later
         $$ = new SymbolInfo(($1->getName() + $2->getName() + $3->getName()), "int");
         yylog(logOut, lineNo, "rel_expression", "simple_expression RELOP simple_expression", $$->getName());
+
+        // check if both of them are int or not
+        if ($1->getType() != "int" || $3->getType() != "int") {
+            yyerror("Type mismatch - RELOP expects int");
+            $$->setType("UNDEFINED");
+        } else {
+            // all is well
+        }
 
         delete $1; delete $2; delete $3;
     }
@@ -680,6 +697,16 @@ simple_expression : term {
         $$ = new SymbolInfo(($1->getName() + $2->getName() + $3->getName()), $3->getType());
         yylog(logOut, lineNo, "simple_expression", "simple_expression ADDOP term", $$->getName());
 
+        // type cast
+        auto [success, changedSymbol] = implicitTypeCast($1->getType(), $3->getType());
+        if (success) {
+            // all is well
+            $$->setType(changedSymbol->getType());
+        } else {
+            yyerror("Type mismatch - void cannot be an operand of ADDOP");
+            $$->setType("UNDEFINED");
+        }
+
         delete $1; delete $2; delete $3;
     }
     ;
@@ -692,9 +719,9 @@ term :	unary_expression {
         $$ = new SymbolInfo(($1->getName() + $2->getName() + $3->getName()), $3->getType());
         yylog(logOut, lineNo, "term", "term MULOP unary_expression", $$->getName());
 
-        // check for non-integer in modulus
+        // check for non-integers in modulus
         if ($2->getName() == "%") {
-            if (typeMatch("int", $3->getType())) {
+            if (typeMatch("int", $1->getType()) && typeMatch("int", $3->getType())) {
                 // all is well
             } else {
                 yyerror("Non-Integer operand on modulus operator");
@@ -707,6 +734,16 @@ term :	unary_expression {
             if ($3->getType() == "CONST_INT" && $3->getName() == "0") {
                 yyerror("Divide by zero");
             } // how to check for expressions evaluating into 0? later
+        }
+
+        // type cast
+        auto [success, changedSymbol] = implicitTypeCast($1->getType(), $3->getType());
+        if (success) {
+            // all is well
+            $$->setType(changedSymbol->getType());
+        } else {
+            yyerror("Type mismatch - void cannot be an operand of MULOP");
+            $$->setType("UNDEFINED");
         }
 
         delete $1; delete $2; delete $3;

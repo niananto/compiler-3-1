@@ -10,8 +10,40 @@ void foo2(int a);
 void foo2(int a);
 void foo2(float a);
 
+float foo3(int a) {
+    return 1.2;
+}
+
 int main() {
-    foo2(2);
+    // foo2(2);
+
+    int a;
+    a = foo3(2);
+
+    int c[10];
+    a = c[a+1];
+    a = c[1+a];
+
+    float b;
+    b=1.2;
+    c[b];
+    c[b+1];
+    c[b*2];
+
+    int b;
+    float b;
+
+    a = c;
+    b = a[1];
+
+    a(2);
+    c(5);
+    foo;
+    foo[2];
+
+    void foo4(int a) {
+        a = 5;
+    }
 
     return 0;
 }
