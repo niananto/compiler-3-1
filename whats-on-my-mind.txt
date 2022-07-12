@@ -24,15 +24,15 @@ idk why my looked up function from symboltable when that function got called, gi
 solved it fuckkkkkkkk
 
 to-do
-- is the function double defined
-- is it defined already when beign called
-- is it defined already when being declared
-- what happens when we call a function which is declared not defined and then never really define it
-- assign type check
-- array index not integer (both call and declaration)
-- both operands of mod should be int
-- TYPE CONVERSION (details in sped pdf)
-- variable doubel decalartion in the same scope
-- array used as variables and vice versa [have I done it already?]
-- functions used as variables/arrays and vice versa
-- functions declared in scopes other than global scope
+- is the function double defined [done]
+- is it declared already when being declared [done]
+- double declaration is a problem only when they don't match [done]
+- what happens when we call a function which is declared not defined and then never really define it [done]
+- assignop type check [done]
+- array index not integer (both call and declaration) [well declaration is done by default][done]
+- both operands of mod should be int [done]
+- TYPE CONVERSION (details in spec pdf) [done]
+- variable double decalartion in the same scope [done]
+- array used as variables and vice versa [haven't I done it already?][done]
+- functions used as variables/arrays and vice versa [done]
+- functions declared in scopes other than global scope -> {error recovery}
