@@ -38,3 +38,8 @@ to-do
 - functions declared in scopes other than global scope -> {error recovery}
 
 have to deal with all the UNDEFINED"s
+
+I will be give this a little bit of modularity
+getting the code blocks out of .y file for better error recovery
+
+I have moved statement:compound_statement to statements

@@ -64,14 +64,22 @@ bool vectorContains(const std::vector<T> &v, T x) {
 	return find(v.begin(), v.end(), x) != v.end();
 }
 
+bool isInt(string s) {
+    return vectorContains(intFamily, s);
+}
+
+bool isFloat(string s) {
+    return vectorContains(floatFamily, s);
+}
+
 bool typeMatch(string type1, string type2) {
     if (type1 == "UNDEFINED" || type2 == "UNDEFINED") {
         return true;
     } else if (type1 == type2) {
         return true;
-    } else if ((vectorContains(intFamily, type1)) && (vectorContains(intFamily, type2))) {
+    } else if ((isInt(type1)) && (isInt(type2))) {
         return true;
-    } else if ((vectorContains(floatFamily, type1)) && (vectorContains(floatFamily, type2) || vectorContains(intFamily, type2))) {
+    } else if ((isFloat(type1)) && (isFloat(type2) || isInt(type2))) {
         return true;
     }
     return false;
@@ -89,9 +97,9 @@ tuple<bool, SymbolInfo*> typeCast(string left, string right) { // ASSIGNOP
     bool successful = true;
     SymbolInfo* s = new SymbolInfo();
 
-    if (vectorContains(floatFamily, left) && (right != "void")) {
+    if (isFloat(left) && (right != "void")) {
         s->setType(left);
-    } else if (vectorContains(intFamily, left) && vectorContains(intFamily, right)) {
+    } else if (isInt(left) && isInt(right)) {
         s->setType(left);
     } else { 
         successful = false;
@@ -109,7 +117,7 @@ tuple<bool, SymbolInfo*> implicitTypeCast(string left, string right) { // ADDOP 
 
     if (left == "void" || right == "void") {
         successful = false;
-    } else if (vectorContains(floatFamily, left) || vectorContains(floatFamily, right)) {
+    } else if (isFloat(left) || isFloat(right)) {
         s->setType("float");
     } else { // both int
         s->setType(left);

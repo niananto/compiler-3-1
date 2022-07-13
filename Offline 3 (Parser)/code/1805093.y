@@ -1,6 +1,7 @@
 %{
 #include<bits/stdc++.h>
 #include "includes/SymbolTable.h"
+#include "includes/handleGrammers.h"
 #include "includes/utils.h"
 using namespace std;
 
@@ -177,321 +178,65 @@ func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON {
 		 
 func_definition : type_specifier ID LPAREN parameter_list RPAREN { // compound_statement here
 
-        vector<SymbolInfo*> paramsToBeInserted;
-
-        // check if some paramters don't have a name
-        bool paramsInDefinitionHaveNames = true;
-        for (int i=0; i<$4->getParams().size(); i++) {
-            SymbolInfo* param = $4->getParams()[i];
-            if (param->getName() == "NOT DEFINED") {
-                yyerror((to_string(i+1) + "th parameter's name not given in function definition of " + $2->getName()).c_str());
-                paramsInDefinitionHaveNames = false;
-            } else {
-                paramsToBeInserted.push_back(param);
-            }
-        }
-
-        // checking whether this name has been used before
-        SymbolInfo *previous = st->lookup($2->getName());
-        if(previous != nullptr) {
-
-            // was that a function too
-            if(previous->getType() != "FUNCTION") {
-                yyerror(("Multiple declaration of " + $2->getName()).c_str());
-
-            // check for double definition
-            } else if (previous->isDefined()) {
-                yyerror(("Redefinition of " + $2->getName()).c_str());
-
-            } else {
-                previous->setDefined();
-
-                // check if the return type and params are the same
-                // params is just for comparing, not inserting parameters
-                SymbolInfo *returnType = previous->getReturnType();
-                vector<SymbolInfo*> params;
-                bool paramsInDeclarationHaveNames = true;
-                for (int i = 1; i < previous->getParams().size(); i++) {
-                    params.push_back(previous->getParams()[i]);
-                    if(previous->getParams()[i]->getName() == "NOT DEFINED") {
-                        paramsInDeclarationHaveNames = false;
-                    }
-                }
-
-                if (returnType->getType() != $1->getName()) {
-                    yyerror(("Return type mismatch with function declaration in function " + $2->getName()).c_str());
-                
-                } else if (params.size() != $4->getParams().size()) {
-                    yyerror(("Total number of arguments mismatch with declaration in function " + $2->getName()).c_str());
-
-                } else if(compareTypes(params, $4->getParams()) == false) {
-                    yyerror(("Function " + $2->getName() + " has different parameters from the previous definition").c_str());
-                
-                } else {
-                    if (!paramsInDeclarationHaveNames && paramsInDefinitionHaveNames) {
-                        // replace previous's params with $4's params
-                        vector<SymbolInfo*> replaceParams;
-                        for (SymbolInfo* p : $4->getParams()) {
-                            replaceParams.push_back((new SymbolInfo())->copySymbol(p));
-                        }
-                        previous->setParams(replaceParams);
-                    } else if (paramsInDefinitionHaveNames) {
-                        // all is well
-                    } else {
-                        // nothing to do
-                    }
-                }
-            }
-
-        } else {
-            // inserting the function
-            vector<SymbolInfo*> params;
-            params.push_back(new SymbolInfo("RETURN_TYPE", $1->getName()));
-            for (SymbolInfo* param : $4->getParams()) {
-                params.push_back((new SymbolInfo())->copySymbol(param));
-            }
-            st->insert((new SymbolInfo($2->getName(), "FUNCTION"))->setParams(params)->setDefined());
-        }
-
-        // enter scope
-        st->enterScope();
-
-        // whatever happens, params should be inserted into the symbol table
-        // into the scope. huh
-        // inserting the params
-        for (SymbolInfo* param : paramsToBeInserted) {
-            st->insert(param);
-        }
+        handleFuncDefinition($1, $2, $4);
 
     } compound_statement {
 
         $$ = new SymbolInfo(($1->getName() + " "  + $2->getName() + "(" + $4->getName() + ")" + $7->getName()), "FUNC_DEFINITION");
         
-        // print scopes
+        // print scopes and exit
         st->printAll(logOut);
+        st->exitScope();
 
         yylog(logOut, lineNo, "func_definition", "type_specifier ID LPAREN parameter_list RPAREN compound_statement", $$->getName());
-
-        // exit scope
-        st->exitScope();
 
         delete $1; delete $2; delete $4; delete $7;
     }
     | type_specifier ID LPAREN parameter_list error RPAREN { // compound_statement here
 
-        vector<SymbolInfo*> paramsToBeInserted;
-
-        // check if some paramters don't have a name
-        bool paramsInDefinitionHaveNames = true;
-        for (int i=0; i<$4->getParams().size(); i++) {
-            SymbolInfo* param = $4->getParams()[i];
-            if (param->getName() == "NOT DEFINED") {
-                yyerror((to_string(i+1) + "th parameter's name not given in function definition of " + $2->getName()).c_str());
-                paramsInDefinitionHaveNames = false;
-            } else {
-                paramsToBeInserted.push_back(param);
-            }
-        }
-
-        // checking whether this name has been used before
-        SymbolInfo *previous = st->lookup($2->getName());
-        if(previous != nullptr) {
-
-            // was that a function too
-            if(previous->getType() != "FUNCTION") {
-                yyerror(("Multiple declaration of " + $2->getName()).c_str());
-
-            // check for double definition
-            } else if (previous->isDefined()) {
-                yyerror(("Redefinition of " + $2->getName()).c_str());
-
-            } else {
-                previous->setDefined();
-
-                // check if the return type and params are the same
-                // params is just for comparing, not inserting parameters
-                SymbolInfo *returnType = previous->getReturnType();
-                vector<SymbolInfo*> params;
-                bool paramsInDeclarationHaveNames = true;
-                for (int i = 1; i < previous->getParams().size(); i++) {
-                    params.push_back(previous->getParams()[i]);
-                    if(previous->getParams()[i]->getName() == "NOT DEFINED") {
-                        paramsInDeclarationHaveNames = false;
-                    }
-                }
-
-                if (returnType->getType() != $1->getName()) {
-                    yyerror(("Return type mismatch with function declaration in function " + $2->getName()).c_str());
-                
-                } else if (params.size() != $4->getParams().size()) {
-                    yyerror(("Total number of arguments mismatch with declaration in function " + $2->getName()).c_str());
-
-                } else if(compareTypes(params, $4->getParams()) == false) {
-                    yyerror(("Function " + $2->getName() + " has different parameters from the previous definition").c_str());
-                
-                } else {
-                    if (!paramsInDeclarationHaveNames && paramsInDefinitionHaveNames) {
-                        // replace previous's params with $4's params
-                        vector<SymbolInfo*> replaceParams;
-                        for (SymbolInfo* p : $4->getParams()) {
-                            replaceParams.push_back((new SymbolInfo())->copySymbol(p));
-                        }
-                        previous->setParams(replaceParams);
-                    } else if (paramsInDefinitionHaveNames) {
-                        // all is well
-                    } else {
-                        // nothing to do
-                    }
-                }
-            }
-
-        } else {
-            // inserting the function
-            vector<SymbolInfo*> params;
-            params.push_back(new SymbolInfo("RETURN_TYPE", $1->getName()));
-            for (SymbolInfo* param : $4->getParams()) {
-                params.push_back((new SymbolInfo())->copySymbol(param));
-            }
-            st->insert((new SymbolInfo($2->getName(), "FUNCTION"))->setParams(params)->setDefined());
-        }
-
-        // enter scope
-        st->enterScope();
-
-        // whatever happens, params should be inserted into the symbol table
-        // into the scope. huh
-        // inserting the params
-        for (SymbolInfo* param : paramsToBeInserted) {
-            st->insert(param);
-        }
+        handleFuncDefinition($1, $2, $4);
 
     } compound_statement {
 
         $$ = new SymbolInfo(($1->getName() + " "  + $2->getName() + "(" + $4->getName() + ")" + $8->getName()), "FUNC_DEFINITION");
         
-        // print scopes
+        // print scopes and exit
         st->printAll(logOut);
+        st->exitScope();
 
         yylog(logOut, lineNo, "func_definition", "type_specifier ID LPAREN parameter_list RPAREN compound_statement", $$->getName());
-
-        // exit scope
-        st->exitScope();
 
         delete $1; delete $2; delete $4; delete $8;
     }
     | type_specifier ID LPAREN RPAREN { // compound_statement here
 
-        // checking whether this name has been used before
-        SymbolInfo *previous = st->lookup($2->getName());
-        if(previous != nullptr) {
-
-            // was that a function too
-            if(previous->getType() != "FUNCTION") {
-                yyerror(("Multiple declaration of " + $2->getName()).c_str());
-
-            // check for double definition
-            } else if (previous->isDefined()) {
-                yyerror(("Redefinition of " + $2->getName()).c_str());
-
-            } else {
-                previous->setDefined();
-
-                // check if the return type and params are the same
-                // in this case params should be empty
-                SymbolInfo *returnType = previous->getReturnType();
-
-                if (returnType->getType() != $1->getName()) {
-                    yyerror(("Return type mismatch with function declaration in function " + $2->getName()).c_str());
-
-                } else if(previous->getParams().size() != 1) {
-                    yyerror(("Total number of arguments mismatch with declaration in function " + $2->getName()).c_str());
-                                    
-                } else {
-                    // all is well
-            
-                    // no params so no insertion
-                }
-            }
-
-        } else {
-            // inserting the function
-            st->insert((new SymbolInfo($2->getName(), "FUNCTION"))->addParam(new SymbolInfo("RETURN_TYPE", $1->getName()))->setDefined());
-
-            // no params so no insertion
-        }
-
-        // enter scope
-        st->enterScope();
+        handleFuncDefinition($1, $2);
 
     } compound_statement {
 
         $$ = new SymbolInfo(($1->getName() + " " + $2->getName() + "()" + $6->getName()), "FUNC_DEFINITION");
 
-        // print scopes
+        // print scopes and exit
         st->printAll(logOut);
+        st->exitScope();
 
         yylog(logOut, lineNo, "func_definition", "type_specifier ID LPAREN RPAREN compound_statement", $$->getName());
-
-        // exit scope
-        st->exitScope();
 
         delete $1; delete $2; delete $6;
     }
     | type_specifier ID LPAREN error RPAREN { // compound_statement here
 
-        // checking whether this name has been used before
-        SymbolInfo *previous = st->lookup($2->getName());
-        if(previous != nullptr) {
-
-            // was that a function too
-            if(previous->getType() != "FUNCTION") {
-                yyerror(("Multiple declaration of " + $2->getName()).c_str());
-
-            // check for double definition
-            } else if (previous->isDefined()) {
-                yyerror(("Redefinition of " + $2->getName()).c_str());
-
-            } else {
-                previous->setDefined();
-
-                // check if the return type and params are the same
-                // in this case params should be empty
-                SymbolInfo *returnType = previous->getReturnType();
-
-                if (returnType->getType() != $1->getName()) {
-                    yyerror(("Return type mismatch with function declaration in function " + $2->getName()).c_str());
-
-                } else if(previous->getParams().size() != 1) {
-                    yyerror(("Total number of arguments mismatch with declaration in function " + $2->getName()).c_str());
-                                    
-                } else {
-                    // all is well
-            
-                    // no params so no insertion
-                }
-            }
-
-        } else {
-            // inserting the function
-            st->insert((new SymbolInfo($2->getName(), "FUNCTION"))->addParam(new SymbolInfo("RETURN_TYPE", $1->getName()))->setDefined());
-
-            // no params so no insertion
-        }
-
-        // enter scope
-        st->enterScope();
+        handleFuncDefinition($1, $2);
 
     } compound_statement {
 
         $$ = new SymbolInfo(($1->getName() + " " + $2->getName() + "()" + $7->getName()), "FUNC_DEFINITION");
 
-        // print scopes
+        // print scopes and exit
         st->printAll(logOut);
+        st->exitScope();
 
         yylog(logOut, lineNo, "func_definition", "type_specifier ID LPAREN RPAREN compound_statement", $$->getName());
-
-        // exit scope
-        st->exitScope();
 
         delete $1; delete $2; delete $7;
     }
@@ -500,36 +245,40 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN { // compound_s
 parameter_list  : parameter_list COMMA type_specifier ID {
         $$ = new SymbolInfo(($1->getName() + "," + $3->getName() + " "  + $4->getName()), "PARAMETER_LIST");
 
-        // adding the params
-        $$->setParams($1->getParams());
-        // check if there was a parameter with same name before
-        for (SymbolInfo* param : $1->getParams()) {
-            if(param->getName() == $4->getName()) {
-                yyerror(("Multiple declaration of " + $4->getName() + " in parameter").c_str());
-            }
-        }
-        $$->addParam(new SymbolInfo($4->getName(), $3->getName()));
+        // // adding the params
+        // $$->setParams($1->getParams());
+        // // check if there was a parameter with same name before
+        // for (SymbolInfo* param : $1->getParams()) {
+        //     if(param->getName() == $4->getName()) {
+        //         yyerror(("Multiple declaration of " + $4->getName() + " in parameter").c_str());
+        //     }
+        // }
+        // $$->addParam(new SymbolInfo($4->getName(), $3->getName()));
         
 
-        yylog(logOut, lineNo, "parameter_list", "parameter_list COMMA type_specifier ID", $$->getName());
+        // yylog(logOut, lineNo, "parameter_list", "parameter_list COMMA type_specifier ID", $$->getName());
+
+        handleParameterList($$, $1, $3, $4);
 
         delete $1; delete $3; delete $4;
     }
     | parameter_list error COMMA type_specifier ID {
         $$ = new SymbolInfo(($1->getName() + "," + $4->getName() + " "  + $5->getName()), "PARAMETER_LIST");
 
-        // adding the params
-        $$->setParams($1->getParams());
-        // check if there was a parameter with same name before
-        for (SymbolInfo* param : $1->getParams()) {
-            if(param->getName() == $5->getName()) {
-                yyerror(("Multiple declaration of " + $5->getName() + " in parameter").c_str());
-            }
-        }
-        $$->addParam(new SymbolInfo($5->getName(), $4->getName()));
+        // // adding the params
+        // $$->setParams($1->getParams());
+        // // check if there was a parameter with same name before
+        // for (SymbolInfo* param : $1->getParams()) {
+        //     if(param->getName() == $5->getName()) {
+        //         yyerror(("Multiple declaration of " + $5->getName() + " in parameter").c_str());
+        //     }
+        // }
+        // $$->addParam(new SymbolInfo($5->getName(), $4->getName()));
         
 
-        yylog(logOut, lineNo, "parameter_list", "parameter_list COMMA type_specifier ID", $$->getName());
+        // yylog(logOut, lineNo, "parameter_list", "parameter_list COMMA type_specifier ID", $$->getName());
+
+        handleParameterList($$, $1, $4, $5);
 
         delete $1; delete $4; delete $5;
     }
@@ -543,7 +292,7 @@ parameter_list  : parameter_list COMMA type_specifier ID {
 
         delete $1; delete $3;
     }
-    | parameter_list error COMMA type_specifier {
+    | parameter_list error COMMA type_specifier {        
         $$ = new SymbolInfo(($1->getName() + "," + $4->getName()), "PARAMETER_LIST");
         yylog(logOut, lineNo, "parameter_list", "parameter_list COMMA type_specifier", $$->getName());
 
@@ -579,27 +328,36 @@ compound_statement : LCURL statements RCURL {
 
         delete $2;
     }
+    | LCURL statements error RCURL {
+        $$ = new SymbolInfo(("{\n" + $2->getName() + "}\n"), "COMPOUND_STATEMENT");
+        yylog(logOut, lineNo, "compound_statement", "LCURL statements RCURL", $$->getName());
+
+        delete $2;
+    }
+    | LCURL error statements RCURL {
+        $$ = new SymbolInfo(("{\n" + $3->getName() + "}\n"), "COMPOUND_STATEMENT");
+        yylog(logOut, lineNo, "compound_statement", "LCURL statements RCURL", $$->getName());
+
+        delete $3;
+    }
     | LCURL RCURL {
-        $$ = new SymbolInfo("{}", "COMPOUND_STATEMENT");
+        $$ = new SymbolInfo("{}\n", "COMPOUND_STATEMENT");
+        yylog(logOut, lineNo, "compound_statement", "LCURL RCURL", $$->getName());
+    }
+    | LCURL error RCURL {
+        $$ = new SymbolInfo("{}\n", "COMPOUND_STATEMENT");
         yylog(logOut, lineNo, "compound_statement", "LCURL RCURL", $$->getName());
     }
     ;
  		    
 var_declaration : type_specifier declaration_list SEMICOLON {
         $$ = new SymbolInfo(($1->getName() + " " + $2->getName() + ";"), "VAR_DECLARATION");
-        
-        // inserting the variables into current scope
-        for (SymbolInfo* var : $2->getParams()) {
-            // setting type of each var to type_specifier
-            // unless it's void
-            if ($1->getName() == "void") {
-                yyerror("Variable type cannot be void");
-            } else if (st->insert((new SymbolInfo())->copySymbol(var)->setType($1->getName())) == false) {
-                yyerror(("Multiple declaration of " + var->getName()).c_str());
-            }
-        }
-        yylog(logOut, lineNo, "var_declaration", "type_specifier declaration_list SEMICOLON", $$->getName());
-
+        handleVarDeclaration($$, $1, $2);        
+        delete $1; delete $2;
+    }
+    | type_specifier declaration_list error SEMICOLON {
+        $$ = new SymbolInfo(($1->getName() + " " + $2->getName() + ";"), "VAR_DECLARATION");
+        handleVarDeclaration($$, $1, $2);
         delete $1; delete $2;
     }
     ;
@@ -620,28 +378,23 @@ type_specifier : INT {
  		
 declaration_list : declaration_list COMMA ID {
         $$ = new SymbolInfo(($1->getName() + "," + $3->getName()), "DECLARATION_LIST");
-        // adding previous id/arrays first
-        for (SymbolInfo* var : $1->getParams()) {
-            $$->addParam((new SymbolInfo())->copySymbol(var));
-        }
-        // now adding this id
-        $$->addParam((new SymbolInfo())->copySymbol($3));
-        yylog(logOut, lineNo, "declaration_list", "declaration_list COMMA ID", $$->getName());
-
-
+        handleDeclarationList($$, $1, $3);
         delete $1; delete $3;
+    }
+    | declaration_list error COMMA ID {
+        $$ = new SymbolInfo(($1->getName() + "," + $4->getName()), "DECLARATION_LIST");
+        handleDeclarationList($$, $1, $4);
+        delete $1; delete $4;
     }
     | declaration_list COMMA ID LTHIRD CONST_INT RTHIRD {
         $$ = new SymbolInfo(($1->getName() + "," + $3->getName() + "[" + $5->getName() + "]"), "DECLARATION_LIST");
-        // adding previous id/arrays first
-        for (SymbolInfo* var : $1->getParams()) {
-            $$->addParam((new SymbolInfo())->copySymbol(var));
-        }
-        // now adding this array
-        $$->addParam((new SymbolInfo())->copySymbol($3)->setArraySize(stoi($5->getName())));
-        yylog(logOut, lineNo, "declaration_list", "declaration_list COMMA ID LTHIRD CONST_INT RTHIRD", $$->getName());
-
+        handleDeclarationList($$, $1, $3, $5);
         delete $1; delete $3; delete $5;
+    }
+    | declaration_list error COMMA ID LTHIRD CONST_INT RTHIRD {
+        $$ = new SymbolInfo(($1->getName() + "," + $4->getName() + "[" + $6->getName() + "]"), "DECLARATION_LIST");
+        handleDeclarationList($$, $1, $4, $6);
+        delete $1; delete $4; delete $6;
     }
     | ID {
         $$ = new SymbolInfo($1->getName(), "DECLARATION_LIST");
@@ -675,6 +428,25 @@ statements : statement {
 
         delete $1; delete $2;
     }
+    | statements error statement {
+        $$ = new SymbolInfo(($1->getName() + $3->getName()), "STATEMENTS");
+        yylog(logOut, lineNo, "statements", "statements statement", $$->getName());
+
+        delete $1; delete $3;
+    }
+    | {cout<<lineNo<<" entering scope"<<endl;st->enterScope();} compound_statement {
+        cout << lineNo << " exiting scope" << endl;
+
+        $$ = new SymbolInfo(($2->getName()), "STATEMENT");
+
+        // print scopes and exit
+        st->printAll(logOut);
+        st->exitScope();
+
+        yylog(logOut, lineNo, "statement", "compound_statement", $$->getName());
+
+        delete $2;
+    }
     ;
 	   
 statement : var_declaration {
@@ -688,19 +460,6 @@ statement : var_declaration {
         yylog(logOut, lineNo, "statement", "expression_statement", $$->getName());
 
         delete $1;
-    }
-    | {st->enterScope();} compound_statement {
-        $$ = new SymbolInfo(($2->getName()), "STATEMENT");
-
-        // print scopes
-        st->printAll(logOut);
-
-        yylog(logOut, lineNo, "statement", "compound_statement", $$->getName());
-
-        // exit scope
-        st->exitScope();
-
-        delete $2;
     }
     | FOR LPAREN expression_statement expression_statement expression RPAREN statement {
         $$ = new SymbolInfo(("for(" + $3->getName() + $4->getName() + $5->getName() + ")" + $7->getName()), "FOR_LOOP");
@@ -742,6 +501,16 @@ statement : var_declaration {
         yylog(logOut, lineNo, "statement", "RETURN expression SEMICOLON", $$->getName());
 
         delete $2;
+    }
+    | func_declaration {
+        $$ = $1;
+        yyerror("Function declaration is only allowed in the global scope");
+        yylog(logOut, lineNo, "statement", "func_declaration", $$->getName());
+    }
+    | func_definition {
+        $$ = $1;
+        yyerror("Function definition is only allowed in the global scope");
+        yylog(logOut, lineNo, "statement", "func_definition", $$->getName());
     }
     ;
 	  
@@ -854,11 +623,11 @@ logic_expression : rel_expression {
         yylog(logOut, lineNo, "logic_expression", "rel_expression LOGICOP rel_expression", $$->getName());
 
         // check if both of them are int or not
-        if ($1->getType() != "int" || $3->getType() != "int") {
+        if (isInt($1->getType()) && isInt($3->getType())) {
+            // all is well
+        } else {
             yyerror("Type mismatch - LOGICOP expects int");
             $$->setType("UNDEFINED");
-        } else {
-            // all is well
         }
 
         delete $1; delete $2; delete $3;
@@ -874,11 +643,11 @@ rel_expression : simple_expression {
         yylog(logOut, lineNo, "rel_expression", "simple_expression RELOP simple_expression", $$->getName());
 
         // check if both of them are int or not
-        if ($1->getType() != "int" || $3->getType() != "int") {
+        if (isInt($1->getType()) && isInt($3->getType())) {
+            // all is well
+        } else {
             yyerror("Type mismatch - RELOP expects int");
             $$->setType("UNDEFINED");
-        } else {
-            // all is well
         }
 
         delete $1; delete $2; delete $3;
