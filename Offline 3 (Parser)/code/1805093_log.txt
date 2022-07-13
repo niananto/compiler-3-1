@@ -63,7 +63,7 @@ Line 3: parameter_list : type_specifier
 
 int
 
-Error at line 3: syntax error
+Error at line 3: syntax error, unexpected ADDOP, expecting RPAREN or COMMA
 
 Error at line 3: 1th parameter's name not given in function definition of var
 
@@ -117,7 +117,7 @@ Line 8: declaration_list : ID
 
 x
 
-Error at line 8: syntax error
+Error at line 8: syntax error, unexpected ADDOP, expecting COMMA or SEMICOLON
 
 Line 8: declaration_list : declaration_list COMMA ID
 
@@ -157,7 +157,13 @@ Line 9: simple_expression : term
 
 2
 
-Error at line 9: syntax error
+Error at line 9: syntax error, unexpected ASSIGNOP
+
+int x,z;
+
+
+int x,z;
+
 
 Line 9: factor : CONST_INT
 
@@ -172,7 +178,7 @@ Line 9: term : unary_expression
 6
 
 
-Error at line no 10: Unrecognized character '#'
+Error at line 10: Unrecognized character '#'
 Line 11: simple_expression : term
 
 6
@@ -188,6 +194,9 @@ Line 11: logic_expression : rel_expression
 Line 11: expression : logic_expression
 
 6
+
+int x,z;
+
 
 Line 11: variable : ID
 

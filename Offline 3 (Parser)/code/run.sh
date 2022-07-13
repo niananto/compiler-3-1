@@ -1,6 +1,7 @@
 #!/bin/bash
 
 yacc -d -y 1805093.y
+# yacc -d -y --warnings=none 1805093.y
 # echo 'Generated the parser C file as well the header file'
 g++ -w -c -o y.o y.tab.c
 # echo 'Generated the parser object file'

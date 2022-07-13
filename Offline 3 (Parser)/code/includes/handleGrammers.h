@@ -15,6 +15,83 @@ extern ofstream errorOut;
 
 extern unsigned long lineNo;
 
+// func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON
+void handleFuncDeclaration(SymbolInfo* s1, SymbolInfo* s2, SymbolInfo* s4) {
+
+    // check if function already exists
+    SymbolInfo* previous = st->lookup(s2->getName());
+    if (previous != nullptr) {
+        if (previous->isDefined()) {
+            yyerror(("Function " + s2->getName() + " already defined").c_str());
+        } else {
+            // double declaration
+            // check for matching return type and parameter list
+            // it's only a problem when they don't match
+
+            vector<SymbolInfo*> params;
+            for (int i = 1; i < previous->getParams().size(); i++) {
+                params.push_back(previous->getParams()[i]);
+            }
+            
+            if (previous->getReturnType()->getType() != s1->getName()) {
+                yyerror(("Return type mismatch with function declaration in function " + s2->getName()).c_str());
+            } else if (params.size() != s4->getParams().size()) {
+                yyerror(("Total number of arguments mismatch with declaration in function " + s2->getName()).c_str());
+            } else if(compareTypes(params, s4->getParams()) == false) {
+                yyerror(("Function " + s2->getName() + " has different parameters from the previous declaration").c_str());
+            } else {
+                // all is well
+            }
+        }
+    }
+    
+    // dummy enter and exit scope
+    st->enterScope();
+    st->exitScope();
+
+    // get the params from parameter_list and concat it with return type
+    // we will insert this ID into Symbol Table
+    vector<SymbolInfo*> params;
+    params.push_back(new SymbolInfo("RETURN_TYPE", s1->getName()));
+    for (SymbolInfo* param : s4->getParams()) {
+        params.push_back((new SymbolInfo())->copySymbol(param));
+        
+    }
+    st->insert((new SymbolInfo(s2->getName(), "FUNCTION"))->setParams(params));
+}
+
+// func_declaration : type_specifier ID LPAREN RPAREN SEMICOLON
+void handleFuncDeclaration(SymbolInfo* s1, SymbolInfo* s2) {
+
+    // check if function already exists
+    SymbolInfo* previous = st->lookup(s2->getName());
+    if (previous != nullptr) {
+        if (previous->isDefined()) {
+            yyerror(("Function " + s2->getName() + " already defined").c_str());
+        } else {
+            // double declaration
+            // check for matching return type and parameter list
+            // it's only a problem when they don't match
+            
+            if (previous->getReturnType()->getType() != s1->getName()) {
+                yyerror(("Return type mismatch with function declaration in function " + s2->getName()).c_str());
+            } else if (previous->getParams().size() > 1) {
+                yyerror(("Function " + s2->getName() + " should not have any parameter from previous declaration").c_str());
+            } else {
+                // all is well
+            }
+        }
+    }
+
+    // dummy enter and exit scope
+    st->enterScope();
+    st->exitScope();
+
+    // we will insert this ID into Symbol Table
+    // no params in this case just the return type
+    st->insert((new SymbolInfo(s2->getName(), "FUNCTION"))->addParam(new SymbolInfo("RETURN_TYPE", s1->getName())));
+}
+
 // func_definition : type_specifier ID LPAREN parameter_list RPAREN
 void handleFuncDefinition(SymbolInfo* s1, SymbolInfo* s2, SymbolInfo* s4) {
     vector<SymbolInfo*> paramsToBeInserted;

@@ -41,6 +41,7 @@ void yyerror(const char *s) {
 %type<symbol> type_specifier declaration_list statements statement expression_statement variable expression logic_expression rel_expression simple_expression
 %type<symbol> term unary_expression factor argument_list arguments
 
+%define parse.error verbose
 %destructor{
     delete $$;
 }<symbol>
@@ -91,52 +92,40 @@ unit : var_declaration {
         yylog(logOut, lineNo, "unit", "func_definition", $$->getName());
         delete $1;
     }
+    | error {
+        $$ = new SymbolInfo("", "UNIT");
+    }
     ;
      
 func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON {
         $$ = new SymbolInfo(($1->getName() + " " + $2->getName() + "(" + $4->getName() + ");\n"), "FUNC_DECLARATION");
         yylog(logOut, lineNo, "func_declaration", "type_specifier ID LPAREN parameter_list RPAREN SEMICOLON", $$->getName());
 
-        // check if function already exists
-        SymbolInfo* previous = st->lookup($2->getName());
-        if (previous != nullptr) {
-            if (previous->isDefined()) {
-                yyerror(("Function " + $2->getName() + " already defined").c_str());
-            } else {
-                // double declaration
-                // check for matching return type and parameter list
-                // it's only a problem when they don't match
+        handleFuncDeclaration($1, $2, $4);
 
-                vector<SymbolInfo*> params;
-                for (int i = 1; i < previous->getParams().size(); i++) {
-                    params.push_back(previous->getParams()[i]);
-                }
-                
-                if (previous->getReturnType()->getType() != $1->getName()) {
-                    yyerror(("Return type mismatch with function declaration in function " + $2->getName()).c_str());
-                } else if (params.size() != $4->getParams().size()) {
-                    yyerror(("Total number of arguments mismatch with declaration in function " + $2->getName()).c_str());
-                } else if(compareTypes(params, $4->getParams()) == false) {
-                    yyerror(("Function " + $2->getName() + " has different parameters from the previous declaration").c_str());
-                } else {
-                    // all is well
-                }
-            }
-        }
-        
-        // dummy enter and exit scope
-        st->enterScope();
-        st->exitScope();
+        delete $1; delete $2; delete $4;
+    }
+    | type_specifier ID LPAREN parameter_list error RPAREN SEMICOLON {
+        $$ = new SymbolInfo(($1->getName() + " " + $2->getName() + "(" + $4->getName() + ");\n"), "FUNC_DECLARATION");
+        yylog(logOut, lineNo, "func_declaration", "type_specifier ID LPAREN parameter_list RPAREN SEMICOLON", $$->getName());
 
-        // get the params from parameter_list and concat it with return type
-        // we will insert this ID into Symbol Table
-        vector<SymbolInfo*> params;
-        params.push_back(new SymbolInfo("RETURN_TYPE", $1->getName()));
-        for (SymbolInfo* param : $4->getParams()) {
-            params.push_back((new SymbolInfo())->copySymbol(param));
-            
-        }
-        st->insert((new SymbolInfo($2->getName(), "FUNCTION"))->setParams(params));
+        handleFuncDeclaration($1, $2, $4);
+
+        delete $1; delete $2; delete $4;
+    }
+    | type_specifier ID LPAREN parameter_list RPAREN error {
+        $$ = new SymbolInfo(($1->getName() + " " + $2->getName() + "(" + $4->getName() + ");\n"), "FUNC_DECLARATION");
+        yylog(logOut, lineNo, "func_declaration", "type_specifier ID LPAREN parameter_list RPAREN SEMICOLON", $$->getName());
+
+        handleFuncDeclaration($1, $2, $4);
+
+        delete $1; delete $2; delete $4;
+    }
+    | type_specifier ID LPAREN parameter_list error RPAREN error {
+        $$ = new SymbolInfo(($1->getName() + " " + $2->getName() + "(" + $4->getName() + ");\n"), "FUNC_DECLARATION");
+        yylog(logOut, lineNo, "func_declaration", "type_specifier ID LPAREN parameter_list RPAREN SEMICOLON", $$->getName());
+
+        handleFuncDeclaration($1, $2, $4);
 
         delete $1; delete $2; delete $4;
     }
@@ -144,33 +133,29 @@ func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON {
         $$ = new SymbolInfo(($1->getName() + " "  + $2->getName() + "();\n"), "FUNC_DECLARATION");
         yylog(logOut, lineNo, "func_declaration", "type_specifier ID LPAREN RPAREN SEMICOLON", $$->getName());
 
-        // check if function already exists
-        SymbolInfo* previous = st->lookup($2->getName());
-        if (previous != nullptr) {
-            if (previous->isDefined()) {
-                yyerror(("Function " + $2->getName() + " already defined").c_str());
-            } else {
-                // double declaration
-                // check for matching return type and parameter list
-                // it's only a problem when they don't match
-                
-                if (previous->getReturnType()->getType() != $1->getName()) {
-                    yyerror(("Return type mismatch with function declaration in function " + $2->getName()).c_str());
-                } else if (previous->getParams().size() > 1) {
-                    yyerror(("Function " + $2->getName() + " should not have any parameter from previous declaration").c_str());
-                } else {
-                    // all is well
-                }
-            }
-        }
+        handleFuncDeclaration($1, $2);
 
-        // dummy enter and exit scope
-        st->enterScope();
-        st->exitScope();
+        delete $1; delete $2;
+    }
+    | type_specifier ID LPAREN RPAREN error {
+        $$ = new SymbolInfo(($1->getName() + " "  + $2->getName() + "();\n"), "FUNC_DECLARATION");
+        yylog(logOut, lineNo, "func_declaration", "type_specifier ID LPAREN RPAREN SEMICOLON", $$->getName());
 
-        // we will insert this ID into Symbol Table
-        // no params in this case just the return type
-        st->insert((new SymbolInfo($2->getName(), "FUNCTION"))->addParam(new SymbolInfo("RETURN_TYPE", $1->getName())));
+        handleFuncDeclaration($1, $2);
+
+        delete $1; delete $2;
+    }| type_specifier ID LPAREN error RPAREN SEMICOLON {
+        $$ = new SymbolInfo(($1->getName() + " "  + $2->getName() + "();\n"), "FUNC_DECLARATION");
+        yylog(logOut, lineNo, "func_declaration", "type_specifier ID LPAREN RPAREN SEMICOLON", $$->getName());
+
+        handleFuncDeclaration($1, $2);
+
+        delete $1; delete $2;
+    }| type_specifier ID LPAREN error RPAREN error {
+        $$ = new SymbolInfo(($1->getName() + " "  + $2->getName() + "();\n"), "FUNC_DECLARATION");
+        yylog(logOut, lineNo, "func_declaration", "type_specifier ID LPAREN RPAREN SEMICOLON", $$->getName());
+
+        handleFuncDeclaration($1, $2);
 
         delete $1; delete $2;
     }
@@ -245,38 +230,12 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN { // compound_s
 parameter_list  : parameter_list COMMA type_specifier ID {
         $$ = new SymbolInfo(($1->getName() + "," + $3->getName() + " "  + $4->getName()), "PARAMETER_LIST");
 
-        // // adding the params
-        // $$->setParams($1->getParams());
-        // // check if there was a parameter with same name before
-        // for (SymbolInfo* param : $1->getParams()) {
-        //     if(param->getName() == $4->getName()) {
-        //         yyerror(("Multiple declaration of " + $4->getName() + " in parameter").c_str());
-        //     }
-        // }
-        // $$->addParam(new SymbolInfo($4->getName(), $3->getName()));
-        
-
-        // yylog(logOut, lineNo, "parameter_list", "parameter_list COMMA type_specifier ID", $$->getName());
-
         handleParameterList($$, $1, $3, $4);
 
         delete $1; delete $3; delete $4;
     }
     | parameter_list error COMMA type_specifier ID {
         $$ = new SymbolInfo(($1->getName() + "," + $4->getName() + " "  + $5->getName()), "PARAMETER_LIST");
-
-        // // adding the params
-        // $$->setParams($1->getParams());
-        // // check if there was a parameter with same name before
-        // for (SymbolInfo* param : $1->getParams()) {
-        //     if(param->getName() == $5->getName()) {
-        //         yyerror(("Multiple declaration of " + $5->getName() + " in parameter").c_str());
-        //     }
-        // }
-        // $$->addParam(new SymbolInfo($5->getName(), $4->getName()));
-        
-
-        // yylog(logOut, lineNo, "parameter_list", "parameter_list COMMA type_specifier ID", $$->getName());
 
         handleParameterList($$, $1, $4, $5);
 
@@ -328,23 +287,7 @@ compound_statement : LCURL statements RCURL {
 
         delete $2;
     }
-    | LCURL statements error RCURL {
-        $$ = new SymbolInfo(("{\n" + $2->getName() + "}\n"), "COMPOUND_STATEMENT");
-        yylog(logOut, lineNo, "compound_statement", "LCURL statements RCURL", $$->getName());
-
-        delete $2;
-    }
-    | LCURL error statements RCURL {
-        $$ = new SymbolInfo(("{\n" + $3->getName() + "}\n"), "COMPOUND_STATEMENT");
-        yylog(logOut, lineNo, "compound_statement", "LCURL statements RCURL", $$->getName());
-
-        delete $3;
-    }
     | LCURL RCURL {
-        $$ = new SymbolInfo("{}\n", "COMPOUND_STATEMENT");
-        yylog(logOut, lineNo, "compound_statement", "LCURL RCURL", $$->getName());
-    }
-    | LCURL error RCURL {
         $$ = new SymbolInfo("{}\n", "COMPOUND_STATEMENT");
         yylog(logOut, lineNo, "compound_statement", "LCURL RCURL", $$->getName());
     }
@@ -428,24 +371,12 @@ statements : statement {
 
         delete $1; delete $2;
     }
-    | statements error statement {
-        $$ = new SymbolInfo(($1->getName() + $3->getName()), "STATEMENTS");
-        yylog(logOut, lineNo, "statements", "statements statement", $$->getName());
+    | statements error {
+        $$ = new SymbolInfo(($1->getName()), "STATEMENTS");
+        // yylog(logOut, lineNo, "statements", "statements statement", $$->getName());
+        logOut << $$->getName() << endl << endl;
 
-        delete $1; delete $3;
-    }
-    | {cout<<lineNo<<" entering scope"<<endl;st->enterScope();} compound_statement {
-        cout << lineNo << " exiting scope" << endl;
-
-        $$ = new SymbolInfo(($2->getName()), "STATEMENT");
-
-        // print scopes and exit
-        st->printAll(logOut);
-        st->exitScope();
-
-        yylog(logOut, lineNo, "statement", "compound_statement", $$->getName());
-
-        delete $2;
+        delete $1;
     }
     ;
 	   
@@ -460,6 +391,27 @@ statement : var_declaration {
         yylog(logOut, lineNo, "statement", "expression_statement", $$->getName());
 
         delete $1;
+    }
+    | func_declaration {
+        $$ = $1;
+        yyerror("Function declaration is only allowed in the global scope");
+        yylog(logOut, lineNo, "statement", "func_declaration", $$->getName());
+    }
+    | func_definition {
+        $$ = $1;
+        yyerror("Function definition is only allowed in the global scope");
+        yylog(logOut, lineNo, "statement", "func_definition", $$->getName());
+    }
+    | {st->enterScope();} compound_statement {
+        $$ = new SymbolInfo(($2->getName()), "STATEMENT");
+
+        // print scopes and exit
+        st->printAll(logOut);
+        st->exitScope();
+
+        yylog(logOut, lineNo, "statement", "compound_statement", $$->getName());
+
+        delete $2;
     }
     | FOR LPAREN expression_statement expression_statement expression RPAREN statement {
         $$ = new SymbolInfo(("for(" + $3->getName() + $4->getName() + $5->getName() + ")" + $7->getName()), "FOR_LOOP");
@@ -502,16 +454,9 @@ statement : var_declaration {
 
         delete $2;
     }
-    | func_declaration {
-        $$ = $1;
-        yyerror("Function declaration is only allowed in the global scope");
-        yylog(logOut, lineNo, "statement", "func_declaration", $$->getName());
-    }
-    | func_definition {
-        $$ = $1;
-        yyerror("Function definition is only allowed in the global scope");
-        yylog(logOut, lineNo, "statement", "func_definition", $$->getName());
-    }
+    // | error {
+    //     $$ = new SymbolInfo("", "STATEMENT");
+    // }
     ;
 	  
 expression_statement : SEMICOLON {
@@ -642,12 +587,12 @@ rel_expression : simple_expression {
         $$ = new SymbolInfo(($1->getName() + $2->getName() + $3->getName()), "int");
         yylog(logOut, lineNo, "rel_expression", "simple_expression RELOP simple_expression", $$->getName());
 
-        // check if both of them are int or not
-        if (isInt($1->getType()) && isInt($3->getType())) {
-            // all is well
-        } else {
+        // check if any of them are void
+        if ($1->getType() == "void" || $3->getType() == "void") {
             yyerror("Type mismatch - RELOP expects int");
             $$->setType("UNDEFINED");
+        } else {
+           // all is well
         }
 
         delete $1; delete $2; delete $3;
@@ -690,7 +635,17 @@ term :	unary_expression {
                 // all is well
             } else {
                 yyerror("Non-Integer operand on modulus operator");
-                $$->setType("int");
+                $$->setType("UNDEFINED");
+            }
+        } else {
+            // type cast
+            auto [success, changedSymbol] = implicitTypeCast($1->getType(), $3->getType());
+            if (success) {
+                // all is well
+                $$->setType(changedSymbol->getType());
+            } else {
+                yyerror("Type mismatch - void cannot be an operand of MULOP");
+                $$->setType("UNDEFINED");
             }
         }
 
@@ -698,17 +653,8 @@ term :	unary_expression {
         if ($2->getName() == "/" || $2->getName() == "%") {
             if ($3->getType() == "CONST_INT" && $3->getName() == "0") {
                 yyerror("Divide by zero");
+                $$->setType("UNDEFINED");
             } // how to check for expressions evaluating into 0? later
-        }
-
-        // type cast
-        auto [success, changedSymbol] = implicitTypeCast($1->getType(), $3->getType());
-        if (success) {
-            // all is well
-            $$->setType(changedSymbol->getType());
-        } else {
-            yyerror("Type mismatch - void cannot be an operand of MULOP");
-            $$->setType("UNDEFINED");
         }
 
         delete $1; delete $2; delete $3;

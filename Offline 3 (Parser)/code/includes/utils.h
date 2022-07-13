@@ -97,7 +97,9 @@ tuple<bool, SymbolInfo*> typeCast(string left, string right) { // ASSIGNOP
     bool successful = true;
     SymbolInfo* s = new SymbolInfo();
 
-    if (isFloat(left) && (right != "void")) {
+    if (left == "UNDEFINED" || right == "UNDEFINED") {
+        s->setType("UNDEFINED");
+    } else if (isFloat(left) && (right != "void")) {
         s->setType(left);
     } else if (isInt(left) && isInt(right)) {
         s->setType(left);

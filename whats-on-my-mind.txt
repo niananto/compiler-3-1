@@ -35,11 +35,9 @@ to-do
 - variable double decalartion in the same scope [done]
 - array used as variables and vice versa [haven't I done it already?][done]
 - functions used as variables/arrays and vice versa [done]
-- functions declared in scopes other than global scope -> {error recovery}
+- functions declared in scopes other than global scope -> {error recovery}[done]
 
 have to deal with all the UNDEFINED"s
 
 I will be give this a little bit of modularity
 getting the code blocks out of .y file for better error recovery
-
-I have moved statement:compound_statement to statements
