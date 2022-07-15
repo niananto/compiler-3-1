@@ -693,7 +693,7 @@ factor : variable {
             $$->setType("UNDEFINED");
             yyerror(("Undeclared function " + $1->getName()).c_str());
         } else {
-            if (previous->getType() == "FUNCTION") {
+            if (previous->isFunction()) {
                 if (previous->getParams().size() > 0) {
                     // check if number of arguments matches
                     if ((previous->getParams().size() - 1) != $3->getParams().size()) {

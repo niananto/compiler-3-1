@@ -79,6 +79,15 @@ public:
         // cout << "Not found\n";
         return nullptr;
     }
+    
+    SymbolInfo* lookupGlobalScope(string name) {
+        ScopeTable* itr = currentScope;
+        while(itr->getParentScope() != nullptr) {
+            itr = itr->getParentScope();
+        }
+
+        return itr->lookup(name);
+    }
 
     // void printThis() {
     //     if(currentScope == nullptr) {

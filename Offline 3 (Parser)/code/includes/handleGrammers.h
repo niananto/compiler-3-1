@@ -103,17 +103,22 @@ void handleFuncDefinition(SymbolInfo* s1, SymbolInfo* s2, SymbolInfo* s4) {
         if (param->getName() == "NOT DEFINED") {
             yyerror((to_string(i+1) + "th parameter's name not given in function definition of " + s2->getName()).c_str());
             paramsInDefinitionHaveNames = false;
+
+        // check if that param's name clashes with some other func's name
+        } else if (st->lookupGlobalScope(param->getName()) != nullptr && st->lookupGlobalScope(param->getName())->isFunction()) {
+            yyerror(("Parameter " + param->getName() + " clashes with a function").c_str());
+
         } else {
             paramsToBeInserted.push_back(param);
         }
     }
 
-    // checking whether this name has been used before
+    // checking whether this function name has been used before
     SymbolInfo *previous = st->lookup(s2->getName());
     if(previous != nullptr) {
 
         // was that a function too
-        if(previous->getType() != "FUNCTION") {
+        if(previous->isFunction() == false) {
             yyerror(("Multiple declaration of " + s2->getName()).c_str());
 
         // check for double definition
@@ -189,7 +194,7 @@ void handleFuncDefinition(SymbolInfo* s1, SymbolInfo* s2) {
     if(previous != nullptr) {
 
         // was that a function too
-        if(previous->getType() != "FUNCTION") {
+        if(previous->isFunction() == false) {
             yyerror(("Multiple declaration of " + s2->getName()).c_str());
 
         // check for double definition
@@ -243,6 +248,29 @@ void handleParameterList(SymbolInfo* ss, SymbolInfo* s1, SymbolInfo* s3, SymbolI
     yylog(logOut, lineNo, "parameter_list", "parameter_list COMMA type_specifier ID", ss->getName());
 }
 
+// var_declaration : type_specifier declaration_list SEMICOLON
+void handleVarDeclaration(SymbolInfo* ss, SymbolInfo* s1, SymbolInfo* s2) {
+    
+    // inserting the variables into current scope
+    for (SymbolInfo* var : s2->getParams()) {
+        // setting type of each var to type_specifier
+        // unless it's void
+        if (s1->getName() == "void") {
+            yyerror("Variable type cannot be void");
+
+        // first look for function with the same name in global scope
+        } else if (st->lookupGlobalScope(var->getName()) != nullptr && st->lookupGlobalScope(var->getName())->isFunction()) {
+            yyerror(("A function exists with the name " + var->getName()).c_str());
+
+        // then try to insert in the currentscope
+        // if fails, then there is another variable with the same name in that scope
+        } else if (st->insert((new SymbolInfo())->copySymbol(var)->setType(s1->getName())) == false) {
+            yyerror(("Multiple declaration of " + var->getName()).c_str());
+        }
+    }
+    yylog(logOut, lineNo, "var_declaration", "type_specifier declaration_list SEMICOLON", ss->getName());
+}
+
 // declaration_list : declaration_list COMMA ID
 void handleDeclarationList(SymbolInfo* ss, SymbolInfo* s1, SymbolInfo* s3) {
 
@@ -253,22 +281,6 @@ void handleDeclarationList(SymbolInfo* ss, SymbolInfo* s1, SymbolInfo* s3) {
     // now adding this id
     ss->addParam((new SymbolInfo())->copySymbol(s3));
     yylog(logOut, lineNo, "declaration_list", "declaration_list COMMA ID", ss->getName());
-}
-
-// var_declaration : type_specifier declaration_list SEMICOLON
-void handleVarDeclaration(SymbolInfo* ss, SymbolInfo* s1, SymbolInfo* s2) {
-    
-    // inserting the variables into current scope
-    for (SymbolInfo* var : s2->getParams()) {
-        // setting type of each var to type_specifier
-        // unless it's void
-        if (s1->getName() == "void") {
-            yyerror("Variable type cannot be void");
-        } else if (st->insert((new SymbolInfo())->copySymbol(var)->setType(s1->getName())) == false) {
-            yyerror(("Multiple declaration of " + var->getName()).c_str());
-        }
-    }
-    yylog(logOut, lineNo, "var_declaration", "type_specifier declaration_list SEMICOLON", ss->getName());
 }
 
 // declaration_list : declaration_list COMMA ID LTHIRD CONST_INT RTHIRD
