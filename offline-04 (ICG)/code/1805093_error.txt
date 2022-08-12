@@ -1,0 +1,10 @@
+Error at line 2: Undeclared array a
+
+Error at line 2: Undeclared variable i
+
+Error at line 2: Undeclared array a
+
+Error at line 3: Undeclared variable i
+
+Error at line 4: Undeclared array a
+

@@ -13,8 +13,13 @@ SymbolTable* st = new SymbolTable(30);
 ofstream logOut;
 ofstream errorOut;
 
+ofstream tempCodeOut;
+ofstream tempDataOut;
+
 extern unsigned long lineNo;
 extern unsigned long errorNo;
+unsigned labelCount = 0;
+unsigned tempCount = 0;
 
 // [what happens when we call a function which is declared not defined and then never really define it]
 // to check if every declared only (not defined) functions are defined later if that function was called
@@ -25,6 +30,28 @@ void yyerror(const char *s) {
 	logOut << "Error at line " << lineNo << ": " << s << endl << endl;
 	errorOut << "Error at line " << lineNo << ": " << s << endl << endl;
     errorNo++;
+}
+
+char *newLabel()
+{
+	char *lb= new char[4];
+	strcpy(lb,"L");
+	char b[3];
+	sprintf(b,"%d", labelCount);
+	labelCount++;
+	strcat(lb,b);
+	return lb;
+}
+
+char *newTemp()
+{
+	char *t= new char[4];
+	strcpy(t,"t");
+	char b[3];
+	sprintf(b,"%d", tempCount);
+	tempCount++;
+	strcat(t,b);
+	return t;
 }
 
 %}
@@ -806,14 +833,16 @@ int main(int argc,char *argv[])
         return 1;
     }
 
-    logOut.open("1805093_log.txt");
-    errorOut.open("1805093_error.txt");  
-
     yyin = fopen(argv[1], "r");
     if(yyin == NULL){
 		cout << "Cannot open specified input file" << endl;
 		return 1;
 	}
+
+    logOut.open("1805093_log.txt");
+    errorOut.open("1805093_error.txt");  
+    tempCodeOut.open("temp_code.txt");
+    tempDataOut.open("temp_data.txt");
     
 	yyparse();
     fclose(yyin);
@@ -824,6 +853,18 @@ int main(int argc,char *argv[])
 
     logOut.close();
     errorOut.close();
+    tempCodeOut.close();
+    tempDataOut.close();
+    if (errorNo != 0) {
+        ofstream codeOut("code.asm");
+        codeOut << ".MODEL SMALL\n.STACK 100H\n.DATA\n\n";
+        ifstream tempDataIn("temp_data.txt");
+        codeOut << tempDataIn.rdbuf();
+        codeOut << "\n.CODE\n\n";
+        ifstream tempCodeIn("temp_code.txt");
+        codeOut << tempCodeIn.rdbuf();
+        codeOut.close();
+    }
 	
     delete st;
 
