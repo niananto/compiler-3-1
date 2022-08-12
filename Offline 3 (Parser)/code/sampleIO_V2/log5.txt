@@ -63,7 +63,11 @@ Line 3: parameter_list : type_specifier
 
 int
 
-Error at line 3: syntax error, unexpected ADDOP, expecting RPAREN or COMMA
+Error at line 3: syntax error
+
+int
+
+int
 
 Error at line 3: 1th parameter's name not given in function definition of var
 
@@ -83,7 +87,7 @@ ScopeTable # 1
  1 --> < y , ID > 
  2 --> < z , ID > 
  7 --> < a , ID > 
- 29 --> < var , ID > 
+ 29 --> < var , ID >
 
 
 Line 4: func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement
@@ -117,7 +121,13 @@ Line 8: declaration_list : ID
 
 x
 
-Error at line 8: syntax error, unexpected ADDOP, expecting COMMA or SEMICOLON
+Error at line 8: syntax error
+
+x
+
+x
+
+x
 
 Line 8: declaration_list : declaration_list COMMA ID
 
@@ -157,7 +167,7 @@ Line 9: simple_expression : term
 
 2
 
-Error at line 9: syntax error, unexpected ASSIGNOP
+Error at line 9: syntax error
 
 int x,z;
 
@@ -177,8 +187,7 @@ Line 9: term : unary_expression
 
 6
 
-
-Error at line 10: Unrecognized character '#'
+Error at line 10: Unrecognized character #
 Line 11: simple_expression : term
 
 6
@@ -191,7 +200,7 @@ Line 11: logic_expression : rel_expression
 
 6
 
-Line 11: expression : logic_expression
+Line 11: expression : logic expression
 
 6
 
@@ -269,7 +278,7 @@ Line 14: logic_expression : rel_expression
 
 0
 
-Line 14: expression : logic_expression
+Line 14: expression : logic expression
 
 0
 
@@ -304,10 +313,10 @@ ScopeTable # 1.2
 
 ScopeTable # 1
  0 --> < x , ID > 
- 1 --> < y , ID > < main , ID > 
+ 1 --> < y , ID > < main , ID >
  2 --> < z , ID > 
  7 --> < a , ID > 
- 29 --> < var , ID > 
+ 29 --> < var , ID >
 
 
 Line 15: func_definition : type_specifier ID LPAREN RPAREN compound_statement
@@ -343,19 +352,18 @@ return 0;
 
 
 
-Line 16: start : program
-
-
+Line 15: start : program
 
 
 
 ScopeTable # 1
  0 --> < x , ID > 
- 1 --> < y , ID > < main , ID > 
+ 1 --> < y , ID > < main , ID >
  2 --> < z , ID > 
  7 --> < a , ID > 
- 29 --> < var , ID > 
+ 29 --> < var , ID >
 
 
-Total lines: 16
+Total lines: 15
 Total errors: 5
+

@@ -39,7 +39,7 @@ to-do
 - functions used as variables/arrays and vice versa [done]
 - functions declared in scopes other than global scope -> {error recovery}[done]
 
-have to deal with all the UNDEFINED"s
+have to deal with all the UNDEFINED"s - not done
 
 I will be give this a little bit of modularity
 getting the code blocks out of .y file for better error recovery
