@@ -40,6 +40,10 @@ public:
         }
     }
 
+    string getScopeId() {
+        return currentScope->getId();
+    }
+
     bool insert(string name, string type) {
         if(currentScope == nullptr) enterScope();
         return currentScope->insert(name, type);

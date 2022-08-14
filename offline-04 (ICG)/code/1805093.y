@@ -32,26 +32,12 @@ void yyerror(const char *s) {
     errorNo++;
 }
 
-char *newLabel()
-{
-	char *lb= new char[4];
-	strcpy(lb,"L");
-	char b[3];
-	sprintf(b,"%d", labelCount);
-	labelCount++;
-	strcat(lb,b);
-	return lb;
+string newLabel() {
+	return "L_" + labelCount++;
 }
 
-char *newTemp()
-{
-	char *t= new char[4];
-	strcpy(t,"t");
-	char b[3];
-	sprintf(b,"%d", tempCount);
-	tempCount++;
-	strcat(t,b);
-	return t;
+string newTemp() {
+	return "t" + tempCount++;
 }
 
 %}
@@ -374,6 +360,8 @@ declaration_list : declaration_list COMMA ID {
 
         yylog(logOut, lineNo, "declaration_list", "ID", $$->getName());
 
+        tempDataOut << $1->getName() + "_" + st->getScopeId() + " DW ?" << endl;
+
         delete $1;
     }
     | ID LTHIRD CONST_INT RTHIRD {
@@ -383,6 +371,8 @@ declaration_list : declaration_list COMMA ID {
         $$->addParam((new SymbolInfo())->copySymbol($1)->setArraySize(stoi($3->getName())));
 
         yylog(logOut, lineNo, "declaration_list", "ID LTHIRD CONST_INT RTHIRD", $$->getName());
+
+        tempDataOut << $1->getName() + "_" + st->getScopeId() + " DW " + $3->getName() + " DUP(?)" << endl;
 
         delete $1; delete $3;
     }
@@ -553,6 +543,8 @@ variable : ID {
         // check if expression is within bounds of array
 
         yylog(logOut, lineNo, "variable", "ID LTHIRD expression RTHIRD", $$->getName());
+
+        tempCodeOut << "MOV BX, " + $3->getName() << endl;
 
         delete $1; delete $3;
     }
@@ -763,6 +755,11 @@ factor : variable {
 
         yylog(logOut, lineNo, "factor", "ID LPAREN argument_list RPAREN", $$->getName());
 
+        for (int i=0; i<$3->getParams().size(); i++) {
+            tempCodeOut << "PUSH " + $3->getParams()[i]->getName() << endl;
+        }
+        tempCodeOut << "CALL " + $1->getName() << endl;
+
         delete $1; delete $3;
     }
 	| LPAREN expression RPAREN {
@@ -774,10 +771,14 @@ factor : variable {
 	| CONST_INT {
         $$ = $1;
         yylog(logOut, lineNo, "factor", "CONST_INT", $$->getName());
+
+        tempCodeOut << "PUSH " + $1->getName() << endl;
     }
 	| CONST_FLOAT {
         $$ = new SymbolInfo(($1->getName() + "0"), "CONST_FLOAT"); // just to match the samples
         yylog(logOut, lineNo, "factor", "CONST_FLOAT", $$->getName());
+
+        tempCodeOut << "PUSH " + $1->getName() << endl;
 
         // why can't I delete this?
         // delete $1;
@@ -786,11 +787,15 @@ factor : variable {
         $$ = new SymbolInfo(($1->getName() + "++"), $1->getType());
         yylog(logOut, lineNo, "factor", "variable INCOP", $$->getName());
 
+        tempCodeOut << "POP AX\nINC AX\nPUSH AX\n";
+
         delete $1;
     }
 	| variable DECOP {
         $$ = new SymbolInfo(($1->getName() + "--"), $1->getType());
         yylog(logOut, lineNo, "factor", "variable DECOP", $$->getName());
+
+        tempCodeOut << "POP AX\nDEC AX\nPUSH AX\n";
 
         delete $1;
     }
