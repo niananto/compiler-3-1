@@ -14,6 +14,7 @@ ofstream logOut;
 ofstream errorOut;
 
 ofstream codeOut;
+ofstream dataOut;
 
 extern unsigned long lineNo;
 extern unsigned long errorNo;
@@ -357,8 +358,9 @@ declaration_list : declaration_list COMMA ID {
         $$->addParam((new SymbolInfo())->copySymbol($1));
         yylog(logOut, lineNo, "declaration_list", "ID", $$->getName());
 
-        
-        codeOut << "PUSH BX ;line no : " << lineNo << endl;
+        if(st->getScopeId() == "1" && !isFloat($1->getType())) {
+            dataOut << "\t" << $1->getName() << " DW ?" << endl;
+        }
 
         delete $1;
     }
@@ -368,7 +370,9 @@ declaration_list : declaration_list COMMA ID {
         $$->addParam((new SymbolInfo())->copySymbol($1)->setArraySize(stoi($3->getName())));
         yylog(logOut, lineNo, "declaration_list", "ID LTHIRD CONST_INT RTHIRD", $$->getName());
 
-        codeOut << "MOV SP, [BP+" +  + "] ;line no : " << lineNo << endl;
+        if(st->getScopeId() == "1" && !isFloat($1->getType())) {
+            dataOut << "\t" << $1->getName() << " DW " + $3->getName() + " DUP(?)" << endl;
+        }
 
         delete $1; delete $3;
     }
@@ -426,7 +430,20 @@ statement : var_declaration {
 
         delete $2;
     }
-    | FOR LPAREN expression_statement expression_statement expression RPAREN statement {
+    | FOR LPAREN expression_statement {
+        string labelFor = newLabel();
+        codeOut << endl;
+        codeOut << labelFor << ": ;line no: " << lineNo << endl;
+    } expression_statement {
+        string labelEnd = newLabel();
+        string labelContinue = newLabel();
+        codeOut << "\t\tCMP AX, 0 ;line no: " << lineNo << endl;
+        codeOut << "\t\tJNE " << labelContinue << " ;line no: " << lineNo << endl;
+        codeOut << "\t\tJMP " << labelEnd << " ;line no: " << lineNo << endl;
+        codeOut << labelContinue << ": ;line no: " << lineNo << endl;
+    } expression {
+        
+    } RPAREN statement {
         $$ = new SymbolInfo(("for(" + $3->getName() + $4->getName() + $5->getName() + ")" + $7->getName()), "FOR_LOOP");
         yylog(logOut, lineNo, "statement", "FOR LPAREN expression_statement expression_statement expression RPAREN statement", $$->getName());
 
@@ -480,6 +497,8 @@ expression_statement : SEMICOLON {
         $$ = new SymbolInfo(($1->getName() + ";"), "EXPRESSION_STATEMENT");
         yylog(logOut, lineNo, "expression_statement", "expression SEMICOLON", $$->getName());
 
+        codeOut << endl << "\t\tPOP AX ;line no " << lineNo << endl << endl;
+
         delete $1;
     }
     ;
@@ -502,7 +521,14 @@ variable : ID {
         }
         yylog(logOut, lineNo, "variable", "ID", $$->getName());
 
-        codeOut << "PUSH " << $1->getName() << " ;line no: " << lineNo << endl;
+        if (previous != nullptr && previous->isVariable() == true) {
+            codeOut << endl;
+            if (previous->getOffset() == -1) {
+                codeOut << "\t\tPUSH " << $1->getName() << " ;line no: " << lineNo << endl;
+            } else {
+                codeOut << "\t\tPUSH [BP+" << previous->getOffset() << "] ;line no: " << lineNo << endl;
+            }
+        }
     } 		
     | ID LTHIRD expression RTHIRD {
         $$ = new SymbolInfo(($1->getName() + "[" + $3->getName() + "]"), "ARRAY");
@@ -542,7 +568,25 @@ variable : ID {
 
         yylog(logOut, lineNo, "variable", "ID LTHIRD expression RTHIRD", $$->getName());
 
-        codeOut << "MOV BX, " + $3->getName() << " ;line no: " << lineNo << endl;
+        if (previous != nullptr) {
+            codeOut << endl;
+            codeOut << "\t\tPOP BX ;line no: " << lineNo << endl;
+            codeOut << "\t\tSHL BX, 1 ;line no: " << lineNo << endl;
+            if (previous->getOffset() != -1) {
+                if (previous->getOffset() < 0) {
+                    codeOut << "\t\tNEG BX ;line no: " << lineNo << " offset is negative" << endl;
+                }
+                codeOut << "\t\tADD BX, " << previous->getOffset() << " ;line no: " << lineNo << endl;
+                codeOut << "\t\tADD BX, BP ;line no: " << lineNo << endl;
+                codeOut << "\t\tMOV AX, [BX] ;line no: " << lineNo << endl;
+            } else {
+                codeOut << "\t\tMOV AX, " + $1->getName() + "[BX] ;line no: " << lineNo << endl;
+            }
+            codeOut << "\t\tPUSH AX ;line no: " << lineNo << endl;
+            codeOut << "\t\tPUSH BX ;line no: " << lineNo << endl;
+            codeOut << endl;
+        }
+        
 
         delete $1; delete $3;
     }
@@ -572,6 +616,26 @@ expression : logic_expression {
             $$->setType("UNDEFINED");
         }
 
+        codeOut << endl;
+        codeOut << "\t\tPOP AX ;line no: " << lineNo << endl;
+        if ($1->isArray()) {
+            codeOut << "\t\tPOP BX ;line no: " << lineNo << endl;
+        }
+        if ($1->getOffset() == -1) {
+            if ($1->isArray()) {
+                codeOut << "\t\tMOV " + $1->getName() + "[BX], AX ;line no: " << lineNo << endl;
+            } else {
+                codeOut << "\t\tMOV " << $1->getName() << ", AX ;line no: " << lineNo << endl;
+            }
+        } else {
+            if ($1->isArray()) {
+                codeOut << "\t\tMOV [BX], AX ;line no: " << lineNo << endl;
+            } else {
+                codeOut << "\t\tMOV [BP + " << $1->getOffset() << "], AX ;line no: " << lineNo << endl;
+            }
+        }
+        codeOut << endl;
+
         delete $1; delete $3;
     }
     ;
@@ -590,6 +654,46 @@ logic_expression : rel_expression {
         } else {
             yyerror("Type mismatch - LOGICOP expects int");
             $$->setType("UNDEFINED");
+        }
+
+        if($2->getName() == "&&") {
+            string labelLeftTrue = newLabel();
+            string labelTrue = newLabel();
+            string labelEnd = newLabel();
+
+            codeOut << "\t\tPOP BX ;line no: " << lineNo << endl;
+            codeOut << "\t\tPOP AX ;line no: " << lineNo << endl;
+            codeOut << "\t\tCMP AX, 0 ;line no: " << lineNo << endl;
+            codeOut << "\t\tJNE " << labelLeftTrue << " ;line no: " << lineNo << endl;
+            codeOut << "\t\tPUSH 0 ;line no: " << lineNo << endl;
+            codeOut << "\t\tJMP " << labelEnd << " ;line no: " << lineNo << endl;
+            codeOut << "\t\t" << labelLeftTrue << ": ;line no: " << lineNo << endl;
+            codeOut << "\t\tCMP BX, 0 ;line no: " << lineNo << endl;
+            codeOut << "\t\tJNE " << labelTrue << " ;line no: " << lineNo << endl;
+            codeOut << "\t\tPUSH 0 ;line no: " << lineNo << endl;
+            codeOut << "\t\tJMP " << labelEnd << " ;line no: " << lineNo << endl;
+            codeOut << "\t\t" << labelTrue << ": ;line no: " << lineNo << endl;
+            codeOut << "\t\tPUSH 1 ;line no: " << lineNo << endl;
+            codeOut << "\t\t" << labelEnd << ": ;line no: " << lineNo << endl;
+        } else { // "||"
+            string labelLeftFalse = newLabel();
+            string labelFalse = newLabel();
+            string labelEnd = newLabel();
+
+            codeOut << "\t\tPOP BX ;line no: " << lineNo << endl;
+            codeOut << "\t\tPOP AX ;line no: " << lineNo << endl;
+            codeOut << "\t\tCMP AX, 0 ;line no: " << lineNo << endl;
+            codeOut << "\t\tJE " << labelLeftFalse << " ;line no: " << lineNo << endl;
+            codeOut << "\t\tPUSH 1 ;line no: " << lineNo << endl;
+            codeOut << "\t\tJMP " << labelEnd << " ;line no: " << lineNo << endl;
+            codeOut << "\t\t" << labelLeftFalse << ": ;line no: " << lineNo << endl;
+            codeOut << "\t\tCMP BX, 0 ;line no: " << lineNo << endl;
+            codeOut << "\t\tJE " << labelFalse << " ;line no: " << lineNo << endl;
+            codeOut << "\t\tPUSH 1 ;line no: " << lineNo << endl;
+            codeOut << "\t\tJMP " << labelEnd << " ;line no: " << lineNo << endl;
+            codeOut << "\t\t" << labelFalse << ": ;line no: " << lineNo << endl;
+            codeOut << "\t\tPUSH 0 ;line no: " << lineNo << endl;
+            codeOut << "\t\t" << labelEnd << ": ;line no: " << lineNo << endl;
         }
 
         delete $1; delete $2; delete $3;
@@ -612,6 +716,34 @@ rel_expression : simple_expression {
            // all is well
         }
 
+        string labelIfTrue = newLabel();
+        string labelEnd = newLabel();
+
+        codeOut << endl;
+        codeOut << "\t\tPOP BX" << " ;line no: " << lineNo << endl;
+        codeOut << "\t\tPOP AX" << " ;line no: " << lineNo << endl;
+        codeOut << "\t\tCMP AX, BX" << " ;line no: " << lineNo << endl;
+
+        if(symbol == "==")
+            codeOut << "\t\tJE " << labelIfTrue << " ;line no: " << lineNo << endl;
+        else if(symbol == "!=")
+            codeOut << "\t\tJNE " << labelIfTrue << " ;line no: " << lineNo << endl;
+        else if(symbol == "<")
+            codeOut << "\t\tJL " << labelIfTrue << " ;line no: " << lineNo << endl;
+        else if(symbol == "<=")
+            codeOut << "\t\tJLE " << labelIfTrue << " ;line no: " << lineNo << endl;
+        else if(symbol == ">")
+            codeOut << "\t\tJG " << labelIfTrue << " ;line no: " << lineNo << endl;
+        else if(symbol == ">=")
+            codeOut << "\t\tJGE " << labelIfTrue << " ;line no: " << lineNo << endl;
+        
+        codeOut << "\t\tPUSH 0" << " ;line no: " << lineNo << endl;
+        codeOut << "\t\tJMP " << labelEnd << " ;line no: " << lineNo << endl;
+        codeOut << labelIfTrue << ":" << endl;
+        codeOut << "\t\tPUSH 1" << " ;line no: " << lineNo << endl;
+        codeOut << labelEnd << ":" << endl;
+        codeOut << endl;
+
         delete $1; delete $2; delete $3;
     }
     ;
@@ -633,6 +765,13 @@ simple_expression : term {
             yyerror("Type mismatch - void cannot be an operand of ADDOP");
             $$->setType("UNDEFINED");
         }
+
+        codeOut << endl;
+        codeOut << "\t\tPOP BX" << " ;line no: " << lineNo << endl;
+        codeOut << "\t\tPOP AX" << " ;line no: " << lineNo << endl;
+        codeOut << "\t\t" << ($2->getName() == "+" ? "ADD" : "SUB") << " AX, BX" << " ;line no: " << lineNo << endl;
+        codeOut << "\t\tPUSH AX" << " ;line no: " << lineNo << endl;
+        codeOut << endl;
 
         delete $1; delete $2; delete $3;
     }
@@ -674,6 +813,21 @@ term :	unary_expression {
             } // how to check for expressions evaluating into 0? later
         }
 
+        codeOut << endl;
+        codeOut << "\t\tPOP BX" << " ;line no: " << lineNo << endl;
+        codeOut << "\t\tPOP AX" << " ;line no: " << lineNo << endl;
+        if ($2->getName() == "*") {
+            codeOut << "\t\tIMUL BX" << " ;line no: " << lineNo << endl;
+        } else {
+            codeOut << "\t\tXOR DX, DX" << " ;line no: " << lineNo << endl;
+            codeOut << "\t\tIDIV BX" << " ;line no: " << lineNo << endl;
+            if ($2->getName() == "%") {
+                codeOut << "\t\tMOV AX, DX" << " ;line no: " << lineNo << endl;
+            }
+        }
+        codeOut << "\t\tPUSH AX" << " ;line no: " << lineNo << endl;
+        codeOut << endl;
+
         delete $1; delete $2; delete $3;
     }
     ;
@@ -682,11 +836,33 @@ unary_expression : ADDOP unary_expression {
         $$ = new SymbolInfo(($1->getName() + $2->getName()), $2->getType());
         yylog(logOut, lineNo, "unary_expression", "ADDOP unary_expression", $$->getName());
 
+        if ($1-getName() == "-") {
+            codeOut << endl;
+            codeOut << "\t\tPOP AX" << " ;line no: " << lineNo << endl;
+            codeOut << "\t\tNEG AX" << " ;line no: " << lineNo << endl;
+            codeOut << "\t\tPUSH AX" << " ;line no: " << lineNo << endl;
+            codeOut << endl;
+        }
+
         delete $1; delete $2;
     } 
     | NOT unary_expression {
         $$ = new SymbolInfo(("!" + $2->getName()), $2->getType());
         yylog(logOut, lineNo, "unary_expression", "NOT unary_expression", $$->getName());
+
+        string labelIfZero = newLabel();
+        string labelEnd = newLabel();
+
+        codeOut << endl;
+        codeOut << "\t\tPOP AX" << " ;line no: " << lineNo << endl;
+        codeOut << "\t\tCMP AX, 0" << " ;line no: " << lineNo << endl;
+        codeOut << "\t\tJE " << labelIfZero << " ;line no: " << lineNo << endl;
+        codeOut << "\t\tPUSH 0" << " ;line no: " << lineNo << endl;
+        codeOut << "\t\tJMP " << labelEnd << " ;line no: " << lineNo << endl;
+        codeOut << labelIfZero << ":" << " ;line no: " << lineNo << endl;
+        codeOut << "\t\tPUSH 1" << " ;line no: " << lineNo << endl;
+        codeOut << labelEnd << ":" << " ;line no: " << lineNo << endl;
+        codeOut << endl;
 
         delete $2;
     }
@@ -699,6 +875,10 @@ unary_expression : ADDOP unary_expression {
 factor : variable {
         $$ = $1;
         yylog(logOut, lineNo, "factor", "variable", $$->getName());
+
+        if ($1->isArray()) {
+            codeOut << "\t\tPOP BX" << " ;line no: " << lineNo << endl;
+        }
     }
 	| ID LPAREN argument_list RPAREN {
         $$ = new SymbolInfo(($1->getName() + "(" + $3->getName() + ")"), "FUNCTION_CALL");        
@@ -753,10 +933,12 @@ factor : variable {
 
         yylog(logOut, lineNo, "factor", "ID LPAREN argument_list RPAREN", $$->getName());
 
-        for (int i=0; i<$3->getParams().size(); i++) {
-            codeOut << "PUSH " + $3->getParams()[i]->getName() << endl;
-        }
-        codeOut << "CALL " + $1->getName() << " ;line no: " << lineNo << endl;
+        // for (int i=0; i<$3->getParams().size(); i++) {
+        //     codeOut << "PUSH " + $3->getParams()[i]->getName() << endl;
+        // }
+        codeOut << "\t\tCALL " + $1->getName() << " ;line no: " << lineNo << endl;
+        // pushing return value to stack
+        codeOut << "\t\tPUSH AX" << " ;line no: " << lineNo << endl;
 
         delete $1; delete $3;
     }
@@ -770,13 +952,11 @@ factor : variable {
         $$ = $1;
         yylog(logOut, lineNo, "factor", "CONST_INT", $$->getName());
 
-        codeOut << "PUSH " + $1->getName() << " ;line no: " << lineNo << endl;
+        codeOut << "\t\tPUSH " + $1->getName() << " ;line no: " << lineNo << endl;
     }
 	| CONST_FLOAT {
         $$ = new SymbolInfo(($1->getName() + "0"), "CONST_FLOAT"); // just to match the samples
         yylog(logOut, lineNo, "factor", "CONST_FLOAT", $$->getName());
-
-        codeOut << "PUSH " + $1->getName() << " ;line no: " << lineNo << endl;
 
         // why can't I delete this?
         // delete $1;
@@ -785,7 +965,26 @@ factor : variable {
         $$ = new SymbolInfo(($1->getName() + "++"), $1->getType());
         yylog(logOut, lineNo, "factor", "variable INCOP", $$->getName());
 
-        codeOut << "POP AX\nINC AX\nPUSH AX" << " ;line no: " << lineNo << endl;
+        if ($1->isArray()) {
+            codeOut << "\t\tPOP BX" << " ;line no: " << lineNo << endl;
+            codeOut << "\t\tMOV AX, [BX]" << " ;line no: " << lineNo << endl;
+        } else {
+            codeOut << "\t\tPOP AX" << " ;line no: " << lineNo << endl;
+            codeOut << "\t\tPUSH AX" << " ;line no: " << lineNo << endl;
+        }
+        codeOut << "\t\tINC AX" << " ;line no: " << lineNo << endl;
+
+        if($1->getOffset() != -1) {
+            if($1->isArray())
+                codeOut << "\t\tMOV [BX], AX" << " ;line no: " << lineNo << endl;
+            else
+                codeOut << "\t\tMOV [BP+" + to_string($1->getOffset()) + "], AX" << " ;line no: " << lineNo << endl;
+        } else {
+            if($1->isArray())
+                codeOut << "\t\tMOV " + $1->getName() + "[BX], AX" << " ;line no: " << lineNo << endl;
+            else
+                codeOut << "\t\tMOV " + $1->getName() + ", AX" << " ;line no: " << lineNo << endl;
+        }
 
         delete $1;
     }
@@ -793,7 +992,26 @@ factor : variable {
         $$ = new SymbolInfo(($1->getName() + "--"), $1->getType());
         yylog(logOut, lineNo, "factor", "variable DECOP", $$->getName());
 
-        codeOut << "POP AX\nDEC AX\nPUSH AX" << " ;line no: " << lineNo << endl;
+        if ($1->isArray()) {
+            codeOut << "\t\tPOP BX" << " ;line no: " << lineNo << endl;
+            codeOut << "\t\tMOV AX, [BX]" << " ;line no: " << lineNo << endl;
+        } else {
+            codeOut << "\t\tPOP AX" << " ;line no: " << lineNo << endl;
+            codeOut << "\t\tPUSH AX" << " ;line no: " << lineNo << endl;
+        }
+        codeOut << "\t\tDEC AX" << " ;line no: " << lineNo << endl;
+
+        if($1->getOffset() != -1) {
+            if($1->isArray())
+                codeOut << "\t\tMOV [BX], AX" << " ;line no: " << lineNo << endl;
+            else
+                codeOut << "\t\tMOV [BP+" + to_string($1->getOffset()) + "], AX" << " ;line no: " << lineNo << endl;
+        } else {
+            if($1->isArray())
+                codeOut << "\t\tMOV " + $1->getName() + "[BX], AX" << " ;line no: " << lineNo << endl;
+            else
+                codeOut << "\t\tMOV " + $1->getName() + ", AX" << " ;line no: " << lineNo << endl;
+        }
 
         delete $1;
     }
@@ -845,6 +1063,7 @@ int main(int argc,char *argv[])
     logOut.open("1805093_log.txt");
     errorOut.open("1805093_error.txt");  
     codeOut.open("code.txt");
+    dataOut.open("data.txt");
     
 	yyparse();
     fclose(yyin);
@@ -856,6 +1075,7 @@ int main(int argc,char *argv[])
     logOut.close();
     errorOut.close();
     codeOut.close();
+    dataOut.close();
     // if (errorNo != 0) {
     //     ofstream codeOut("code.asm");
     //     codeOut << ".MODEL SMALL\n.STACK 100H\n.DATA\n\n";

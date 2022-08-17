@@ -1,6 +1,7 @@
 .MODEL SMALL
 .STACK 400H
 .DATA
+	b DW ?
 	;println(n)
 .CODE
 	PRINT_INTEGER PROC NEAR
@@ -54,7 +55,8 @@
 	main PROC
 		MOV AX, @DATA
 		MOV DS, AX
-		MOV SP, [BP+-6]	;array a[3] declared
+		PUSH BX    ;line no 4: x declared
+		MOV SP, [BP+-8]	;array a[3] declared
 		MOV AH, 4CH
 		INT 21H
 	main ENDP

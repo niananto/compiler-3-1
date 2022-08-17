@@ -23,6 +23,8 @@ public:
 
         defined = false;
         arraySize = -1;
+
+        offset = -1;
     }
 
     SymbolInfo(const string &name, const string &type) {
@@ -32,6 +34,8 @@ public:
 
         defined = false;
         arraySize = -1;
+
+        offset = -1;
     }
 
     SymbolInfo* copySymbol(SymbolInfo* symbol) {
@@ -42,6 +46,8 @@ public:
         params = symbol->params;
         defined = symbol->defined;
         arraySize = symbol->arraySize;
+
+        offset = symbol->offset;
 
         return this;
     }
