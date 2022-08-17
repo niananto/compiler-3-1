@@ -1,0 +1,127 @@
+Line 1: type_specifier : INT
+
+int
+
+Line 2: type_specifier : INT
+
+int
+
+Line 2: declaration_list : ID
+
+a
+
+Line 2: var_declaration : type_specifier declaration_list SEMICOLON
+
+int a;
+
+Line 2: statement : var_declaration
+
+int a;
+
+Line 2: statements : statement
+
+int a;
+
+Line 3: variable : ID
+
+a
+
+Line 3: factor : CONST_INT
+
+10
+
+Line 3: unary_expression : factor
+
+10
+
+Line 3: term : unary_expression
+
+10
+
+Line 3: simple_expression : term
+
+10
+
+Line 3: rel_expression : simple_expression
+
+10
+
+Line 3: logic_expression : rel_expression
+
+10
+
+Line 3: expression : variable ASSIGNOP logic_expression
+
+a=10
+
+Line 3: expression_statement : expression SEMICOLON
+
+a=10;
+
+Line 3: statement : expression_statement
+
+a=10;
+
+Line 3: statements : statements statement
+
+int a;
+a=10;
+
+Line 4: statement : PRINTLN LPAREN ID RPAREN SEMICOLON
+
+println(a);
+
+Line 4: statements : statements statement
+
+int a;
+a=10;
+println(a);
+
+Line 5: compound_statement : LCURL statements RCURL
+
+{
+int a;
+a=10;
+println(a);
+}
+
+ScopeTable # 1.1
+ 4 --> < a : ID> 
+
+ScopeTable # 1
+ 16 --> < main : ID> 
+
+
+
+Line 5: func_definition : type_specifier ID LPAREN  RPAREN compound_statement
+
+int main(){
+int a;
+a=10;
+println(a);
+}
+
+Line 5: unit : func_definition
+
+int main(){
+int a;
+a=10;
+println(a);
+}
+
+Line 5: program : unit
+
+int main(){
+int a;
+a=10;
+println(a);
+}
+
+Line 5: start : program
+
+ScopeTable # 1
+ 16 --> < main : ID> 
+
+
+Total lines: 5
+Total errors: 0

@@ -1,0 +1,32 @@
+Error at line 1: syntax error
+
+Line 2: unit :  error SEMICOLON
+
+;
+
+
+Line 2: program : unit
+
+;
+
+
+Line 4: unit :  error SEMICOLON
+
+;
+
+
+Line 4: program : program unit
+
+;
+;
+
+
+
+
+ScopeTable # 1
+
+
+
+Total lines: 7
+Total errors: 1
+

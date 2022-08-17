@@ -13,8 +13,7 @@ SymbolTable* st = new SymbolTable(30);
 ofstream logOut;
 ofstream errorOut;
 
-ofstream tempCodeOut;
-ofstream tempDataOut;
+ofstream codeOut;
 
 extern unsigned long lineNo;
 extern unsigned long errorNo;
@@ -354,25 +353,22 @@ declaration_list : declaration_list COMMA ID {
     }
     | ID {
         $$ = new SymbolInfo($1->getName(), "DECLARATION_LIST");
-
         // adding this id to declaration_list for assigning type later
         $$->addParam((new SymbolInfo())->copySymbol($1));
-
         yylog(logOut, lineNo, "declaration_list", "ID", $$->getName());
 
-        tempDataOut << $1->getName() + "_" + st->getScopeId() + " DW ?" << " ;line no: " << lineNo << endl;
+        
+        codeOut << "PUSH BX ;line no : " << lineNo << endl;
 
         delete $1;
     }
     | ID LTHIRD CONST_INT RTHIRD {
         $$ = new SymbolInfo(($1->getName() + "[" + $3->getName() + "]"), "DECLARATION_LIST");
-
         // adding this array to declaration_list for assiginng type later
         $$->addParam((new SymbolInfo())->copySymbol($1)->setArraySize(stoi($3->getName())));
-
         yylog(logOut, lineNo, "declaration_list", "ID LTHIRD CONST_INT RTHIRD", $$->getName());
 
-        tempDataOut << $1->getName() + "_" + st->getScopeId() + " DW " + $3->getName() + " DUP(?)" << " ;line no: " << lineNo << endl;
+        codeOut << "MOV SP, [BP+" +  + "] ;line no : " << lineNo << endl;
 
         delete $1; delete $3;
     }
@@ -506,7 +502,7 @@ variable : ID {
         }
         yylog(logOut, lineNo, "variable", "ID", $$->getName());
 
-        tempCodeOut << "PUSH " << $1->getName() << " ;line no: " << lineNo << endl;
+        codeOut << "PUSH " << $1->getName() << " ;line no: " << lineNo << endl;
     } 		
     | ID LTHIRD expression RTHIRD {
         $$ = new SymbolInfo(($1->getName() + "[" + $3->getName() + "]"), "ARRAY");
@@ -546,7 +542,7 @@ variable : ID {
 
         yylog(logOut, lineNo, "variable", "ID LTHIRD expression RTHIRD", $$->getName());
 
-        tempCodeOut << "MOV BX, " + $3->getName() << " ;line no: " << lineNo << endl;
+        codeOut << "MOV BX, " + $3->getName() << " ;line no: " << lineNo << endl;
 
         delete $1; delete $3;
     }
@@ -758,9 +754,9 @@ factor : variable {
         yylog(logOut, lineNo, "factor", "ID LPAREN argument_list RPAREN", $$->getName());
 
         for (int i=0; i<$3->getParams().size(); i++) {
-            tempCodeOut << "PUSH " + $3->getParams()[i]->getName() << endl;
+            codeOut << "PUSH " + $3->getParams()[i]->getName() << endl;
         }
-        tempCodeOut << "CALL " + $1->getName() << " ;line no: " << lineNo << endl;
+        codeOut << "CALL " + $1->getName() << " ;line no: " << lineNo << endl;
 
         delete $1; delete $3;
     }
@@ -774,13 +770,13 @@ factor : variable {
         $$ = $1;
         yylog(logOut, lineNo, "factor", "CONST_INT", $$->getName());
 
-        tempCodeOut << "PUSH " + $1->getName() << " ;line no: " << lineNo << endl;
+        codeOut << "PUSH " + $1->getName() << " ;line no: " << lineNo << endl;
     }
 	| CONST_FLOAT {
         $$ = new SymbolInfo(($1->getName() + "0"), "CONST_FLOAT"); // just to match the samples
         yylog(logOut, lineNo, "factor", "CONST_FLOAT", $$->getName());
 
-        tempCodeOut << "PUSH " + $1->getName() << " ;line no: " << lineNo << endl;
+        codeOut << "PUSH " + $1->getName() << " ;line no: " << lineNo << endl;
 
         // why can't I delete this?
         // delete $1;
@@ -789,7 +785,7 @@ factor : variable {
         $$ = new SymbolInfo(($1->getName() + "++"), $1->getType());
         yylog(logOut, lineNo, "factor", "variable INCOP", $$->getName());
 
-        tempCodeOut << "POP AX\nINC AX\nPUSH AX" << " ;line no: " << lineNo << endl;
+        codeOut << "POP AX\nINC AX\nPUSH AX" << " ;line no: " << lineNo << endl;
 
         delete $1;
     }
@@ -797,7 +793,7 @@ factor : variable {
         $$ = new SymbolInfo(($1->getName() + "--"), $1->getType());
         yylog(logOut, lineNo, "factor", "variable DECOP", $$->getName());
 
-        tempCodeOut << "POP AX\nDEC AX\nPUSH AX" << " ;line no: " << lineNo << endl;
+        codeOut << "POP AX\nDEC AX\nPUSH AX" << " ;line no: " << lineNo << endl;
 
         delete $1;
     }
@@ -848,8 +844,7 @@ int main(int argc,char *argv[])
 
     logOut.open("1805093_log.txt");
     errorOut.open("1805093_error.txt");  
-    tempCodeOut.open("temp_code.txt");
-    tempDataOut.open("temp_data.txt");
+    codeOut.open("code.txt");
     
 	yyparse();
     fclose(yyin);
@@ -860,18 +855,17 @@ int main(int argc,char *argv[])
 
     logOut.close();
     errorOut.close();
-    tempCodeOut.close();
-    tempDataOut.close();
-    if (errorNo != 0) {
-        ofstream codeOut("code.asm");
-        codeOut << ".MODEL SMALL\n.STACK 100H\n.DATA\n\n";
-        ifstream tempDataIn("temp_data.txt");
-        codeOut << tempDataIn.rdbuf();
-        codeOut << "\n.CODE\n\n";
-        ifstream tempCodeIn("temp_code.txt");
-        codeOut << tempCodeIn.rdbuf();
-        codeOut.close();
-    }
+    codeOut.close();
+    // if (errorNo != 0) {
+    //     ofstream codeOut("code.asm");
+    //     codeOut << ".MODEL SMALL\n.STACK 100H\n.DATA\n\n";
+    //     ifstream tempDataIn("temp_data.txt");
+    //     codeOut << tempDataIn.rdbuf();
+    //     codeOut << "\n.CODE\n\n";
+    //     ifstream tempCodeIn("temp_code.txt");
+    //     codeOut << tempCodeIn.rdbuf();
+    //     codeOut.close();
+    // }
 	
     delete st;
 

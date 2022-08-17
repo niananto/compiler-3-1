@@ -1,0 +1,4 @@
+Error at line 1: syntax error
+
+
+Total errors: 1

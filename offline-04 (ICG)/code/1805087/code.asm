@@ -54,7 +54,16 @@
 	main PROC
 		MOV AX, @DATA
 		MOV DS, AX
-		MOV SP, [BP+-6]	;array a[3] declared
+		PUSH BX    ;line no 2: a declared
+		PUSH [BP+-2]	; a pushed
+		PUSH 10
+		POP AX	;10 popped
+		MOV [BP+-2], AX	;assigned 10 to a
+		POP AX	;Popped out a=10
+
+		PUSH [BP+-2]	;passing a to PRINT_INTEGER
+		CALL PRINT_INTEGER
+
 		MOV AH, 4CH
 		INT 21H
 	main ENDP

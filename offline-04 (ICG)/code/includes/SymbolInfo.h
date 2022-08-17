@@ -13,6 +13,8 @@ class SymbolInfo {
     bool defined; // for checking double definition
     unsigned arraySize; // for array
 
+    int offset; // for stack
+
 public:
     SymbolInfo() {
         name = "NOT DEFINED";
@@ -31,16 +33,6 @@ public:
         defined = false;
         arraySize = -1;
     }
-
-    // copy constructor
-    // SymbolInfo(const SymbolInfo &other) {
-    //     name = other.name;
-    //     type = other.type;
-    //     next = other.next;
-
-    //     params = other.params;
-    //     arraySize = other.arraySize;
-    // }
 
     SymbolInfo* copySymbol(SymbolInfo* symbol) {
         name = symbol->name;
@@ -105,6 +97,15 @@ public:
 
     SymbolInfo* setArraySize(unsigned arraySize) {
         this->arraySize = arraySize;
+        return this;
+    }
+
+    int getOffset() const {
+        return offset;
+    }
+
+    SymbolInfo* setOffset(int offset) {
+        this->offset = offset;
         return this;
     }
 
