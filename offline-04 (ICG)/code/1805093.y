@@ -482,6 +482,9 @@ statement : var_declaration {
         $$ = new SymbolInfo(("return " + $2->getName() + ";\n"), "RETURN_STATEMENT");
         yylog(logOut, lineNo, "statement", "RETURN expression SEMICOLON", $$->getName());
 
+        codeOut << "\t\tPOP AX ;line no: " << lineNo << endl;
+        
+
         delete $2;
     }
     // | error {
