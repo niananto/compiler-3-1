@@ -51,6 +51,7 @@ digit [0-9]
 "continue" {return CONTINUE;}
 "void" {return VOID;}
 "printf" {return PRINTLN;}
+"println" {return PRINTLN;}
 
 {letter_}({letter_}|{digit})* {
     // will be changing this "ID" type later

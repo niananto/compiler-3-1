@@ -18,3 +18,4 @@ g++ y.o l.o -lfl -o a
 
 
 rm y.o lex.yy.c l.o a y.tab.c y.tab.h
+rm code.txt data.txt

@@ -8,9 +8,11 @@ using namespace std;
 vector<string> intFamily{"int", "CONST_INT"};
 vector<string> floatFamily{"float", "CONST_FLOAT"};
 
-void yylog(ofstream &logOut, unsigned long lineNo, string left, string right, string symbolName) {
+void yylog(ofstream& logOut, ofstream& codeOut, unsigned long lineNo, string left, string right, string symbolName) {
     logOut << "Line " << lineNo << ": " << left << " : " << right << endl << endl;
     logOut << symbolName << endl << endl;
+
+    codeOut << "\t\t\t;" << left << " : " << right << endl;
 }
 
 vector<string> splitString(string line, char delim) {

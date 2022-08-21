@@ -9,6 +9,8 @@ class SymbolTable {
     ScopeTable* currentScope;
     unsigned long totalBuckets;
 
+    unsigned long idCountInCurrentFunction;
+
 public:
     SymbolTable(unsigned long totalBuckets) {
         this->totalBuckets = totalBuckets;
@@ -44,13 +46,27 @@ public:
         return currentScope->getId();
     }
 
+    void resetIdCount() {
+        idCountInCurrentFunction = 0;
+    }
+    
+    unsigned getIdCount() {
+        return idCountInCurrentFunction;
+    }
+
     bool insert(string name, string type) {
         if(currentScope == nullptr) enterScope();
+        idCountInCurrentFunction++;
         return currentScope->insert(name, type);
     }
 
     bool insert(SymbolInfo* symbol) {
         if(currentScope == nullptr) enterScope();
+        if (symbol->isArray()) {
+            idCountInCurrentFunction += symbol->getArraySize();
+        } else {
+            idCountInCurrentFunction++;
+        }
         return currentScope->insert(symbol);
     }
 

@@ -12,6 +12,7 @@ extern void yyerror(const char *);
 extern SymbolTable* st;
 extern ofstream logOut;
 extern ofstream errorOut;
+extern ofstream codeOut;
 
 extern unsigned long lineNo;
 
@@ -181,8 +182,10 @@ void handleFuncDefinition(SymbolInfo* s1, SymbolInfo* s2, SymbolInfo* s4) {
     // whatever happens, params should be inserted into the symbol table
     // into the scope. huh
     // inserting the params
+    int i = paramsToBeInserted.size();
     for (SymbolInfo* param : paramsToBeInserted) {
-        st->insert(param);
+        st->insert(param->setOffset(2 + i*2));
+        i--;
     }
 }
 
@@ -245,14 +248,24 @@ void handleParameterList(SymbolInfo* ss, SymbolInfo* s1, SymbolInfo* s3, SymbolI
     }
     ss->addParam(new SymbolInfo(s4->getName(), s3->getName()));
 
-    yylog(logOut, lineNo, "parameter_list", "parameter_list COMMA type_specifier ID", ss->getName());
+    yylog(logOut, codeOut, lineNo, "parameter_list", "parameter_list COMMA type_specifier ID", ss->getName());
 }
 
 // var_declaration : type_specifier declaration_list SEMICOLON
 void handleVarDeclaration(SymbolInfo* ss, SymbolInfo* s1, SymbolInfo* s2) {
-    
     // inserting the variables into current scope
+    // unsigned i = s2->getParams().size();
+    unsigned i = 0;
     for (SymbolInfo* var : s2->getParams()) {
+        SymbolInfo* toBeInserted = (new SymbolInfo())->copySymbol(var)->setType(s1->getName());
+        if (st->getScopeId() != "1") {
+            toBeInserted->setOffset(2 + i*2);
+        } else {
+            toBeInserted->setOffset(-1);
+        }
+        // i--;
+        i++;
+
         // setting type of each var to type_specifier
         // unless it's void
         if (s1->getName() == "void") {
@@ -264,11 +277,11 @@ void handleVarDeclaration(SymbolInfo* ss, SymbolInfo* s1, SymbolInfo* s2) {
 
         // then try to insert in the currentscope
         // if fails, then there is another variable with the same name in that scope
-        } else if (st->insert((new SymbolInfo())->copySymbol(var)->setType(s1->getName())) == false) {
+        } else if ((st->insert(toBeInserted)) == false) {
             yyerror(("Multiple declaration of " + var->getName()).c_str());
         }
     }
-    yylog(logOut, lineNo, "var_declaration", "type_specifier declaration_list SEMICOLON", ss->getName());
+    yylog(logOut, codeOut, lineNo, "var_declaration", "type_specifier declaration_list SEMICOLON", ss->getName());
 }
 
 // declaration_list : declaration_list COMMA ID
@@ -280,7 +293,7 @@ void handleDeclarationList(SymbolInfo* ss, SymbolInfo* s1, SymbolInfo* s3) {
     }
     // now adding this id
     ss->addParam((new SymbolInfo())->copySymbol(s3));
-    yylog(logOut, lineNo, "declaration_list", "declaration_list COMMA ID", ss->getName());
+    yylog(logOut, codeOut, lineNo, "declaration_list", "declaration_list COMMA ID", ss->getName());
 }
 
 // declaration_list : declaration_list COMMA ID LTHIRD CONST_INT RTHIRD
@@ -291,7 +304,7 @@ void handleDeclarationList(SymbolInfo* ss, SymbolInfo* s1, SymbolInfo* s3, Symbo
     }
     // now adding this array
     ss->addParam((new SymbolInfo())->copySymbol(s3)->setArraySize(stoi(s5->getName())));
-    yylog(logOut, lineNo, "declaration_list", "declaration_list COMMA ID LTHIRD CONST_INT RTHIRD", ss->getName());
+    yylog(logOut, codeOut, lineNo, "declaration_list", "declaration_list COMMA ID LTHIRD CONST_INT RTHIRD", ss->getName());
 }
 
 
