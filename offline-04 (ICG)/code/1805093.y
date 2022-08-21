@@ -599,6 +599,9 @@ statement : var_declaration {
             codeOut << "\t\tRET " + (paramsCount ? to_string(paramsCount*2) : "") << endl;
         }
 
+        codeOut << "\t\tPOP AX ;line no: " << lineNo << endl;
+        
+
         delete $2;
     }
     // | error {
