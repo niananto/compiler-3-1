@@ -43,3 +43,7 @@ have to deal with all the UNDEFINED"s - not done
 
 I will be give this a little bit of modularity
 getting the code blocks out of .y file for better error recovery
+
+
+--------------
+Everything upto assignment 03 is complete 💯 just don't follow the 4th assignment as I made a complete fool of myself during that period working on microcontroller project rather than this (was worth it tho).
